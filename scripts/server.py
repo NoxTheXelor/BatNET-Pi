@@ -25,10 +25,6 @@ from tensorflow.keras.models import Model, load_model
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
-try:
-    import tflite_runtime.interpreter as tflite
-except BaseException:
-    from tensorflow import lite as tflite
 
 
 HEADER = 64
