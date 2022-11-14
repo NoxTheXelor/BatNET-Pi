@@ -16,6 +16,12 @@ import os
 from utils.notifications import sendAppriseNotifications
 from utils.parse_settings import config_to_settings
 
+from bat_utils import write_op as wo
+from bat_utils import classifier as clss
+from bat_utils.data_set_params import DataSetParams
+from tensorflow.keras.models import Model, load_model
+
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
@@ -55,33 +61,65 @@ with open(userDir + '/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
 
 def loadModel():
 
-    global INPUT_LAYER_INDEX
-    global OUTPUT_LAYER_INDEX
-    global MDATA_INPUT_INDEX
     global CLASSES
 
     print('LOADING TF LITE MODEL...', end=' ')
 
-    # Load TFLite model and allocate tensors.
-    modelpath = userDir + '/BirdNET-Pi/model/BirdNET_6K_GLOBAL_MODEL.tflite'
-    myinterpreter = tflite.Interpreter(model_path=modelpath, num_threads=2)
-    myinterpreter.allocate_tensors()
+    model_name = "hybrid_cnn_xgboost"
+    date = "02_06_21_09_32_04_"
+    hnm_iter = "2"
+    model_file_features = model_dir + date + "features_" + model_name + "_hnm" + hnm_iter
+    network_features = load_model(model_file_features + '_model')
+    network_feat = Model(inputs=network_features.input, outputs=network_features.layers[-3].output)
+    model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
+    network_classif = joblib.load(model_file_classif + '_model.pkl')
 
-    # Get input and output tensors.
-    input_details = myinterpreter.get_input_details()
-    output_details = myinterpreter.get_output_details()
+        # load params
+    with open(model_file_classif + '_params.p') as f:
+        parameters = json.load(f)
+    print("params=", parameters)
 
-    # Get input tensor index
-    INPUT_LAYER_INDEX = input_details[0]['index']
-    MDATA_INPUT_INDEX = input_details[1]['index']
-    OUTPUT_LAYER_INDEX = output_details[0]['index']
 
     # Load labels
     CLASSES = []
-    labelspath = userDir + '/BirdNET-Pi/model/labels.txt'
-    with open(labelspath, 'r') as lfile:
-        for line in lfile.readlines():
-            CLASSES.append(line.replace('\n', ''))
+    CLASSES.append('not call')
+    CLASSES.append('Barbarg')
+    CLASSES.append('Envsp')
+    CLASSES.append('Myosp')
+    CLASSES.append('Pip35')
+    CLASSES.append('Pip50')
+    CLASSES.append('Plesp')
+    CLASSES.append('Rhisp')
+
+    # model classifier
+    params = DataSetParams(model_name)
+    params.window_size = parameters['win_size']
+    params.max_freq = parameters['max_freq']
+    params.min_freq = parameters['min_freq']
+    params.mean_log_mag = parameters['mean_log_mag']
+    params.fft_win_length = parameters['slice_scale']
+    params.fft_overlap = parameters['overlap']
+    params.crop_spec = parameters['crop_spec']
+    params.denoise = parameters['denoise']
+    params.smooth_spec = parameters['smooth_spec']
+    params.nms_win_size = parameters['nms_win_size']
+    params.smooth_op_prediction_sigma = parameters['smooth_op_prediction_sigma']
+    if model_name in ["hybrid_cnn_xgboost", "hybrid_call_xgboost"]: params.n_estimators = parameters["n_estimators"]
+    params.load_features_from_file = False
+    params.detect_time = 0
+    params.classif_time = 0
+    model_cls = clss.Classifier(params)
+    if model_name in  ["batmen", "cnn2", "hybrid_cnn_svm", "hybrid_cnn_xgboost", "hybrid_call_svm", "hybrid_call_xgboost"]:
+        model_cls.model.network_classif = network_classif
+    if model_name in ["cnn2", "hybrid_call_svm", "hybrid_call_xgboost"]:
+        model_cls.model.network_detect = network_detect
+    if model_name in ["hybrid_cnn_svm", "hybrid_cnn_xgboost"]:
+        model_cls.model.network_features = network_features
+        model_cls.model.model_feat = network_feat
+    if model_name in ["hybrid_cnn_svm", "hybrid_call_svm"]:
+        model_cls.model.scaler = scaler
+
+
 
     print('DONE!')
 
