@@ -64,13 +64,14 @@ def loadModel():
     model_name = "hybrid_cnn_xgboost"
     date = "02_06_21_09_32_04_"
     hnm_iter = "2"
+    model_dir= "..\model"
     model_file_features = model_dir + date + "features_" + model_name + "_hnm" + hnm_iter
     network_features = load_model(model_file_features + '_model')
     network_feat = Model(inputs=network_features.input, outputs=network_features.layers[-3].output)
     model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
     network_classif = joblib.load(model_file_classif + '_model.pkl')
 
-        # load params
+    # load params
     with open(model_file_classif + '_params.p') as f:
         parameters = json.load(f)
     print("params=", parameters)
@@ -105,21 +106,18 @@ def loadModel():
     params.detect_time = 0
     params.classif_time = 0
     model_cls = clss.Classifier(params)
-    if model_name in  ["batmen", "cnn2", "hybrid_cnn_svm", "hybrid_cnn_xgboost", "hybrid_call_svm", "hybrid_call_xgboost"]:
+    if model_name =="hybrid_cnn_xgboost":
         model_cls.model.network_classif = network_classif
-    if model_name in ["cnn2", "hybrid_call_svm", "hybrid_call_xgboost"]:
-        model_cls.model.network_detect = network_detect
-    if model_name in ["hybrid_cnn_svm", "hybrid_cnn_xgboost"]:
         model_cls.model.network_features = network_features
         model_cls.model.model_feat = network_feat
-    if model_name in ["hybrid_cnn_svm", "hybrid_call_svm"]:
-        model_cls.model.scaler = scaler
-
-
+    
+    # load thresholds
+    threshold_classes = np.load(model_file_classif + '_thresholds.npy')
+    threshold_classes = threshold_classes / 100
 
     print('DONE!')
 
-    return myinterpreter
+    return model_cls
 
 
 def loadCustomSpeciesList(path):
@@ -195,10 +193,7 @@ def custom_sigmoid(x, sensitivity=1.0):
 def predict(sample, sensitivity):
     global INTERPRETER
     # Make a prediction
-    INTERPRETER.set_tensor(INPUT_LAYER_INDEX, np.array(sample[0], dtype='float32'))
-    INTERPRETER.set_tensor(MDATA_INPUT_INDEX, np.array(sample[1], dtype='float32'))
-    INTERPRETER.invoke()
-    prediction = INTERPRETER.get_tensor(OUTPUT_LAYER_INDEX)[0]
+    
 
     # Apply custom sigmoid
     p_sigmoid = custom_sigmoid(prediction, sensitivity)

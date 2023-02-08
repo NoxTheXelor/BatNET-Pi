@@ -1,12 +1,12 @@
 import numpy as np
 import time
 
-import evaluate as evl
-import cls_cnn as cls_cnn
-import cls_cnn2 as cls_cnn2
-import cls_hybrid_cnn as cls_hybrid_cnn
-import cls_hybrid_call as cls_hybrid_call
-from run_training import save_model
+from bat_utils import evaluate as evl
+from bat_utils import cls_cnn as cls_cnn
+from bat_utils import cls_cnn2 as cls_cnn2
+from bat_utils import cls_hybrid_cnn as cls_hybrid_cnn
+from bat_utils import cls_hybrid_call as cls_hybrid_call
+from bat_utils.run_training import save_model
 
 class Classifier:
 

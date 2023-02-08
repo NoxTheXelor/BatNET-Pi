@@ -5,9 +5,9 @@ import pyximport; pyximport.install()
 from os import path
 import time
 
-from spectrogram import compute_features_spectrogram
+from bat_utils.spectrogram import compute_features_spectrogram
 import nms as nms
-from cnn_helper import network_fit, tune_network
+from bat_utils.cnn_helper import network_fit, tune_network
 
 
 class NeuralNet:

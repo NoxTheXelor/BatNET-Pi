@@ -14,11 +14,11 @@ from sklearn.svm import SVC
 import xgboost as xgb
 
 import nms_cnn2 as nms
-from spectrogram import compute_features_spectrogram
-from call_features import compute_features_call
-from cnn_helper import network_fit, tune_network
-from svm_xgb_helper import tune_svm, tune_xgb
-from models_params_helper import params_to_dict
+from bat_utils.spectrogram import compute_features_spectrogram
+from bat_utils.call_features import compute_features_call
+from bat_utils.cnn_helper import network_fit, tune_network
+from bat_utils.svm_xgb_helper import tune_svm, tune_xgb
+from bat_utils.models_params_helper import params_to_dict
 
 
 class NeuralNet:
