@@ -3,7 +3,6 @@ from skimage.util.shape import view_as_windows
 
 import bat_utils.spectrogram as sp
 
-
 def compute_features_call(audio_samples, sampling_rate, params):
     """
     Computes the features related to the calls of the audio samples.
@@ -22,12 +21,12 @@ def compute_features_call(audio_samples, sampling_rate, params):
     features_call : numpy array
         Array containing the 18 features call for each window of the audio file.
     """
-    
+
     # load audio and create spectrogram
     spectrogram = sp.gen_spectrogram(audio_samples, sampling_rate, params.fft_win_length, params.fft_overlap,
                                      crop_spec=params.crop_spec, max_freq=params.max_freq, min_freq=params.min_freq)
     spectrogram = sp.process_spectrogram(spectrogram, denoise_spec=params.denoise, mean_log_mag=params.mean_log_mag, smooth_spec=params.smooth_spec)
-
+    
     total_win_size = spectrogram.shape[1]
     spectrogram = view_as_windows(spectrogram, (spectrogram.shape[0], params.window_width))[0]
     spectrogram = spectrogram.sum(axis=2)
@@ -85,7 +84,7 @@ def compute_features_call(audio_samples, sampling_rate, params):
         stacked = np.vstack((stacked, freq_percentage))
 
     stacked = stacked.T
-
+    
     # pad on extra features at the end as the sliding window will mean its a different size
     features = stacked.reshape((stacked.shape[0], np.prod(stacked.shape[1:])))
     features = np.vstack((features, np.tile(features[-1, :], (total_win_size - features.shape[0], 1))))
@@ -96,3 +95,9 @@ def compute_features_call(audio_samples, sampling_rate, params):
     features_padding[:features.shape[0], :] = features
     features_call = features_padding
     return features_call
+
+
+
+
+
+

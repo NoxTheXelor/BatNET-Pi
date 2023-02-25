@@ -6,7 +6,7 @@ from os import path
 import time
 
 from bat_utils.spectrogram import compute_features_spectrogram
-import nms as nms
+from bat_utils import nms as nms
 from bat_utils.cnn_helper import network_fit, tune_network
 
 

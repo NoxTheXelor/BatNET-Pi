@@ -9,7 +9,7 @@ import os
 from bat_utils.models_params_helper import params_to_dict
 import bat_utils.evaluate as evl
 from bat_utils.data_set_params import DataSetParams
-import bat_utils.classifier as clss
+from bat_utils import classifier as clss
 
 def load_data(data_set, goal):
     """

@@ -7,8 +7,8 @@ import time
 import pickle
 
 from bat_utils.cnn_helper import obj_func_cnn, network_fit
+from bat_utils import nms_cnn2 as nms
 from bat_utils.spectrogram import compute_features_spectrogram
-import bat_utils.nms_cnn2 as nms
 from hyperopt import hp, tpe, fmin, space_eval, Trials
 
 

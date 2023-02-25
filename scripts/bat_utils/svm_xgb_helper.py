@@ -1,12 +1,13 @@
 import numpy as np
 from hyperopt import hp, tpe, fmin, space_eval, Trials
-from hyperopt.pyll.base import scope
+from hyperopt.pyll.base import scope 
 import pickle
 from sklearn.svm import SVC
 import xgboost as xgb
-from sklearn.metrics import log_loss
-from sklearn.model_selection import train_test_split
+from skmultilearn.model_selection.iterative_stratification import iterative_train_test_split
 from sklearn.utils import class_weight
+from sklearn.multioutput import MultiOutputClassifier
+from tensorflow.keras.losses import BinaryCrossentropy
 import gc
 
 from bat_utils.data_set_params import DataSetParams
@@ -20,10 +21,10 @@ def tune_svm(params, feat_train, labels, trials_filename):
     params : DataSetParams
         Parameters of the model.
     feat_train : ndarray
-        Array containing the spectrogram features for each window of the audio file.
-    labels : numpy array
-        Class label (0-7) for each training position.
-    trials_filename : String
+        Array containing the spectrogram features for each training window of the audio file.
+    labels : ndarray
+        Class labels in one-hot encoding for each training window of the audio files.
+    trials_filename : Stringy
         Name of the file where the previous iterations of hyperopt are saved.
     """
 
@@ -31,7 +32,7 @@ def tune_svm(params, feat_train, labels, trials_filename):
     space_svm = {   'C':hp.choice('C', [0.1, 1, 10, 100, 1000]),
                     'kernel':hp.choice('kernel',['linear','rbf','poly','sigmoid']),
                     'degree': scope.int(hp.quniform('degree',1,15,1)),
-                    'gamma_svm': hp.choice('gamma_svm', ['auto', 0.1, 1, 10, 100]),
+                    'gamma_svm': hp.choice('gamma_svm', ['auto', 'scale', 0.1, 1, 10, 100]),
                     'class_weight':hp.choice('class_weight', ["balanced", None]),
                     'max_iter': hp.choice('max_iter', [100,500,1000,1500,2000,2500]),
                     'model': "svm",
@@ -64,7 +65,7 @@ def tune_svm(params, feat_train, labels, trials_filename):
 
 
 
-def tune_xgb(params, feat_train, labels , trials_filename):
+def tune_xgb(params, feat_train, labels, trials_filename):
     """
     Tunes the XGBoost with hyperopt.
 
@@ -73,9 +74,9 @@ def tune_xgb(params, feat_train, labels , trials_filename):
     params : DataSetParams
         Parameters of the model.
     feat_train : ndarray
-        Array containing the spectrogram features for each window of the audio file.
-    labels : numpy array
-        Class label (0-7) for each training position.
+        Array containing the spectrogram features for each training window of the audio file.
+    labels : ndarray
+        Class labels in one-hot encoding for each training window of the audio files.
     trials_filename : String
         Name of the file where the previous iterations of hyperopt are saved.
     """
@@ -88,14 +89,13 @@ def tune_xgb(params, feat_train, labels , trials_filename):
                     'gamma_xgb': hp.choice('gamma_xgb', [0, 0.0001, 0.005, 0.001, 0.005, 0.01]),
                     'subsample': hp.choice('subsample', [0.7, 0.8, 0.9, 1]),
                     'scale_pos_weight': hp.choice('scale_pos_weight', [0, 0.25, 0.5, 1, 1.5]),
-                    'objective': 'multi:softprob',
+                    'objective': 'binary:logistic',
                     'eval_metric': 'mlogloss',
                     'model': "xgboost",
                     'feat_train': feat_train,
                     'labels': labels
                 }
 
-    
     # load the saved trials
     try:
         trials = pickle.load(open(trials_filename+".hyperopt", "rb"))
@@ -137,19 +137,9 @@ def obj_func_svm_xgb(args):
     """
 
     # split dataset into training and validation set
-    train_feat, val_feat, train_labels, val_labels = train_test_split(args['feat_train'], args['labels'],
-                                                        test_size=0.1, random_state=1, stratify=args['labels'])
-    
-    # compute sample weights
-    class_weights = list(class_weight.compute_class_weight('balanced', np.unique(train_labels),train_labels))
-    class_w = np.ones(train_labels.shape[0], dtype = 'float')
-    for i, val in enumerate(train_labels):
-        class_w[i] = class_weights[val]
-    class_w_valid = np.ones(val_labels.shape[0], dtype = 'float')
-    for i, val in enumerate(val_labels):
-        class_w_valid[i] = class_weights[val]
+    train_feat, train_labels, val_feat, val_labels = iterative_train_test_split(args['feat_train'], args['labels'], 0.1)
 
-    # Fit the SVM and compute the loss
+    # Fit SVM and compute the loss
     if args['model']=='svm':
         params_svm = DataSetParams()
         params_svm.C = args['C']
@@ -159,13 +149,20 @@ def obj_func_svm_xgb(args):
         params_svm.class_weight = args['class_weight']
         params_svm.max_iter = args['max_iter']
         print_params_svm(params_svm)
-        clf = SVC(kernel=params_svm.kernel, C=params_svm.C, degree=params_svm.degree,
+        clf =MultiOutputClassifier(SVC(kernel=params_svm.kernel, C=params_svm.C, degree=params_svm.degree,
                     gamma=params_svm.gamma_svm, class_weight=params_svm.class_weight, probability=True,
-                    verbose=False, max_iter=params_svm.max_iter)
+                    verbose=False, max_iter=params_svm.max_iter), n_jobs=-1)
         clf.fit(train_feat, train_labels)
-        y_pred_train = clf.predict_proba(val_feat)
-        loss = log_loss(val_labels, y_pred_train)
 
+        # Compute loss
+        y_pred_train = clf.predict_proba(val_feat)
+        y_pred_train = np.array(y_pred_train)[:,:,1].T
+        val_labels = np.array(val_labels)
+        sample_w = class_weight.compute_sample_weight('balanced',val_labels)
+        bce = BinaryCrossentropy()
+        loss = bce(val_labels, y_pred_train, sample_weight=sample_w).numpy()
+
+    
     # Fit XGBoost and compute minimum loss
     elif args['model']=='xgboost':
         params_xgb = DataSetParams()
@@ -177,23 +174,29 @@ def obj_func_svm_xgb(args):
         params_xgb.subsample = args['subsample']
         params_xgb.scale_pos_weight = args['scale_pos_weight']
         print_params_xgb(params_xgb)
-        clf = xgb.XGBClassifier(eta=params_xgb.eta, min_child_weight=params_xgb.min_child_weight, max_depth=params_xgb.max_depth,
+        xgb_clf = xgb.XGBClassifier(eta=params_xgb.eta, min_child_weight=params_xgb.min_child_weight, max_depth=params_xgb.max_depth,
                                 n_estimators=params_xgb.n_estimators, gamma=params_xgb.gamma_xgb, subsample=params_xgb.subsample,
-                                scale_pos_weight=params_xgb.scale_pos_weight, objective="multi:softprob",
+                                scale_pos_weight=params_xgb.scale_pos_weight, objective="binary:logistic",
                                 tree_method='gpu_hist', predictor='gpu_predictor')
-        clf.fit(train_feat, train_labels, eval_metric=['mlogloss'], sample_weight=class_w,
-                early_stopping_rounds=params_xgb.n_estimators//10, eval_set=[(val_feat,val_labels)], verbose=False)
-        history = clf.evals_result()
-        loss = np.min(history['validation_0']['mlogloss'])
-        clf._Booster.__del__()
-    
+        clf = MultiOutputClassifier(xgb_clf)
+        sample_w = class_weight.compute_sample_weight('balanced',train_labels)
+        clf.fit(train_feat, train_labels, sample_weight=sample_w)
+        y_pred_train = clf.predict_proba(val_feat)
+        y_pred_train = np.array(y_pred_train)[:,:,1].T
+        sample_w = class_weight.compute_sample_weight('balanced',val_labels)
+        bce = BinaryCrossentropy()
+        loss = bce(val_labels, y_pred_train, sample_weight=sample_w).numpy()
+        
+        # Free memory
+        for clf_estimator in clf.estimators_:
+            clf_estimator._Booster.__del__()
     gc.collect()
     return loss
 
 
 def print_params_svm(params):
     """
-    Print the parameters of the SVM.
+    Prints the parameters of SVM.
 
     Parameters
     ------------
@@ -212,14 +215,14 @@ def print_params_svm(params):
 
 def print_params_xgb(params):
     """
-    Print the parameters of XGBoost.
+    Prints the parameters of XGBoost.
 
     Parameters
     ------------
     params : DataSetParams
         Parameters of the model.
     """
-
+    
     dic = {}
     dic["eta"] = params.eta
     dic['min_child_weight'] = params.min_child_weight

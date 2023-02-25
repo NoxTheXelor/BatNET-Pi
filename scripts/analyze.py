@@ -84,12 +84,12 @@ def main():
         sockParams += 'i=' + args.i + '||'
     if args.o:
         sockParams += 'o=' + args.o + '||'
-    if args.birdweather_id:
-        sockParams += 'birdweather_id=' + args.birdweather_id + '||'
-    if args.include_list:
-        sockParams += 'include_list=' + args.include_list + '||'
-    if args.exclude_list:
-        sockParams += 'exclude_list=' + args.exclude_list + '||'
+    #if args.birdweather_id:
+    #    sockParams += 'birdweather_id=' + args.birdweather_id + '||' #not needed for demo
+    #if args.include_list:
+    #    sockParams += 'include_list=' + args.include_list + '||'
+    #if args.exclude_list:
+    #    sockParams += 'exclude_list=' + args.exclude_list + '||'
     if args.overlap:
         sockParams += 'overlap=' + str(args.overlap) + '||'
     if args.week:
