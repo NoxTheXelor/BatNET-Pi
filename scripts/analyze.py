@@ -19,7 +19,6 @@ def send(msg):
     send_length += b' ' * (HEADER - len(send_length))
     client.send(send_length)
     client.send(message)
-    print(client.recv(2048).decode(FORMAT))
 
 
 def main():
@@ -104,7 +103,6 @@ def main():
         sockParams += 'lon=' + str(args.lon) + '||'
 
     send(sockParams)
-
     send(DISCONNECT_MESSAGE)
     # time.sleep(3)
 

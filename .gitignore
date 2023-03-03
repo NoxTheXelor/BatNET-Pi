@@ -1,6 +1,7 @@
 *.pyc
 *.flac
 .vscode
+data/
 model/*
 results/*
 datasets/

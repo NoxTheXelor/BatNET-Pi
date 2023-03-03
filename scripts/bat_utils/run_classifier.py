@@ -298,8 +298,8 @@ if __name__ == "__main__":
                 call_classes = np.concatenate(np.array(call_classes)).ravel()
                 call_species = [group_names[i] for i in call_classes]
                 print("call pos=",call_time)
-                print("call species=", call_species)
-                print("call proba=",call_prob)
+                #print("call species=", call_species)
+                #print("call proba=",call_prob)
             print('  ' + str(num_calls) + ' calls found')
 
             # save results

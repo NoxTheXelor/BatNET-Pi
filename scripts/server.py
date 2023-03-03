@@ -349,6 +349,9 @@ def handle_client(conn, addr):
                         args.lat = float(inputvars[1])
                     elif inputvars[0] == 'lon':
                         args.lon = float(inputvars[1])
+                
+
+                min_conf = max(0.01, min(args.min_conf, 0.99))
 
                 # Load custom species lists - INCLUDED and EXCLUDED
                 """if not args.include_list == 'null':
@@ -381,7 +384,7 @@ def handle_client(conn, addr):
                 data_dir = 'data/' # path of the directory containing the audio files
                 result_dir = 'results/'    # path to the directory where the results are saved
                 model_dir = 'model/'  # path to the saved models
-                model_name = "hybrid_cnn_xgboost" # one of: 'batmen', 'cnn2',  'hybrid_cnn_svm',
+                model_name = "cnn2" # one of: 'batmen', 'cnn2',  'hybrid_cnn_svm',
                 # 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
 
                 # name of the result file
@@ -509,9 +512,9 @@ def handle_client(conn, addr):
                         if num_calls>0:
                             call_classes = np.concatenate(np.array(call_classes)).ravel()
                             call_species = [group_names[i] for i in call_classes]
-                            print("call pos=",call_time)
-                            print("call species=", call_species)
-                            print("call proba=",call_prob)
+                            #print("call pos=",call_time)
+                            #print("call species=", call_species)
+                            #print("call proba=",call_prob)
                         print('  ' + str(num_calls) + ' calls found')
 
                         # save results
@@ -531,194 +534,9 @@ def handle_client(conn, addr):
                 # save to large csv
                 if save_res and (len(results) > 0):
                     print('\nsaving results to', classification_result_file)
-                    wo.save_to_txt(classification_result_file, results)
+                    wo.save_to_txt(classification_result_file, results, min_conf)
                 else:
                     print('no detections to save')
-
-
-
-
-
-
-
-
-
-
-
-                # Read audio data
-                audioData = readAudioData(args.i, args.overlap)
-
-                # Get Date/Time from filename in case Pi gets behind
-                # now = datetime.now()
-                full_file_name = args.i
-                # print('FULL FILENAME: -' + full_file_name + '-')
-                file_name = Path(full_file_name).stem
-                file_date = file_name.split('-birdnet-')[0]
-                file_time = file_name.split('-birdnet-')[1]
-                date_time_str = file_date + ' ' + file_time
-                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
-                # print('Date:', date_time_obj.date())
-                # print('Time:', date_time_obj.time())
-                print('Date-time:', date_time_obj)
-                now = date_time_obj
-                current_date = now.strftime("%Y-%m-%d")
-                current_time = now.strftime("%H:%M:%S")
-                current_iso8601 = now.astimezone(get_localzone()).isoformat()
-
-                week_number = int(now.strftime("%V"))
-                week = max(1, min(week_number, 48))
-
-                sensitivity = max(0.5, min(1.0 - (args.sensitivity - 1.0), 1.5))
-
-                # Process audio data and get detections
-                detections = analyzeAudioData(audioData, args.lat, args.lon, week, sensitivity, args.overlap)
-
-                # Write detections to output file
-                min_conf = max(0.01, min(args.min_conf, 0.99))
-                writeResultsToFile(detections, min_conf, args.o)
-
-            ###############################################################################
-            ###############################################################################
-                # db + connection server
-                """soundscape_uploaded = False
-
-                # Write detections to Database
-                myReturn = ''
-                for i in detections:
-                    myReturn += str(i) + '-' + str(detections[i][0]) + '\n'
-
-                with open(userDir + '/BirdNET-Pi/BirdDB.txt', 'a') as rfile:
-                    for d in detections:
-                        species_apprised_this_run = []
-                        for entry in detections[d]:
-                            if entry[1] >= min_conf and ((entry[0] in INCLUDE_LIST or len(INCLUDE_LIST) == 0)
-                                                         and (entry[0] not in EXCLUDE_LIST or len(EXCLUDE_LIST) == 0)):
-                                # Write to text file.
-                                rfile.write(str(current_date) + ';' + str(current_time) + ';' + entry[0].replace('_', ';') + ';'
-                                            + str(entry[1]) + ";" + str(args.lat) + ';' + str(args.lon) + ';' + str(min_conf) + ';' + str(week) + ';'
-                                            + str(args.sensitivity) + ';' + str(args.overlap) + '\n')
-
-                                # Write to database
-                                Date = str(current_date)
-                                Time = str(current_time)
-                                species = entry[0]
-                                Sci_Name, Com_Name = species.split('_')
-                                score = entry[1]
-                                Confidence = str(round(score * 100))
-                                Lat = str(args.lat)
-                                Lon = str(args.lon)
-                                Cutoff = str(args.min_conf)
-                                Week = str(args.week)
-                                Sens = str(args.sensitivity)
-                                Overlap = str(args.overlap)
-                                Com_Name = Com_Name.replace("'", "")
-                                File_Name = Com_Name.replace(" ", "_") + '-' + Confidence + '-' + \
-                                    Date.replace("/", "-") + '-birdnet-' + Time + audiofmt
-
-                                # Connect to SQLite Database
-                                for attempt_number in range(3):
-                                    try:
-                                        con = sqlite3.connect(DB_PATH)
-                                        cur = con.cursor()
-                                        cur.execute("INSERT INTO detections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (Date, Time,
-                                                    Sci_Name, Com_Name, str(score), Lat, Lon, Cutoff, Week, Sens, Overlap, File_Name))
-
-                                        con.commit()
-                                        con.close()
-                                        break
-                                    except BaseException:
-                                        print("Database busy")
-                                        time.sleep(2)
-
-                                # Apprise of detection if not already alerted this run.
-                                if not entry[0] in species_apprised_this_run:
-                                    settings_dict = config_to_settings(userDir + '/BirdNET-Pi/scripts/thisrun.txt')
-                                    sendAppriseNotifications(species,
-                                                             str(score),
-                                                             File_Name,
-                                                             Date,
-                                                             Time,
-                                                             Week,
-                                                             Lat,
-                                                             Lon,
-                                                             Cutoff,
-                                                             Sens,
-                                                             Overlap,
-                                                             settings_dict,
-                                                             DB_PATH)
-                                    species_apprised_this_run.append(entry[0])
-
-                                print(str(current_date) +
-                                      ';' +
-                                      str(current_time) +
-                                      ';' +
-                                      entry[0].replace('_', ';') +
-                                      ';' +
-                                      str(entry[1]) +
-                                      ';' +
-                                      str(args.lat) +
-                                      ';' +
-                                      str(args.lon) +
-                                      ';' +
-                                      str(min_conf) +
-                                      ';' +
-                                      str(week) +
-                                      ';' +
-                                      str(args.sensitivity) +
-                                      ';' +
-                                      str(args.overlap) +
-                                      ';' +
-                                      File_Name +
-                                      '\n')
-
-                                if birdweather_id != "99999":
-                                    try:
-
-                                        if soundscape_uploaded is False:
-                                            # POST soundscape to server
-                                            soundscape_url = 'https://app.birdweather.com/api/v1/stations/' + \
-                                                birdweather_id + \
-                                                '/soundscapes' + \
-                                                '?timestamp=' + \
-                                                current_iso8601
-
-                                            with open(args.i, 'rb') as f:
-                                                wav_data = f.read()
-                                            response = requests.post(url=soundscape_url, data=wav_data, headers={'Content-Type': 'application/octet-stream'})
-                                            print("Soundscape POST Response Status - ", response.status_code)
-                                            sdata = response.json()
-                                            soundscape_id = sdata['soundscape']['id']
-                                            soundscape_uploaded = True
-
-                                        # POST detection to server
-                                        detection_url = "https://app.birdweather.com/api/v1/stations/" + birdweather_id + "/detections"
-                                        start_time = d.split(';')[0]
-                                        end_time = d.split(';')[1]
-                                        post_begin = "{ "
-                                        now_p_start = now + datetime.timedelta(seconds=float(start_time))
-                                        current_iso8601 = now_p_start.astimezone(get_localzone()).isoformat()
-                                        post_timestamp = "\"timestamp\": \"" + current_iso8601 + "\","
-                                        post_lat = "\"lat\": " + str(args.lat) + ","
-                                        post_lon = "\"lon\": " + str(args.lon) + ","
-                                        post_soundscape_id = "\"soundscapeId\": " + str(soundscape_id) + ","
-                                        post_soundscape_start_time = "\"soundscapeStartTime\": " + start_time + ","
-                                        post_soundscape_end_time = "\"soundscapeEndTime\": " + end_time + ","
-                                        post_commonName = "\"commonName\": \"" + entry[0].split('_')[1] + "\","
-                                        post_scientificName = "\"scientificName\": \"" + entry[0].split('_')[0] + "\","
-                                        post_algorithm = "\"algorithm\": " + "\"alpha\"" + ","
-                                        post_confidence = "\"confidence\": " + str(entry[1])
-                                        post_end = " }"
-
-                                        post_json = post_begin + post_timestamp + post_lat + post_lon + post_soundscape_id + post_soundscape_start_time + \
-                                            post_soundscape_end_time + post_commonName + post_scientificName + post_algorithm + post_confidence + post_end
-                                        print(post_json)
-                                        response = requests.post(detection_url, json=json.loads(post_json))
-                                        print("Detection POST Response Status - ", response.status_code)
-                                    except BaseException:
-                                        print("Cannot POST right now")
-                conn.send(myReturn.encode(FORMAT))
-
-                # time.sleep(3)"""
 
     conn.close()
 
