@@ -149,7 +149,12 @@ def run_classifier(model, audio, file_dur, samp_rate, threshold_classes, chunk_s
     print('nms computation time', model.params.nms_computation_time, '(secs)')
     print('detect time total', model.params.detect_time, '(secs)')
     print('classif time total', model.params.classif_time, '(secs)')
-    return call_time, call_prob, call_class
+    tps = {}
+    tps["features"] = model.params.features_computation_time
+    tps["nms"] = model.params.nms_computation_time
+    tps["detection"] = model.params.detect_time
+    tps["classification"] = model.params.classif_time
+    return call_time, call_prob, call_class, tps
 
 
 if __name__ == "__main__":

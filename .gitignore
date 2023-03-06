@@ -1,7 +1,8 @@
 *.pyc
 *.flac
 .vscode
-data/
+data/*
+perf_logs/
 model/*
 results/*
 datasets/

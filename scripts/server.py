@@ -47,6 +47,7 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 userDir = os.path.expanduser('~')
 DB_PATH = userDir + '/BirdNET-Pi/scripts/birds.db'
 
+file_lock = threading.Lock()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -64,6 +65,26 @@ with open('scripts/thisrun.txt', 'r') as f:
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
+def record_perf(data):
+    path = userDir+'/BatNET-Pi/perf_logs/'
+    log_file_name = 'log.csv'
+    with file_lock:
+        if not os.path.exists(path+log_file_name) :
+            with open(path+log_file_name, "w") as log_file:
+                head_title = "timestamp,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur"
+                log_file.write(head_title + '\n')
+        with open(path + log_file_name, "a") as log_file:
+            timestamp = str(time.time())
+            data_file = data["file"]
+            ai_used = data["ai"]
+            nbr_detect = data["nbr_detection"]
+            feat_dur = data["feat_time"]
+            nms_dur = data["nms_time"]
+            detection_dur = data["detect_time"]
+            classif_dur = data["classif_time"]
+            tot_dur = data["tot_time"]
+            payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+feat_dur+","+nms_dur+","+detection_dur+","+classif_dur+","+tot_dur
+            log_file.write(payload+"\n")
 
 def handle_client(conn, addr):
     global INCLUDE_LIST
@@ -273,11 +294,21 @@ def handle_client(conn, addr):
                     if read_fail:
                         continue
                     if file_dur>4:
+                        data={}
                         # run classifier
                         tic = time.time()
-                        call_time, call_prob, call_classes = run_classifier(model_cls, audio, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
+                        call_time, call_prob, call_classes, t = run_classifier(model_cls, audio, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
                         toc = time.time()
+                        data["file"] =  file_name
+                        data["ai"] = model_name
+                        data["nbr_detection"] = str(max(0,len(call_classes)-1))
+                        data["feat_time"] =  str(round(t["features"],3))
+                        data["nms_time"] =  str(round(t["nms"],3))
+                        data["detect_time"] =  str(round(t["detection"],3))
+                        data["classif_time"] = str(round(t["classification"],3))
+                        data["tot_time"] = str(round(toc-tic,3))
                         print("total time = ",toc-tic)
+                        record_perf(data)
                         num_calls = len(call_time)
                         if num_calls>0:
                             call_classes = np.concatenate(np.array(call_classes)).ravel()
