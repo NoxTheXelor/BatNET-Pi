@@ -282,55 +282,54 @@ def handle_client(conn, addr):
 
                 print("model name =", model_name)
                 results = []
-                # load audio file names and loop through them
-                audio_files = glob.glob(data_dir + '*.wav')
-                for file_cnt, file_name in enumerate(audio_files):
-                    print("------------",file_name,"--------------")
-                    file_name_root = file_name[len(data_dir):]
+                file_path = args.i
+                file_name_root, file_name = file_path.split("/")
 
-                    # read audio file - skip file if cannot read
-                    read_fail, audio, file_dur, samp_rate, samp_rate_orig = read_audio(file_name,
-                                            do_time_expansion, chunk_size, model_cls.params.window_size)
-                    if read_fail:
-                        continue
-                    if file_dur>4:
-                        data={}
-                        # run classifier
-                        tic = time.time()
-                        call_time, call_prob, call_classes, t = run_classifier(model_cls, audio, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
-                        toc = time.time()
-                        data["file"] =  file_name
-                        data["ai"] = model_name
-                        data["nbr_detection"] = str(max(0,len(call_classes)-1))
-                        data["feat_time"] =  str(round(t["features"],3))
-                        data["nms_time"] =  str(round(t["nms"],3))
-                        data["detect_time"] =  str(round(t["detection"],3))
-                        data["classif_time"] = str(round(t["classification"],3))
-                        data["tot_time"] = str(round(toc-tic,3))
-                        print("total time = ",toc-tic)
-                        record_perf(data)
-                        num_calls = len(call_time)
-                        if num_calls>0:
-                            call_classes = np.concatenate(np.array(call_classes)).ravel()
-                            call_species = [group_names[i] for i in call_classes]
-                            #print("call pos=",call_time)
-                            #print("call species=", call_species)
-                            #print("call proba=",call_prob)
-                        print('  ' + str(num_calls) + ' calls found')
+                print("------------",file_name,"--------------")
 
-                        # save results
-                        if save_res:
-                            # save to AudioTagger format
-                            op_file_name = result_dir + file_name_root[:-4] + '-sceneRect.csv'
-                            wo.create_audio_tagger_op(file_name_root, op_file_name, call_time,
-                                                    call_classes, call_prob,
-                                                    samp_rate_orig, group_names)
+                # read audio file - skip file if cannot read
+                read_fail, audio, file_dur, samp_rate, samp_rate_orig = read_audio(file_path,
+                                        do_time_expansion, chunk_size, model_cls.params.window_size)
+                if read_fail:
+                    continue
+                if file_dur>4:
+                    data={}
+                    # run classifier
+                    tic = time.time()
+                    call_time, call_prob, call_classes, t = run_classifier(model_cls, audio, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
+                    toc = time.time()
+                    data["file"] =  file_name
+                    data["ai"] = model_name
+                    data["nbr_detection"] = str(max(0,len(call_classes)-1))
+                    data["feat_time"] =  str(round(t["features"],3))
+                    data["nms_time"] =  str(round(t["nms"],3))
+                    data["detect_time"] =  str(round(t["detection"],3))
+                    data["classif_time"] = str(round(t["classification"],3))
+                    data["tot_time"] = str(round(toc-tic,3))
+                    print("total time = ",toc-tic)
+                    record_perf(data)
+                    num_calls = len(call_time)
+                    if num_calls>0:
+                        call_classes = np.concatenate(np.array(call_classes)).ravel()
+                        call_species = [group_names[i] for i in call_classes]
+                        #print("call pos=",call_time)
+                        #print("call species=", call_species)
+                        #print("call proba=",call_prob)
+                    print('  ' + str(num_calls) + ' calls found')
 
-                            # save as dictionary
-                            if num_calls > 0:
-                                res = {'filename':file_name_root, 'time':call_time,
-                                    'prob':call_prob, 'pred_classes':call_species}
-                                results.append(res)
+                    # save results
+                    if save_res:
+                        # save to AudioTagger format
+                        op_file_name = result_dir + file_name + '-sceneRect.csv'
+                        wo.create_audio_tagger_op(file_name, op_file_name, call_time,
+                                                call_classes, call_prob,
+                                                samp_rate_orig, group_names)
+
+                        # save as dictionary
+                        if num_calls > 0:
+                            res = {'filename':file_name, 'time':call_time,
+                                'prob':call_prob, 'pred_classes':call_species}
+                            results.append(res)
 
                 # save to large csv
                 if save_res and (len(results) > 0):
