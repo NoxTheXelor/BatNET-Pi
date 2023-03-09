@@ -1,0 +1,292 @@
+{'nb_conv_layers_1': 3, 'nb_dense_layers_1': 1, 'nb_filters_1': 48, 'filter_size_1': 3, 'pool_size_1': 2, 'nb_dense_nodes_1': 384, 'dropout_proba_1': 0.5, 'learn_rate_adam_1': 0.00031622776601683794, 'beta_1_1': 0.95, 'beta_2_1': 0.999, 'epsilon_1': 1e-08, 'min_delta_1': 0.005, 'patience_1': 15, 'batchsize_1': 128, 'nb_conv_layers_2': 2, 'nb_dense_layers_2': 2, 'nb_filters_2': 40, 'filter_size_2': 4, 'pool_size_2': 2, 'nb_dense_nodes_2': 512, 'dropout_proba_2': 0.5, 'learn_rate_adam_2': 0.0022758459260747888, 'beta_1_2': 0.9, 'beta_2_2': 0.999, 'epsilon_2': 1e-08, 'min_delta_2': 0.0005, 'patience_2': 5, 'batchsize_2': 320, 'win_size': 0.23, 'chunk_size': 0, 'max_freq': 270, 'min_freq': 10, 'mean_log_mag': 0.5, 'slice_scale': 0.02322, 'overlap': 0.75, 'crop_spec': True, 'denoise': True, 'smooth_spec': True, 'nms_win_size': 21, 'smooth_op_prediction_sigma': 1.0335917312661498, 'num_hnm': 2}
+ hard negative mining round 0
+evaluate time 47.487 (secs) = 0.79 min \\Best F1 = [0.9987829  0.63852708 0.64804451 0.66458717 0.61825577 0.56780684
+ 0.53621262 0.40399256]Best threshold = [ 0. 99. 15. 21. 36. 30. 84. 26.]
+=====================================================
+Threshold = [ 0. 99. 15. 21. 36. 30. 84. 26.]
+
+=====================================================
+
+--------------
+Confusion matrix tout
+--------------
+[[[1218910    1005]
+  [   2698    6103]]
+
+ [[     45      85]
+  [      5 1228579]]
+
+ [[   1327     618]
+  [    773 1225966]]
+
+ [[   2216    1372]
+  [    830 1224239]]
+
+ [[    384     343]
+  [    257 1227719]]
+
+ [[    763     553]
+  [    759 1226612]]
+
+ [[    105     186]
+  [     26 1228388]]
+
+ [[    351     453]
+  [    253 1227592]]]
+--------------
+Class 0 tout
+--------------
+True Positive 1218910
+False Positive 2698
+False Negative 1005
+True Negative 6103
+Accuracy 0.996986284869734
+Precision 0.9977914355505203
+Recall 0.9991761721103519
+F1 0.9984833237286725
+BCR 0.8463100494684245
+--------------
+Class 1 tout
+--------------
+True Positive 45
+False Positive 5
+False Negative 85
+True Negative 1228579
+Accuracy 0.9999267526861417
+Precision 0.9
+Recall 0.34615384615384615
+F1 0.5
+BCR 0.6730748882140241
+--------------
+Class 2 tout
+--------------
+True Positive 1327
+False Positive 773
+False Negative 618
+True Negative 1225966
+Accuracy 0.9988678944301382
+Precision 0.6319047619047619
+Recall 0.6822622107969152
+F1 0.6561186650185413
+BCR 0.8408160424551583
+--------------
+Class 3 tout
+--------------
+True Positive 2216
+False Positive 830
+False Negative 1372
+True Negative 1224239
+Accuracy 0.998207799247471
+Precision 0.7275114904793172
+Recall 0.6176142697881828
+F1 0.6680735604461863
+BCR 0.8084683784648616
+--------------
+Class 4 tout
+--------------
+True Positive 384
+False Positive 257
+False Negative 343
+True Negative 1227719
+Accuracy 0.9995116802026202
+Precision 0.5990639625585024
+Recall 0.5281980742778541
+F1 0.5614035087719298
+BCR 0.7639943933999616
+--------------
+Class 5 tout
+--------------
+True Positive 763
+False Positive 759
+False Negative 553
+True Negative 1226612
+Accuracy 0.9989321934715676
+Precision 0.5013140604467805
+Recall 0.5797872340425532
+F1 0.5377026074700494
+BCR 0.7895844195577549
+--------------
+Class 6 tout
+--------------
+True Positive 105
+False Positive 26
+False Negative 186
+True Negative 1228388
+Accuracy 0.9998274606191071
+Precision 0.8015267175572519
+Recall 0.36082474226804123
+F1 0.49763033175355453
+BCR 0.6804017883826029
+--------------
+Class 7 tout
+--------------
+True Positive 351
+False Positive 253
+False Negative 453
+True Negative 1227592
+Accuracy 0.9994253851181257
+Precision 0.5811258278145696
+Recall 0.43656716417910446
+F1 0.49857954545454536
+BCR 0.718180556056136
+--------------
+GLOBAL tout
+--------------
+Average Accuracy 0.9989606813306132
+Average Precision 0.717529782038963
+Average Recall 0.5688229642021061
+Average F1 0.6147489428304349
+Average BCR 0.7651038144998654
+
+=====================================================
+Threshold = [ 0. 99. 15. 21. 36. 30. 84. 26.]
+
+=====================================================
+
+--------------
+Confusion matrix detect
+--------------
+[[   6103    2698]
+ [   1005 1218910]]
+--------------
+GLOBAL detect
+--------------
+True Positive 6103
+False Positive 1005
+False Negative 2698
+True Negative 1218910
+Accuracy 0.996986284869734
+Precision 0.858610016882386
+Recall 0.693443926826497
+F1 0.7672386699352569
+BCR 0.8463100494684245
+--------------
+GLOBAL detect
+--------------
+Average Accuracy 0.996986284869734
+Average Precision 0.858610016882386
+Average Recall 0.693443926826497
+Average F1 0.7672386699352569
+Average BCR 0.8463100494684245
+
+=====================================================
+Threshold = [ 0. 99. 15. 21. 36. 30. 84. 26.]
+
+=====================================================
+
+--------------
+Confusion matrix classif
+--------------
+[[[  45   11]
+  [   5 6042]]
+
+ [[1327  121]
+  [ 510 4145]]
+
+ [[2216  304]
+  [ 409 3174]]
+
+ [[ 384  152]
+  [ 209 5358]]
+
+ [[ 763  175]
+  [ 620 4546]]
+
+ [[ 105   66]
+  [  19 5913]]
+
+ [[ 351   83]
+  [ 126 5543]]]
+--------------
+Class 1 classif
+--------------
+True Positive 45
+False Positive 5
+False Negative 11
+True Negative 6042
+Accuracy 0.9973783385220384
+Precision 0.9
+Recall 0.8035714285714286
+F1 0.8490566037735849
+BCR 0.9013722861395261
+--------------
+Class 2 classif
+--------------
+True Positive 1327
+False Positive 510
+False Negative 121
+True Negative 4145
+Accuracy 0.8966082254628871
+Precision 0.7223734349482852
+Recall 0.9164364640883977
+F1 0.8079147640791475
+BCR 0.903438425384693
+--------------
+Class 3 classif
+--------------
+True Positive 2216
+False Positive 409
+False Negative 304
+True Negative 3174
+Accuracy 0.8831722103883336
+Precision 0.8441904761904762
+Recall 0.8793650793650793
+F1 0.8614188532555879
+BCR 0.882607462931214
+--------------
+Class 4 classif
+--------------
+True Positive 384
+False Positive 209
+False Negative 152
+True Negative 5358
+Accuracy 0.9408487629034901
+Precision 0.6475548060708263
+Recall 0.7164179104477612
+F1 0.6802480070859167
+BCR 0.8394376241658601
+--------------
+Class 5 classif
+--------------
+True Positive 763
+False Positive 620
+False Negative 175
+True Negative 4546
+Accuracy 0.8697575360419397
+Precision 0.5516992046276211
+Recall 0.8134328358208955
+F1 0.6574752261956054
+BCR 0.8467086749758755
+--------------
+Class 6 classif
+--------------
+True Positive 105
+False Positive 19
+False Negative 66
+True Negative 5913
+Accuracy 0.9860724233983287
+Precision 0.8467741935483871
+Recall 0.6140350877192983
+F1 0.711864406779661
+BCR 0.8054160603802156
+--------------
+Class 7 classif
+--------------
+True Positive 351
+False Positive 126
+False Negative 83
+True Negative 5543
+Accuracy 0.9657545469441259
+Precision 0.7358490566037735
+Recall 0.8087557603686636
+F1 0.7705817782656421
+BCR 0.8932648090959564
+--------------
+GLOBAL classif
+--------------
+Average Accuracy 0.9342274348087348
+Average Precision 0.7497773102841957
+Average Recall 0.7931449380545034
+Average F1 0.7626513770621636
+Average BCR 0.8674636204390487
+evaluate time 0.542 (secs) = 0.01 min \\Best F1 = 0.5999323976625637Best threshold = [ 0. 99. 15. 21. 36. 30. 84. 26.]
