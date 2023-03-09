@@ -66,7 +66,7 @@ with open('scripts/thisrun.txt', 'r') as f:
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
 def record_perf(data):
-    path = userDir+'/BatNET-Pi/perf_logs/'
+    path = userDir+'/BirdNET-Pi/perf_logs/'
     log_file_name = 'log.csv'
     with file_lock:
         if not os.path.exists(path+log_file_name) :
