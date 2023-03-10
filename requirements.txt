@@ -18,3 +18,4 @@ tensorflow
 hyperopt
 xgboost
 scikit-learn
+scikit-multilearn
