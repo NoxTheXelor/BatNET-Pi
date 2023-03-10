@@ -27,6 +27,9 @@ install_birdnet() {
   cd ~/BirdNET-Pi || exit 1
   echo "Establishing a python virtual environment"
   python3 -m venv birdnet
+  cd scripts/bat_utils || exit 1
+  python3 setup.py build_ext --inplace
+  cd ../.. 
   source ./birdnet/bin/activate
   pip3 install -U -r $HOME/BirdNET-Pi/requirements.txt
 }
