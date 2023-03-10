@@ -1,2 +1,0 @@
-timestamp,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur
-1678385672.772096,R-C2_0_20120909_235714_086.wav,cnn2,0,15.695,1.913,44.034,0.002,61.666
