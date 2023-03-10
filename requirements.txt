@@ -17,3 +17,4 @@ scikit-image
 tensorflow
 hyperopt
 xgboost
+scikit-learn

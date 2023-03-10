@@ -65,8 +65,10 @@ with open('scripts/thisrun.txt', 'r') as f:
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
-def record_perf(data):
-    path = userDir+'/BirdNET-Pi/perf_logs/'
+def record_perf(data, result_dir):
+
+    path = userDir+'/BirdNET-Pi/'+result_dir
+
     log_file_name = 'log.csv'
     with file_lock:
         if not os.path.exists(path+log_file_name) :
@@ -105,7 +107,7 @@ def handle_client(conn, addr):
                 args = type('', (), {})()
 
                 args.i = ''
-                args.o = ''
+                args.o = 'perf_logs/'
                 #args.birdweather_id = '99999'
                 args.include_list = 'null'
                 args.exclude_list = 'null'
@@ -307,7 +309,7 @@ def handle_client(conn, addr):
                     data["classif_time"] = str(round(t["classification"],3))
                     data["tot_time"] = str(round(toc-tic,3))
                     print("total time = ",toc-tic)
-                    record_perf(data)
+                    record_perf(data, args.o)
                     num_calls = len(call_time)
                     if num_calls>0:
                         call_classes = np.concatenate(np.array(call_classes)).ravel()
