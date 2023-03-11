@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import datetime as dt
-
+import os
 
 def save_to_txt(op_file, results, min_conf):
     """
@@ -16,10 +16,12 @@ def save_to_txt(op_file, results, min_conf):
     min_conf : float
         minimum threshold of confidence in species prediction. Below this threshold, the data is not written in the file.
     """
-
-    with open(op_file, 'w') as file:
-        head_str = 'file_name,predicted_time,predicted_species,predicted_prob'
-        file.write(head_str + '\n')
+    if not os.path.exists(op_file+'/daily_result.csv'):
+        with open(op_file+'/daily_result.csv', 'w') as file:
+            head_str = 'file_name,predicted_time,predicted_species,predicted_prob'
+            file.write(head_str + '\n')
+   
+    with open(op_file+'/daily_result.csv', 'a') as filling_file:
         for ii in range(len(results)):
             for jj in range(len(results[ii]['prob'])):
                 row_str = results[ii]['filename'] + ','
@@ -30,7 +32,7 @@ def save_to_txt(op_file, results, min_conf):
                 if(pr>=min_conf):
 
                     row_str += str(tm) + ',' +str(sp) + ',' + str(pr)
-                    file.write(row_str + '\n')
+                    filling_file.write(row_str + '\n')
 
 
 def create_audio_tagger_op(ip_file_name, op_file_name, st_times,

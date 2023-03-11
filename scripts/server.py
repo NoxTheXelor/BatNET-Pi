@@ -47,7 +47,8 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 userDir = os.path.expanduser('~')
 DB_PATH = userDir + '/BirdNET-Pi/scripts/birds.db'
 
-file_lock = threading.Lock()
+result_lock = threading.Lock()
+perf_lock = threading.Lock()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -60,7 +61,7 @@ except BaseException:
 
 
 # Open most recent Configuration and grab DB_PWD as a python variable
-with open('scripts/thisrun.txt', 'r') as f:
+with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
     this_run = f.readlines()
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
@@ -70,23 +71,22 @@ def record_perf(data):
     path = userDir+'/BirdNET-Pi/perf_logs/'
 
     log_file_name = 'log.csv'
-    with file_lock:
-        if not os.path.exists(path+log_file_name) :
-            with open(path+log_file_name, "w") as log_file:
-                head_title = "timestamp,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur"
-                log_file.write(head_title + '\n')
-        with open(path + log_file_name, "a") as log_file:
-            timestamp = str(time.time())
-            data_file = data["file"]
-            ai_used = data["ai"]
-            nbr_detect = data["nbr_detection"]
-            feat_dur = data["feat_time"]
-            nms_dur = data["nms_time"]
-            detection_dur = data["detect_time"]
-            classif_dur = data["classif_time"]
-            tot_dur = data["tot_time"]
-            payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+feat_dur+","+nms_dur+","+detection_dur+","+classif_dur+","+tot_dur
-            log_file.write(payload+"\n")
+    if not os.path.exists(path+log_file_name) :
+        with open(path+log_file_name, "w") as log_file:
+            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur"
+            log_file.write(head_title + '\n')
+    with open(path + log_file_name, "a") as log_file:
+        timestamp = str(time.strftime('%x-%X'))
+        data_file = data["file"]
+        ai_used = data["ai"]
+        nbr_detect = data["nbr_detection"]
+        feat_dur = data["feat_time"]
+        nms_dur = data["nms_time"]
+        detection_dur = data["detect_time"]
+        classif_dur = data["classif_time"]
+        tot_dur = data["tot_time"]
+        payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+feat_dur+","+nms_dur+","+detection_dur+","+classif_dur+","+tot_dur
+        log_file.write(payload+"\n")
 
 def handle_client(conn, addr):
     global INCLUDE_LIST
@@ -175,15 +175,14 @@ def handle_client(conn, addr):
                 save_res = True    # True to save the results in a csv file and False otherwise
                 chunk_size = 4.0    # The size of an audio chunk
                 data_dir = 'data/' # path of the directory containing the audio files
-                result_dir = 'results/'    # path to the directory where the results are saved
+                result_dir = args.o    # path to the directory where the results are saved
                 model_dir = 'model/'  # path to the saved models
                 model_name = "cnn2" # one of: 'batmen', 'cnn2',  'hybrid_cnn_svm',
                 # 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
 
                 # name of the result file
-                classification_result_file = result_dir + 'classification_result.csv'
-                if not os.path.isdir(result_dir):
-                    os.makedirs(result_dir)
+                classification_result_file = result_dir
+                
 
                 if on_GPU:
                     # needed to run tensorflow on GPU
@@ -285,7 +284,7 @@ def handle_client(conn, addr):
                 print("model name =", model_name)
                 results = []
                 file_path = args.i
-                file_name_root, file_name = file_path.split("/")
+                file_name = [val for val in file_path.split("/")][-1]
 
                 print("------------",file_name,"--------------")
 
@@ -309,7 +308,10 @@ def handle_client(conn, addr):
                     data["classif_time"] = str(round(t["classification"],3))
                     data["tot_time"] = str(round(toc-tic,3))
                     print("total time = ",toc-tic)
-                    record_perf(data, )
+                    #need to avoid concurrence writing
+                    perf_lock.acquire()                    
+                    record_perf(data)
+                    perf_lock.release()                    
                     num_calls = len(call_time)
                     if num_calls>0:
                         call_classes = np.concatenate(np.array(call_classes)).ravel()
@@ -321,11 +323,12 @@ def handle_client(conn, addr):
 
                     # save results
                     if save_res:
-                        # save to AudioTagger format
-                        op_file_name = result_dir + file_name + '-sceneRect.csv'
+                        #no use
+                        """# save to AudioTagger format
+                        op_file_name = file_name + '-sceneRect.csv'
                         wo.create_audio_tagger_op(file_name, op_file_name, call_time,
                                                 call_classes, call_prob,
-                                                samp_rate_orig, group_names)
+                                                samp_rate_orig, group_names)"""
 
                         # save as dictionary
                         if num_calls > 0:
@@ -333,10 +336,16 @@ def handle_client(conn, addr):
                                 'prob':call_prob, 'pred_classes':call_species}
                             results.append(res)
 
+                spliter_position = classification_result_file.rfind("/")
+                path_daily_result = classification_result_file[:spliter_position]
                 # save to large csv
                 if save_res and (len(results) > 0):
-                    print('\nsaving results to', classification_result_file)
-                    wo.save_to_txt(classification_result_file, results, min_conf)
+                    print('\nsaving results to', path_daily_result)
+                    print("min conf : "+str(min_conf))
+                    #need to avoid concurrence writing
+                    result_lock.acquire()
+                    wo.save_to_txt(path_daily_result, results, min_conf)
+                    result_lock.release()
                 else:
                     print('no detections to save')
 
