@@ -176,7 +176,7 @@ def handle_client(conn, addr):
                 chunk_size = 4.0    # The size of an audio chunk
                 data_dir = 'data/' # path of the directory containing the audio files
                 result_dir = args.o    # path to the directory where the results are saved
-                model_dir = 'model/'  # path to the saved models
+                model_dir = userDir +'/BirdNET-Pi/model/'  # path to the saved models
                 model_name = "cnn2" # one of: 'batmen', 'cnn2',  'hybrid_cnn_svm',
                 # 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
 
@@ -348,6 +348,7 @@ def handle_client(conn, addr):
                     result_lock.release()
                 else:
                     print('no detections to save')
+                session.close()
 
     conn.close()
 
