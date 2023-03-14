@@ -301,7 +301,7 @@ class NeuralNet:
         pred_classes = np.array([np.argmax(x)+1 for x in call_predictions_bat])[:, np.newaxis]# array de 1
         
         # perform non max suppression
-        pos, prob, pred_classes, call_predictions_not_bat, features = nms.nms_1d(high_preds[:,0].astype(np.float), pred_classes, 
+        pos, prob, pred_classes, call_predictions_not_bat, features = nms.nms_1d(high_preds[:,0].astype(np.float64), pred_classes, 
                                                                     call_predictions_not_bat, features, self.params.nms_win_size, file_duration)
         
         # remove pred that have a higher probability of not being a bat
