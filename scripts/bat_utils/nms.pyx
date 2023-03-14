@@ -51,7 +51,7 @@ def nms_1d(np.ndarray src, np.ndarray pred_classes, np.ndarray call_predictions_
     call_predictions_not_bat = call_predictions_not_bat[inds]
 
     # set output to between 0 and 1, then put it in the correct time range
-    pos = pos.astype(np.float) / src.shape[0]
+    pos = pos.astype(float) / src.shape[0]
     pos = pos*file_duration
 
     return pos, val[..., np.newaxis], pred_classes, call_predictions_not_bat

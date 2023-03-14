@@ -193,7 +193,7 @@ class NeuralNet:
         for i in range(1,8):
             call_predictions_bat = y_predictions[:,i]
             classes = np.repeat(i, call_predictions_bat.shape[0])
-            pos, prob, classes, call_predictions_not_bat_nms = nms.nms_1d(call_predictions_bat.astype(np.float),
+            pos, prob, classes, call_predictions_not_bat_nms = nms.nms_1d(call_predictions_bat.astype(float),
                                     classes, call_predictions_not_bat, self.params.nms_win_size, file_duration)
 
             # remove pred that have a higher probability of not being a bat

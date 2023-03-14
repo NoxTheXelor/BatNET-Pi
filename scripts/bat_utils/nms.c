@@ -2284,7 +2284,7 @@ static PyObject *__pyx_pf_3nms_nms_1d(CYTHON_UNUSED PyObject *__pyx_self, PyArra
   /* "nms.pyx":54
  * 
  *     # set output to between 0 and 1, then put it in the correct time range
- *     pos = pos.astype(np.float) / src.shape[0]             # <<<<<<<<<<<<<<
+ *     pos = pos.astype(float) / src.shape[0]             # <<<<<<<<<<<<<<
  *     pos = pos*file_duration
  * 
  */
@@ -2323,7 +2323,7 @@ static PyObject *__pyx_pf_3nms_nms_1d(CYTHON_UNUSED PyObject *__pyx_self, PyArra
 
   /* "nms.pyx":55
  *     # set output to between 0 and 1, then put it in the correct time range
- *     pos = pos.astype(np.float) / src.shape[0]
+ *     pos = pos.astype(float) / src.shape[0]
  *     pos = pos*file_duration             # <<<<<<<<<<<<<<
  * 
  *     return pos, val[..., np.newaxis], pred_classes, call_predictions_not_bat
