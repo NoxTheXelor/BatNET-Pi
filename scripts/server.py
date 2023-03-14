@@ -66,6 +66,109 @@ with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
+def pre_loading_model():
+    """
+    This code takes a directory of audio files and runs a model to perform bat call detection and classification.
+    It returns in a csv file the time of the detection, the species of the calls
+    and the confidence level of the predicted species.
+    """
+    
+    ####################################
+    # Parameters to be set by the user #
+    ####################################
+    model_dir = userDir +'/BirdNET-Pi/model/'  # path to the saved models
+    model_name = "cnn2" # one of: 'batmen', 'cnn2',  'hybrid_cnn_svm',
+    # 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
+
+    # load model
+    if model_name == "batmen":
+        date = "25_05_21_12_12_25_"
+        hnm_iter = "1" 
+        model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
+        network_classif = load_model(model_file_classif + '_model')
+    elif model_name == "cnn2":
+        date = "25_05_21_15_09_28_" 
+        hnm_iter = "0"
+        model_file_detect = model_dir + date + "detect_" + model_name + "_hnm" + hnm_iter
+        network_detect = load_model(model_file_detect + '_model')
+        model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
+        network_classif = load_model(model_file_classif + '_model')
+    elif model_name == "hybrid_cnn_svm":
+        date = "04_06_21_08_55_14_"
+        hnm_iter = "0"
+        model_file_features = model_dir + date + "features_" + model_name + "_hnm" + hnm_iter
+        network_features = load_model(model_file_features + '_model')
+        network_feat = Model(inputs=network_features.input, outputs=network_features.layers[-3].output)
+        model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
+        network_classif = joblib.load(model_file_classif + '_model.pkl')
+        scaler = joblib.load(model_file_classif + '_scaler.pkl' )
+    elif model_name == "hybrid_cnn_xgboost":
+        date = "18_02_23_11_18_57_"
+        hnm_iter = "2"
+        model_file_features = model_dir + date + "features_" + model_name + "_hnm" + hnm_iter
+        network_features = load_model(model_file_features + '_model')
+        network_feat = Model(inputs=network_features.input, outputs=network_features.layers[-3].output)
+        model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
+        network_classif = joblib.load(model_file_classif + '_model.pkl')
+    elif model_name == "hybrid_call_svm":
+        date = "26_05_21_08_40_42_"
+        hnm_iter = "0"
+        model_file_detect = model_dir + date + "detect_" + model_name + "_hnm" + hnm_iter
+        network_detect = load_model(model_file_detect + '_model')
+        model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
+        network_classif = joblib.load(model_file_classif + '_model.pkl')
+        scaler = joblib.load(model_file_classif + '_scaler.pkl' )
+    elif model_name == "hybrid_call_xgboost":
+        date = "25_05_21_17_51_23_"
+        hnm_iter = "1"
+        model_file_detect = model_dir + date + "detect_" + model_name + "_hnm" + hnm_iter
+        network_detect = load_model(model_file_detect + '_model')
+        model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
+        network_classif = joblib.load(model_file_classif + '_model.pkl')
+    
+    # load params
+    with open(model_file_classif + '_params.p') as f:
+        parameters = json.load(f)
+    #print("params=", parameters)
+
+    # array with group name according to class number
+    group_names = ['not call', 'Barbarg', 'Envsp', 'Myosp', 'Pip35','Pip50', 'Plesp', 'Rhisp']
+
+    # model classifier
+    params = DataSetParams(model_name)
+    params.window_size = parameters['win_size']
+    params.max_freq = parameters['max_freq']
+    params.min_freq = parameters['min_freq']
+    params.mean_log_mag = parameters['mean_log_mag']
+    params.fft_win_length = parameters['slice_scale']
+    params.fft_overlap = parameters['overlap']
+    params.crop_spec = parameters['crop_spec']
+    params.denoise = parameters['denoise']
+    params.smooth_spec = parameters['smooth_spec']
+    params.nms_win_size = parameters['nms_win_size']
+    params.smooth_op_prediction_sigma = parameters['smooth_op_prediction_sigma']
+    if model_name in ["hybrid_cnn_xgboost", "hybrid_call_xgboost"]: params.n_estimators = parameters["n_estimators"]
+    params.load_features_from_file = False
+    params.detect_time = 0
+    params.classif_time = 0
+    model_cls = clss.Classifier(params)
+    if model_name in  ["batmen", "cnn2", "hybrid_cnn_svm", "hybrid_cnn_xgboost", "hybrid_call_svm", "hybrid_call_xgboost"]:
+        model_cls.model.network_classif = network_classif
+    if model_name in ["cnn2", "hybrid_call_svm", "hybrid_call_xgboost"]:
+        model_cls.model.network_detect = network_detect
+    if model_name in ["hybrid_cnn_svm", "hybrid_cnn_xgboost"]:
+        model_cls.model.network_features = network_features
+        model_cls.model.model_feat = network_feat
+    if model_name in ["hybrid_cnn_svm", "hybrid_call_svm"]:
+        model_cls.model.scaler = scaler
+    
+    model_data = {}
+    model_data["model_cls"] = model_cls
+    model_data["group_names"] = group_names
+    model_data["model_name"] = model_name
+    model_data["model_file_classif"] = model_file_classif
+    return model_data
+
 def record_perf(data):
 
     path = userDir+'/BirdNET-Pi/perf_logs/'
@@ -158,30 +261,20 @@ def handle_client(conn, addr):
                     EXCLUDE_LIST = []"""
 
                 #birdweather_id = args.birdweather_id
-
                 
-
-                """
-                This code takes a directory of audio files and runs a model to perform bat call detection and classification.
-                It returns in a csv file the time of the detection, the species of the calls
-                and the confidence level of the predicted species.
-                """
                 
-                ####################################
-                # Parameters to be set by the user #
-                ####################################
-                on_GPU = False   # True if tensorflow runs on GPU, False otherwise
-                do_time_expansion = True  # set to True if audio is not already time expanded
-                save_res = True    # True to save the results in a csv file and False otherwise
-                chunk_size = 4.0    # The size of an audio chunk
-                data_dir = 'data/' # path of the directory containing the audio files
                 result_dir = args.o    # path to the directory where the results are saved
-                model_dir = userDir +'/BirdNET-Pi/model/'  # path to the saved models
-                model_name = "cnn2" # one of: 'batmen', 'cnn2',  'hybrid_cnn_svm',
-                # 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
-
                 # name of the result file
                 classification_result_file = result_dir
+                save_res = True    # True to save the results in a csv file and False otherwise
+                on_GPU = False   # True if tensorflow runs on GPU, False otherwise
+                chunk_size = 4.0    # The size of an audio chunk
+                do_time_expansion = True  # set to True if audio is not already time expanded
+
+                model_file_classif = MODEL["model_file_classif"]
+                model_name = MODEL["model_name"]
+                model_cls = MODEL["model_cls"]
+                group_names = MODEL["group_names"]
                 
 
                 if on_GPU:
@@ -194,88 +287,6 @@ def handle_client(conn, addr):
                     config = tf.compat.v1.ConfigProto(device_count = {'GPU': 0})
                     tf.config.set_visible_devices([], 'GPU')
                     session = tf.compat.v1.InteractiveSession(config=config)
-
-                # load model
-                if model_name == "batmen":
-                    date = "25_05_21_12_12_25_"
-                    hnm_iter = "1" 
-                    model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
-                    network_classif = load_model(model_file_classif + '_model')
-                elif model_name == "cnn2":
-                    date = "25_05_21_15_09_28_" 
-                    hnm_iter = "0"
-                    model_file_detect = model_dir + date + "detect_" + model_name + "_hnm" + hnm_iter
-                    network_detect = load_model(model_file_detect + '_model')
-                    model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
-                    network_classif = load_model(model_file_classif + '_model')
-                elif model_name == "hybrid_cnn_svm":
-                    date = "04_06_21_08_55_14_"
-                    hnm_iter = "0"
-                    model_file_features = model_dir + date + "features_" + model_name + "_hnm" + hnm_iter
-                    network_features = load_model(model_file_features + '_model')
-                    network_feat = Model(inputs=network_features.input, outputs=network_features.layers[-3].output)
-                    model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
-                    network_classif = joblib.load(model_file_classif + '_model.pkl')
-                    scaler = joblib.load(model_file_classif + '_scaler.pkl' )
-                elif model_name == "hybrid_cnn_xgboost":
-                    date = "18_02_23_11_18_57_"
-                    hnm_iter = "2"
-                    model_file_features = model_dir + date + "features_" + model_name + "_hnm" + hnm_iter
-                    network_features = load_model(model_file_features + '_model')
-                    network_feat = Model(inputs=network_features.input, outputs=network_features.layers[-3].output)
-                    model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
-                    network_classif = joblib.load(model_file_classif + '_model.pkl')
-                elif model_name == "hybrid_call_svm":
-                    date = "26_05_21_08_40_42_"
-                    hnm_iter = "0"
-                    model_file_detect = model_dir + date + "detect_" + model_name + "_hnm" + hnm_iter
-                    network_detect = load_model(model_file_detect + '_model')
-                    model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
-                    network_classif = joblib.load(model_file_classif + '_model.pkl')
-                    scaler = joblib.load(model_file_classif + '_scaler.pkl' )
-                elif model_name == "hybrid_call_xgboost":
-                    date = "25_05_21_17_51_23_"
-                    hnm_iter = "1"
-                    model_file_detect = model_dir + date + "detect_" + model_name + "_hnm" + hnm_iter
-                    network_detect = load_model(model_file_detect + '_model')
-                    model_file_classif = model_dir + date + "classif_" + model_name + "_hnm" + hnm_iter
-                    network_classif = joblib.load(model_file_classif + '_model.pkl')
-                
-                # load params
-                with open(model_file_classif + '_params.p') as f:
-                    parameters = json.load(f)
-                print("params=", parameters)
-
-                # array with group name according to class number
-                group_names = ['not call', 'Barbarg', 'Envsp', 'Myosp', 'Pip35','Pip50', 'Plesp', 'Rhisp']
-
-                # model classifier
-                params = DataSetParams(model_name)
-                params.window_size = parameters['win_size']
-                params.max_freq = parameters['max_freq']
-                params.min_freq = parameters['min_freq']
-                params.mean_log_mag = parameters['mean_log_mag']
-                params.fft_win_length = parameters['slice_scale']
-                params.fft_overlap = parameters['overlap']
-                params.crop_spec = parameters['crop_spec']
-                params.denoise = parameters['denoise']
-                params.smooth_spec = parameters['smooth_spec']
-                params.nms_win_size = parameters['nms_win_size']
-                params.smooth_op_prediction_sigma = parameters['smooth_op_prediction_sigma']
-                if model_name in ["hybrid_cnn_xgboost", "hybrid_call_xgboost"]: params.n_estimators = parameters["n_estimators"]
-                params.load_features_from_file = False
-                params.detect_time = 0
-                params.classif_time = 0
-                model_cls = clss.Classifier(params)
-                if model_name in  ["batmen", "cnn2", "hybrid_cnn_svm", "hybrid_cnn_xgboost", "hybrid_call_svm", "hybrid_call_xgboost"]:
-                    model_cls.model.network_classif = network_classif
-                if model_name in ["cnn2", "hybrid_call_svm", "hybrid_call_xgboost"]:
-                    model_cls.model.network_detect = network_detect
-                if model_name in ["hybrid_cnn_svm", "hybrid_cnn_xgboost"]:
-                    model_cls.model.network_features = network_features
-                    model_cls.model.model_feat = network_feat
-                if model_name in ["hybrid_cnn_svm", "hybrid_call_svm"]:
-                    model_cls.model.scaler = scaler
                 
                 # load thresholds
                 threshold_classes = np.load(model_file_classif + '_thresholds.npy')
@@ -355,8 +366,8 @@ def handle_client(conn, addr):
 
 def start():
     # Load model
-    global INTERPRETER, INCLUDE_LIST, EXCLUDE_LIST
-    #INTERPRETER = loadModel()
+    global MODEL, INCLUDE_LIST, EXCLUDE_LIST
+    MODEL = pre_loading_model()
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:

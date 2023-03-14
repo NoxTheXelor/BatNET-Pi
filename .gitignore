@@ -2,7 +2,7 @@
 *.flac
 .vscode
 data/*
-perf_logs/
+perf_logs/*
 results/*
 datasets/
 birdnet.conf
