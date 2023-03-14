@@ -263,9 +263,8 @@ def handle_client(conn, addr):
                 #birdweather_id = args.birdweather_id
                 
                 
-                result_dir = args.o    # path to the directory where the results are saved
                 # name of the result file
-                classification_result_file = result_dir
+                classification_result_file = args.o    # path to the directory where the results are saved
                 save_res = True    # True to save the results in a csv file and False otherwise
                 on_GPU = False   # True if tensorflow runs on GPU, False otherwise
                 chunk_size = 4.0    # The size of an audio chunk
@@ -320,7 +319,8 @@ def handle_client(conn, addr):
                     data["tot_time"] = str(round(toc-tic,3))
                     print("total time = ",toc-tic)
                     #need to avoid concurrence writing
-                    perf_lock.acquire()                    
+                    perf_lock.acquire()     
+                    print("WRITING PERF")               
                     record_perf(data)
                     perf_lock.release()                    
                     num_calls = len(call_time)
@@ -355,6 +355,7 @@ def handle_client(conn, addr):
                     print("min conf : "+str(min_conf))
                     #need to avoid concurrence writing
                     result_lock.acquire()
+                    print("wrinting result to file")
                     wo.save_to_txt(path_daily_result, results, min_conf)
                     result_lock.release()
                 else:
