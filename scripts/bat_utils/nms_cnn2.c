@@ -1932,7 +1932,7 @@ static PyObject *__pyx_pf_8nms_cnn2_nms_1d(CYTHON_UNUSED PyObject *__pyx_self, P
  *     cdef int ii = 0
  *     cdef int ee = 0             # <<<<<<<<<<<<<<
  *     cdef int width = src.shape[0]-1
- *     cdef np.ndarray pos = np.empty(width, dtype=np.int)
+ *     cdef np.ndarray pos = np.empty(width, dtype=int)
  */
   __pyx_v_ee = 0;
 
@@ -1940,7 +1940,7 @@ static PyObject *__pyx_pf_8nms_cnn2_nms_1d(CYTHON_UNUSED PyObject *__pyx_self, P
  *     cdef int ii = 0
  *     cdef int ee = 0
  *     cdef int width = src.shape[0]-1             # <<<<<<<<<<<<<<
- *     cdef np.ndarray pos = np.empty(width, dtype=np.int)
+ *     cdef np.ndarray pos = np.empty(width, dtype=int)
  *     cdef int pos_cnt = 0
  */
   __pyx_v_width = ((__pyx_v_src->dimensions[0]) - 1);
@@ -1948,7 +1948,7 @@ static PyObject *__pyx_pf_8nms_cnn2_nms_1d(CYTHON_UNUSED PyObject *__pyx_self, P
   /* "nms_cnn2.pyx":18
  *     cdef int ee = 0
  *     cdef int width = src.shape[0]-1
- *     cdef np.ndarray pos = np.empty(width, dtype=np.int)             # <<<<<<<<<<<<<<
+ *     cdef np.ndarray pos = np.empty(width, dtype=int)             # <<<<<<<<<<<<<<
  *     cdef int pos_cnt = 0
  *     while ii <= width:
  */
@@ -1984,7 +1984,7 @@ static PyObject *__pyx_pf_8nms_cnn2_nms_1d(CYTHON_UNUSED PyObject *__pyx_self, P
 
   /* "nms_cnn2.pyx":19
  *     cdef int width = src.shape[0]-1
- *     cdef np.ndarray pos = np.empty(width, dtype=np.int)
+ *     cdef np.ndarray pos = np.empty(width, dtype=int)
  *     cdef int pos_cnt = 0             # <<<<<<<<<<<<<<
  *     while ii <= width:
  * 
@@ -1992,7 +1992,7 @@ static PyObject *__pyx_pf_8nms_cnn2_nms_1d(CYTHON_UNUSED PyObject *__pyx_self, P
   __pyx_v_pos_cnt = 0;
 
   /* "nms_cnn2.pyx":20
- *     cdef np.ndarray pos = np.empty(width, dtype=np.int)
+ *     cdef np.ndarray pos = np.empty(width, dtype=int)
  *     cdef int pos_cnt = 0
  *     while ii <= width:             # <<<<<<<<<<<<<<
  * 
