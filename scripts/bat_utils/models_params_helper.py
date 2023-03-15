@@ -107,11 +107,10 @@ def svm_params(params, dict_svm):
     dict_svm : dict
         The keys are the parameter names and they are associated to their values.
     """
-
     params.C = literal_eval(dict_svm['C'])
     params.kernel = dict_svm['kernel']
     params.degree = literal_eval(dict_svm['degree'])
-    params.gamma_svm = dict_svm['gamma_svm'] if dict_svm['gamma_svm']=='auto' else literal_eval(dict_svm['gamma_svm'])
+    params.gamma_svm = dict_svm['gamma_svm'] if dict_svm['gamma_svm'] in ['auto', 'scale'] else literal_eval(dict_svm['gamma_svm'])
     params.class_weight = dict_svm['class_weight'] if dict_svm['class_weight']=="balanced" else None
     params.max_iter = literal_eval(dict_svm['max_iter'])
     

@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 import datetime as dt
-import os
 
-def save_to_txt(op_file, results, min_conf):
+
+def save_to_txt(op_file, results):
     """
     Takes a list of dictionaries of results and saves them to file.
 
@@ -13,26 +13,19 @@ def save_to_txt(op_file, results, min_conf):
         Path to the file in which the results will be saved.
     results : list
         Contains dictionaries with each the four following fields: filename, time, prob, pred_classes.
-    min_conf : float
-        minimum threshold of confidence in species prediction. Below this threshold, the data is not written in the file.
     """
-    if not os.path.exists(op_file+'/daily_result.csv'):
-        with open(op_file+'/daily_result.csv', 'w') as file:
-            head_str = 'file_name,predicted_time,predicted_species,predicted_prob'
-            file.write(head_str + '\n')
-   
-    with open(op_file+'/daily_result.csv', 'a') as filling_file:
+
+    with open(op_file, 'w') as file:
+        head_str = 'file_name,predicted_time,predicted_species,predicted_prob'
+        file.write(head_str + '\n')
         for ii in range(len(results)):
             for jj in range(len(results[ii]['prob'])):
                 row_str = results[ii]['filename'] + ','
                 tm = round(results[ii]['time'][jj],3)
-                sp = results[ii]['pred_classes'][jj]
                 pr = round(results[ii]['prob'][jj],3)
-
-                if(pr>=min_conf):
-
-                    row_str += str(tm) + ',' +str(sp) + ',' + str(pr)
-                    filling_file.write(row_str + '\n')
+                sp = results[ii]['pred_classes'][jj]
+                row_str += str(tm) + ',' +str(sp) + ',' + str(pr)
+                file.write(row_str + '\n')
 
 
 def create_audio_tagger_op(ip_file_name, op_file_name, st_times,
@@ -70,8 +63,9 @@ def create_audio_tagger_op(ip_file_name, op_file_name, st_times,
     y_max = (samp_rate*nwin)/2.0
     num_calls = len(st_times)
 
-
-    if num_calls > 0:
+    if num_calls == 0:
+        da_at = pd.DataFrame(index=np.arange(0), columns=col_names)
+    else:
         da_at = pd.DataFrame(index=np.arange(0, num_calls), columns=col_names)
         da_at['Spec_NStep'] = nstep
         da_at['Spec_NWin'] = nwin
@@ -90,7 +84,5 @@ def create_audio_tagger_op(ip_file_name, op_file_name, st_times,
             da_at.loc[ii, 'Spec_x2'] = (st_time + call_width)/nstep
             da_at.loc[ii, 'ClassifierConfidence'] = round(class_prob[ii], 3)
 
-        # save to disk
-        da_at.to_csv(op_file_name, index=False)
-    else:
-        "No result to save"
+    # save to disk
+    da_at.to_csv(op_file_name, index=False)

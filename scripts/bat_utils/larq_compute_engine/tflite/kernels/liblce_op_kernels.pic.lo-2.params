@@ -1,0 +1,5 @@
+rcsD
+bazel-out/aarch64-opt/bin/larq_compute_engine/tflite/kernels/liblce_op_kernels.pic.lo
+bazel-out/aarch64-opt/bin/larq_compute_engine/tflite/kernels/_objs/lce_op_kernels/bconv2d.pic.o
+bazel-out/aarch64-opt/bin/larq_compute_engine/tflite/kernels/_objs/lce_op_kernels/bmaxpool.pic.o
+bazel-out/aarch64-opt/bin/larq_compute_engine/tflite/kernels/_objs/lce_op_kernels/quantization.pic.o

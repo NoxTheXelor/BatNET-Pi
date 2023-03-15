@@ -1,13 +1,13 @@
 import numpy as np
 import csv
-from bat_utils.models_params_helper import cnn_params, cnn_params_1, cnn_params_2, svm_params, xgboost_params
+from models_params_helper import cnn_params, cnn_params_1, cnn_params_2, svm_params, xgboost_params
 
 
 class DataSetParams:
 
     def __init__(self, model_name=None):
         """
-        Create an object containing all the needed parameters.
+        Creates an object containing all the needed parameters.
 
         Parameters
         -----------
@@ -78,8 +78,8 @@ class DataSetParams:
         Sets the name of the tuning file corresponding to the chosen model.
         """
 
-        self.trials_filename_1 = "results/"
-        self.trials_filename_2 = "results/"
+        self.trials_filename_1 = "/home/ndewinter/results/"
+        self.trials_filename_2 = "/home/ndewinter/results/"
         if self.classification_model == "batmen":
             self.trials_filename_1 += "trials_"+self.classification_model
         elif self.classification_model == "cnn2":
@@ -110,9 +110,9 @@ class DataSetParams:
             'hybrid_call_svm', 'hybrid_call_xgboost'.
         """
         
-        filename_cnn = "data/cnn_params.csv"
-        filename_svm = "data/svm_params.csv"
-        filename_xgboost = "data/xgboost_params.csv"
+        filename_cnn = "/home/ndewinter/code/batML_main/batML_multiclass/data/cnn_params.csv"
+        filename_svm = "/home/ndewinter/code/batML_main/batML_multiclass/data/svm_params.csv"
+        filename_xgboost = "/home/ndewinter/code/batML_main/batML_multiclass/data/xgboost_params.csv"
         dict_cnn = self.load_params(filename_cnn)
         dict_svm = self.load_params(filename_svm)
         dict_xgboost = self.load_params(filename_xgboost)
@@ -175,7 +175,7 @@ class DataSetParams:
         self.smooth_spec = True  # gaussian filter
 
         # throw away unnecessary frequencies, keep from bottom
-        # TODO this only makes sense as a frequency when you know the sampling rate
+        # this only makes sense as a frequency when you know the sampling rate
         # better to think of these as indices
         self.crop_spec = True
         self.max_freq = 270

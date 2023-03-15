@@ -44,7 +44,6 @@ def denoise(spec_noisy, mask=None):
 
     return spec_denoise
 
-
 def gen_mag_spectrogram(x, fs, ms, overlap_perc):
     """
     Computes magnitude spectrogram by specifying the time.
@@ -80,7 +79,7 @@ def gen_mag_spectrogram(x, fs, ms, overlap_perc):
     # apply Hanning window (smoothing values)
     x_wins_han = np.hanning(x_wins.shape[0])[..., np.newaxis] * x_wins
 
-    # do fft (rrft = discrete FT for real input)
+    # do fft (rfft = discrete FT for real input)
     # note this will be much slower if x_wins_han.shape[0] is not a power of 2
     complex_spec = np.fft.rfft(x_wins_han, axis=0)
 
@@ -90,8 +89,9 @@ def gen_mag_spectrogram(x, fs, ms, overlap_perc):
     # remove dc component and orient correctly
     spec = mag_spec[1:, :]
     spec = np.flipud(spec)
-    
-    return spec, x_wins.shape[0]
+
+    x_win_len = x_wins.shape[0]
+    return spec, x_win_len
 
 
 def gen_spectrogram(audio_samples, sampling_rate, fft_win_length, fft_overlap, crop_spec=True, max_freq=256, min_freq=0):
@@ -122,15 +122,15 @@ def gen_spectrogram(audio_samples, sampling_rate, fft_win_length, fft_overlap, c
         Log-magnitude spectrogram.
     """
 
-    # compute spectrogram
+    # compute magnitude spectrogram
     spec, x_win_len = gen_mag_spectrogram(audio_samples, sampling_rate, fft_win_length, fft_overlap)
-    
+
     # only keep the relevant bands
     if crop_spec:
         freq = abs(np.fft.rfftfreq(x_win_len)*sampling_rate)
         freq = np.flip(freq)
         spec = spec[-max_freq:-min_freq, :]
-        
+
         # add some zeros if spec too small
         req_height = max_freq-min_freq
         if spec.shape[0] < req_height:
@@ -202,11 +202,12 @@ def compute_features_spectrogram(audio_samples, sampling_rate, params):
                                      crop_spec=params.crop_spec, max_freq=params.max_freq, min_freq=params.min_freq)
     
     # denoise and smooth the spectrogram
-    spectrogram = process_spectrogram(spectrogram, denoise_spec=params.denoise, mean_log_mag=params.mean_log_mag, smooth_spec=params.smooth_spec)
+    spectrogram = process_spectrogram(spectrogram, denoise_spec=params.denoise,
+                                    mean_log_mag=params.mean_log_mag, smooth_spec=params.smooth_spec)
 
     # extract windows
     spec_win = view_as_windows(spectrogram, (spectrogram.shape[0], params.window_width))[0]
-    
+
     spec_win = zoom(spec_win, (1, 0.5, 0.5), order=1) # (1, 0.5, 0.5) zoom factor for each of the 3 directions
 
     spec_width = spectrogram.shape[1]

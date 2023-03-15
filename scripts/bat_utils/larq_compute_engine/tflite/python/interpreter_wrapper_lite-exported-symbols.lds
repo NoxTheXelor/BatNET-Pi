@@ -1,0 +1,3 @@
+_initinterpreter_wrapper_lite
+_init_interpreter_wrapper_lite
+_PyInit_interpreter_wrapper_lite
