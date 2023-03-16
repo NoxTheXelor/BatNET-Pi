@@ -71,7 +71,7 @@ with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
-def pre_loading_model(model_dir):
+def pre_loading_model(path):
     """
     model_dir : str - name of the used model. Can be either 
         model_raspberry/ 
@@ -79,9 +79,9 @@ def pre_loading_model(model_dir):
         model_float/         ==> float model
     """
     load_features_from_file = False
-    model_name = "hybrid_cnn_xgboost"  # can be one of: 'batmen', 'cnn2',  'hybrid_cnn_svm', 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
+    model_name = "bat_utils/hybrid_cnn_xgboost"  # can be one of: 'batmen', 'cnn2',  'hybrid_cnn_svm', 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
     #model_dir = 'model_raspberry/' # Binary model
-    model_dir = 'raspberry_model_V2/' # Binary model with another XGBoost model using 500 estimators
+    model_dir = path+'bat_utils/raspberry_model_V2/' # Binary model with another XGBoost model using 500 estimators
     #model_dir = "model_float/" # Float model
 
     # model name and load model
@@ -281,7 +281,7 @@ def handle_client(conn, addr):
 def start():
     # Load model
     global MODEL, INCLUDE_LIST, EXCLUDE_LIST
-    MODEL = pre_loading_model()
+    MODEL = pre_loading_model(userDir+'/BirdNET-Pi/scripts/')
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:

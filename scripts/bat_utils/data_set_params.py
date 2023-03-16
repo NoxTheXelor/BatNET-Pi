@@ -1,6 +1,6 @@
 import numpy as np
 import csv
-from models_params_helper import cnn_params, cnn_params_1, cnn_params_2, svm_params, xgboost_params
+from bat_utils.models_params_helper import cnn_params, cnn_params_1, cnn_params_2, svm_params, xgboost_params
 
 
 class DataSetParams:
