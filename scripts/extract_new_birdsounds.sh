@@ -119,7 +119,7 @@ for h in "${SCAN_DIRS[@]}";do
       trim ="${START}" ="${END}"
 
     # Create spectrogram for extraction
-    sox -V1 "${NEWSPECIES_BYDATE}/${NEWFILE}" -n remix 1 rate 100k spectrogram \
+    sox -V1 "${NEWSPECIES_BYDATE}/${NEWFILE}" -n remix 1 rate 128k spectrogram \
       -t "${COMMON_NAME}" \
       -c "${NEWSPECIES_BYDATE//$HOME\/}/${NEWFILE}" \
       -o "${NEWSPECIES_BYDATE}/${NEWFILE}.png"
