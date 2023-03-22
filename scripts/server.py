@@ -43,6 +43,7 @@ SERVER = "localhost"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
+MAXIMAL_ANSWER_LENGTH = 2048
 
 userDir = os.path.expanduser('~')
 DB_PATH = userDir + '/BirdNET-Pi/scripts/birds.db'
@@ -66,6 +67,20 @@ with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
+def recap(data, minimal_conf):
+    if len(data["prob"])==0:
+        return "No result"
+    else:
+        payload = ""
+        for i in range(len(data["prob"])):
+            specie = data["pred_classes"][i]
+            prob = data["prob"][i]
+            if(prob>minimal_conf):
+                new_payload = payload + str(specie) + " : " + str(prob) + "\n"
+                if(len(new_payload.encode('utf-8'))>MAXIMAL_ANSWER_LENGTH):
+                    return payload
+                else:
+                    payload = new_payload
 def pre_loading_model():
     """
     This code takes a directory of audio files and runs a model to perform bat call detection and classification.
@@ -245,10 +260,9 @@ def handle_client(conn, addr):
                         args.lat = float(inputvars[1])
                     elif inputvars[0] == 'lon':
                         args.lon = float(inputvars[1])
-                
 
                 min_conf = max(0.01, min(args.min_conf, 0.99))
-
+                print(min_conf)
                 # Load custom species lists - INCLUDED and EXCLUDED
                 """if not args.include_list == 'null':
                     INCLUDE_LIST = loadCustomSpeciesList(args.include_list)
@@ -292,7 +306,6 @@ def handle_client(conn, addr):
                 threshold_classes = threshold_classes / 100
 
                 print("model name =", model_name)
-                results = []
                 file_path = args.i
                 file_name = [val for val in file_path.split("/")][-1]
 
@@ -309,6 +322,8 @@ def handle_client(conn, addr):
                     tic = time.time()
                     call_time, call_prob, call_classes, t = run_classifier(model_cls, audio, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
                     toc = time.time()
+
+                    # capturing duration
                     data["file"] =  file_name
                     data["ai"] = model_name
                     data["nbr_detection"] = str(max(0,len(call_classes)-1))
@@ -318,11 +333,13 @@ def handle_client(conn, addr):
                     data["classif_time"] = str(round(t["classification"],3))
                     data["tot_time"] = str(round(toc-tic,3))
                     print("total time = ",toc-tic)
+
                     #need to avoid concurrence writing
                     perf_lock.acquire()     
                     print("WRITING PERF")               
                     record_perf(data)
-                    perf_lock.release()                    
+                    perf_lock.release() 
+
                     num_calls = len(call_time)
                     if num_calls>0:
                         call_classes = np.concatenate(np.array(call_classes, dtype= object)).ravel()
@@ -343,23 +360,28 @@ def handle_client(conn, addr):
 
                         # save as dictionary
                         if num_calls > 0:
-                            res = {'filename':file_name, 'time':call_time,
-                                'prob':call_prob, 'pred_classes':call_species}
-                            results.append(res)
 
-                spliter_position = classification_result_file.rfind("/")
-                path_daily_result = classification_result_file[:spliter_position]
-                # save to large csv
-                if save_res and (len(results) > 0):
-                    print('\nsaving results to', path_daily_result)
-                    print("min conf : "+str(min_conf))
-                    #need to avoid concurrence writing
-                    result_lock.acquire()
-                    print("wrinting result to file")
-                    wo.save_to_txt(path_daily_result, results, min_conf)
-                    result_lock.release()
-                else:
-                    print('no detections to save')
+                            results = {'filename':file_name, 'time':call_time,
+                                'prob':call_prob, 'pred_classes':call_species}
+                            
+                            # save to large csv
+                            spliter_position = classification_result_file.rfind("/")
+                            path_daily_result = classification_result_file[:spliter_position]
+                            
+                            print('\nsaving results to', path_daily_result)
+                            print("min conf : "+str(min_conf))
+                            
+                            #need to avoid concurrence writing
+                            result_lock.acquire()
+                            print("wrinting result to file")
+                            wo.save_to_txt(path_daily_result, results, min_conf)
+                            result_lock.release()
+                        else:
+                            print('no detections to save')
+
+                #answer to analyse.py
+                to_return = recap(results, min_conf)
+                conn.send(to_return.encode(FORMAT))
                 session.close()
 
     conn.close()
