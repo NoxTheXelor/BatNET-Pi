@@ -387,6 +387,8 @@ def handle_client(conn, addr):
 
                 #answer to analyse.py
                 to_return = str(recap(results, min_conf))
+                if type(to_return) is None :
+                    to_return = "Analyse ended"
                 print(to_return)
                 conn.send(to_return.encode(FORMAT))
                 session.close()
