@@ -68,7 +68,8 @@ with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
 def recap(data, minimal_conf):
-    if len(data["prob"])==0:
+    #getting empty dictionnary (no key-values) ==> something wrong in code
+    if not data:
         return "No result"
     else:
         payload = ""
@@ -262,7 +263,7 @@ def handle_client(conn, addr):
                         args.lon = float(inputvars[1])
 
                 min_conf = max(0.01, min(args.min_conf, 0.99))
-                print(min_conf)
+                #print(min_conf)
                 # Load custom species lists - INCLUDED and EXCLUDED
                 """if not args.include_list == 'null':
                     INCLUDE_LIST = loadCustomSpeciesList(args.include_list)
@@ -288,6 +289,9 @@ def handle_client(conn, addr):
                 model_name = MODEL["model_name"]
                 model_cls = MODEL["model_cls"]
                 group_names = MODEL["group_names"]
+
+                results = {}
+                to_return = "nothing found"
                 
 
                 if on_GPU:
@@ -361,8 +365,10 @@ def handle_client(conn, addr):
                         # save as dictionary
                         if num_calls > 0:
 
-                            results = {'filename':file_name, 'time':call_time,
-                                'prob':call_prob, 'pred_classes':call_species}
+                            results['filename'] = file_name
+                            results['time'] = call_time
+                            results['prob'] = call_prob
+                            results['pred_classes'] = call_species
                             
                             # save to large csv
                             spliter_position = classification_result_file.rfind("/")
