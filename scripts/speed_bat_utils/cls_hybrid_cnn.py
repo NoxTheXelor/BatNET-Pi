@@ -6,8 +6,8 @@ import time
 from scipy.ndimage.filters import gaussian_filter1d
 from tflite_runtime import interpreter as inter
 
-import bat_utils.nms as nms
-from bat_utils.spectrogram import compute_features_spectrogram
+import speed_bat_utils.nms as nms
+from speed_bat_utils.spectrogram import compute_features_spectrogram
 
 
 class NeuralNet:

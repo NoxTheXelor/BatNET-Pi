@@ -1,4 +1,4 @@
-import bat_utils.cls_hybrid_cnn as cls_hybrid_cnn
+import speed_bat_utils.cls_hybrid_cnn as cls_hybrid_cnn
 
 
 class Classifier:

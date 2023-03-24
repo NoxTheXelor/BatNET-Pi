@@ -16,11 +16,11 @@ import librosa
 from utils.notifications import sendAppriseNotifications
 from utils.parse_settings import config_to_settings
 
-from bat_utils import classifier as clss
-from bat_utils import write_op as wo
-from bat_utils.data_set_params import DataSetParams
+from speed_bat_utils import classifier as clss
+from speed_bat_utils import write_op as wo
+from speed_bat_utils.data_set_params import DataSetParams
 from tensorflow.keras.models import Model, load_model
-#from bat_utils.run_classifier import read_audio, run_classifier
+#from speed_bat_utils.run_classifier import read_audio, run_classifier
 
 from scipy.io import wavfile
 import numpy as np
@@ -33,7 +33,7 @@ from tensorflow.keras.models import Model, load_model
 import joblib
 
 from tflite_support.metadata_writers import writer_utils
-from bat_utils.larq_compute_engine.tflite.python import interpreter
+from speed_bat_utils.larq_compute_engine.tflite.python import interpreter
 import xgboost as xgb
 
 
@@ -79,9 +79,9 @@ def pre_loading_model(path):
         model_float/         ==> float model
     """
     load_features_from_file = False
-    model_name = "bat_utils/hybrid_cnn_xgboost"  # can be one of: 'batmen', 'cnn2',  'hybrid_cnn_svm', 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
+    model_name = "speed_bat_utils/hybrid_cnn_xgboost"  # can be one of: 'batmen', 'cnn2',  'hybrid_cnn_svm', 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
     #model_dir = 'model_raspberry/' # Binary model
-    model_dir = path+'bat_utils/raspberry_model_V2/' # Binary model with another XGBoost model using 500 estimators
+    model_dir = path+'speed_bat_utils/raspberry_model_V2/' # Binary model with another XGBoost model using 500 estimators
     #model_dir = "model_float/" # Float model
 
     # model name and load model
