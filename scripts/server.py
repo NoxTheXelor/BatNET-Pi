@@ -67,21 +67,6 @@ with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
-def recap(data, minimal_conf):
-    #getting empty dictionnary (no key-values) ==> something wrong in code
-    if not data:
-        return "No result"
-    else:
-        payload = ""
-        for i in range(len(data["prob"])):
-            specie = data["pred_classes"][i]
-            prob = data["prob"][i]
-            if(prob>minimal_conf):
-                new_payload = payload + str(specie) + " : " + str(prob) + "\n"
-                if(len(new_payload.encode('utf-8'))>MAXIMAL_ANSWER_LENGTH):
-                    return payload
-                else:
-                    payload = new_payload
 def pre_loading_model():
     """
     This code takes a directory of audio files and runs a model to perform bat call detection and classification.
@@ -384,9 +369,10 @@ def handle_client(conn, addr):
                             result_lock.release()
                         else:
                             print('no detections to save')
+                            os.system('rm '+userDir+'/'+file_path)
 
                 #answer to analyse.py
-                to_return = str(recap(results, min_conf))
+                to_return = '  ' + str(num_calls) + ' calls found'
                 if type(to_return) is None :
                     to_return = "Analyse ended"
                 print(to_return)
