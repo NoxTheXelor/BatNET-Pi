@@ -21,4 +21,3 @@ xgboost
 scikit-learn
 scikit-multilearn
 tflite
-larq-compute-engine
