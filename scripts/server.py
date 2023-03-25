@@ -360,7 +360,7 @@ def handle_client(conn, addr):
                             path_daily_result = classification_result_file[:spliter_position]
                             
                             print('\nsaving results to', path_daily_result)
-                            print("min conf : "+str(min_conf))
+                            #print("min conf : "+str(min_conf))
                             
                             #need to avoid concurrence writing
                             result_lock.acquire()
@@ -369,7 +369,8 @@ def handle_client(conn, addr):
                             result_lock.release()
                         else:
                             print('no detections to save')
-                            os.system('rm '+userDir+'/'+file_path)
+                            os.system('rm '+file_path)
+                            print('removing '+file_name)
 
                 #answer to analyse.py
                 to_return = '  ' + str(num_calls) + ' calls found'
