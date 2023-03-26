@@ -274,6 +274,8 @@ def handle_client(conn, addr):
                 result_lock.release()
             else:
                 print('no detections to save')
+                os.system('rm '+ path_file)
+                print(file_name+' removed')
 
     conn.close()
 
