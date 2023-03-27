@@ -30,7 +30,7 @@ class Classifier:
         """
         self.model.save_features(goal, files)
 
-    def test_batch(self, goal, file, durations):
+    def test_batch(self, goal, full_path, file, durations):
         """
         Makes a prediction on the position, probability and class of the calls present in the list of audio files.
 
@@ -39,6 +39,8 @@ class Classifier:
         goal : String
             Indicates whether the files need to be tested for detection or classification.
             Can be either "detection" or "classification".
+        full_path : String
+            path to the filename
         file : String
             Name of the wav file used to test the model.
         durations : numpy array
@@ -60,6 +62,6 @@ class Classifier:
         pred_classes = None
         nb_windows = None
         #file_name = "20200806_230000T"
-        nms_pos, nms_prob, pred_classes, nb_windows = self.model.test(goal, file_name=file,
-                                                                          file_duration=durations[ii]) #110.0
+        nms_pos, nms_prob, pred_classes, nb_windows = self.model.test(goal, full_path,file_name=file,
+                                                                          file_duration=durations) #110.0
         return nms_pos, nms_prob, pred_classes, nb_windows

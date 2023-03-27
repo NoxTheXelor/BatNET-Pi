@@ -27,7 +27,7 @@ class NeuralNet:
         self.model_feat = None
         self.network_classif = None
 
-    def test(self, goal, file_name=None, file_duration=None, audio_samples=None, sampling_rate=None):
+    def test(self, goal, full_path,file_name=None, file_duration=None, audio_samples=None, sampling_rate=None):
         """
         Makes a prediction on the position, probability and class of the calls present in an audio file.
         
@@ -36,6 +36,8 @@ class NeuralNet:
         goal : String
             Indicates whether the file needs to be tested for detection or classification.
             Can be either "detection" or "classification".
+        full_path : String
+            path to the filename
         file_name : String
             Name of the wav file used to make a prediction.
         file_duration : float
@@ -59,7 +61,7 @@ class NeuralNet:
 
         # compute features
         tic = time.time()
-        features = self.create_or_load_features(goal, file_name, audio_samples, sampling_rate)
+        features = self.create_or_load_features(goal, full_path, file_name, audio_samples, sampling_rate)
         toc=time.time()
         self.params.features_computation_time += toc - tic
         features = features.reshape(features.shape[0], features.shape[2], features.shape[3], 1).astype("float32")
@@ -110,7 +112,7 @@ class NeuralNet:
         nb_windows = features.shape[0]
         return  nms_pos, nms_prob, pred_classes, nb_windows
 
-    def create_or_load_features(self, goal, file_name=None, audio_samples=None, sampling_rate=None):
+    def create_or_load_features(self, goal, full_path, file_name=None, audio_samples=None, sampling_rate=None):
         """
         Does 1 of 3 possible things
         1) computes feature from audio samples directly
@@ -122,6 +124,8 @@ class NeuralNet:
         goal : String
             Indicates whether the features are used for detection or classification.
             Can be either "detection" or "classification".
+        full_path : String
+            path to the filename
         file_name : String
             Name of the wav file used to make a prediction.
         audio_samples : numpy array
@@ -153,7 +157,7 @@ class NeuralNet:
             else:
                 if self.params.load_features_from_file: print("missing features have to be computed ", self.params.feature_dir + data_set + '_' + file_name.split("/")[-1]  + '_spectrogram' )
                 #sampling_rate, audio_samples = wavfile.read("20200806_230000T.wav")
-                sampling_rate, audio_samples = wavfile.read(audio_dir + file_name.split("/")[-1]  + '.wav')
+                sampling_rate, audio_samples = wavfile.read(full_path)
                 features = compute_features_spectrogram(audio_samples, sampling_rate, self.params)
                 if self.params.save_features_to_file or self.params.load_features_from_file:
                     np.save(self.params.feature_dir + data_set + '_' + file_name.split("/")[-1] + '_spectrogram', features)

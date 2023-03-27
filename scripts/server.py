@@ -79,7 +79,7 @@ def pre_loading_model(path):
         model_float/         ==> float model
     """
     load_features_from_file = False
-    model_name = "speed_bat_utils/hybrid_cnn_xgboost"  # can be one of: 'batmen', 'cnn2',  'hybrid_cnn_svm', 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
+    model_name = "hybrid_cnn_xgboost"  # can be one of: 'batmen', 'cnn2',  'hybrid_cnn_svm', 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
     #model_dir = 'model_raspberry/' # Binary model
     model_dir = path+'speed_bat_utils/raspberry_model_V2/' # Binary model with another XGBoost model using 500 estimators
     #model_dir = "model_float/" # Float model
@@ -221,10 +221,10 @@ def handle_client(conn, addr):
                 group_names = ['not call', 'Barbarg', 'Envsp', 'Myosp', 'Pip35', ' Pip50', 'Plesp', 'Rhisp']
                 classification_result_file = args.o
                 path_file = args.i
-                file_dur = librosa.get_duration(path_file)
+                file_dur = librosa.get_duration(filename=path_file)
                 file_name = [val for val in path_file.split("/")][-1]
                 tic = time.time()
-                call_time, call_prob, call_classes, nb_window = MODEL.test_batch("classification", file_name,file_dur)
+                call_time, call_prob, call_classes, nb_window = MODEL.test_batch("classification", path_file,file_name,file_dur)
                 toc = time.time()
                 data = {}
                 data["file"] =  file_name
