@@ -1,4 +1,4 @@
-from larq_compute_engine.tflite.python.interpreter_base import InterpreterBase
+from speed_bat_utils.larq_compute_engine.tflite.python.interpreter_base import InterpreterBase
 
 __all__ = ["Interpreter"]
 
@@ -45,7 +45,7 @@ class Interpreter(InterpreterBase):
         use_indirect_bgemm: bool = False,
         use_xnnpack: bool = False,
     ):
-        from larq_compute_engine.tflite.python import interpreter_wrapper_lite
+        from speed_bat_utils.larq_compute_engine.tflite.python import interpreter_wrapper_lite
 
         super().__init__(
             interpreter_wrapper_lite.LiteInterpreter(

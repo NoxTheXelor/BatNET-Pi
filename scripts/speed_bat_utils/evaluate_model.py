@@ -7,7 +7,7 @@ from tflite_support.metadata_writers import writer_utils
 import json
 import joblib
 from data_set_params import DataSetParams
-from larq_compute_engine.tflite.python import interpreter
+fromspeed_bat_utils.larq_compute_engine.tflite.python import interpreter
 import classifier as clss
 import xgboost as xgb
 import tflite

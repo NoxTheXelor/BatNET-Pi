@@ -19,7 +19,7 @@ from utils.parse_settings import config_to_settings
 from speed_bat_utils import classifier as clss
 from speed_bat_utils import write_op as wo
 from speed_bat_utils.data_set_params import DataSetParams
-from tensorflow.keras.models import Model, load_model
+#from tensorflow.keras.models import Model, load_model
 #from speed_bat_utils.run_classifier import read_audio, run_classifier
 
 from scipy.io import wavfile
@@ -27,9 +27,9 @@ import numpy as np
 import os
 import glob
 import time
-import tensorflow as tf
+#import tensorflow as tf
 import json
-from tensorflow.keras.models import Model, load_model
+#from tensorflow.keras.models import Model, load_model
 import joblib
 
 from tflite_support.metadata_writers import writer_utils
