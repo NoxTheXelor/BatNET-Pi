@@ -20,4 +20,4 @@ exclude_species_list.txt
 firstrun.ini
 HUMAN.txt
 include_species_list.txt
-scripts/server_test.pyc
+scripts/server_test.py
