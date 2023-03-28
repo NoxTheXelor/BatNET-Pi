@@ -146,6 +146,25 @@ EOF
   fi
 }
 
+install_recording_timer() {
+  echo "Installing birdnet_recording.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_recording.timer
+[Unit]
+Description=BirdNET Recording Timer
+
+[Timer]
+OnCalendar= *-*-* 16:20:00
+OnCalendar= *-*-* 16:24:00
+TimeZone = UTC+02:00
+Unit= birdnet_recording.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.timer /usr/lib/systemd/system
+  systemctl enable birdnet_recording.timer
+}
+
 install_recording_service() {
   echo "Installing birdnet_recording.service"
   cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_recording.service
@@ -433,6 +452,7 @@ install_services() {
   install_birdnet_stats_service
   install_recording_service
   install_custom_recording_service # But does not enable
+  install_recording_timer          # time recording
   install_extraction_service
   install_spectrogram_service
   install_chart_viewer_service
