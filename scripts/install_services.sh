@@ -153,9 +153,8 @@ install_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 16:20:00
-OnCalendar= *-*-* 16:24:00
-TimeZone = UTC+02:00
+OnCalendar= *-*-* 17:40:00 UTC+02:00
+OnCalendar= *-*-* 17:44:00 UTC+02:00
 Unit= birdnet_recording.service
 
 [Install]

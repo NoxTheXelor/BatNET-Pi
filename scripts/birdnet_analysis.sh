@@ -24,7 +24,7 @@ if ! diff ${LAST_RUN} ${THIS_RUN};then
     echo "Recording element changed -- restarting 'birdnet_recording.service'"
     sudo systemctl stop birdnet_recording.service
     sudo rm -rf ${RECS_DIR}/$(date +%B-%Y/%d-%A)/*
-    sudo systemctl start birdnet_recording.service
+    sudo systemctl start birdnet_recording.timer
   fi
   cat ${THIS_RUN} > ${LAST_RUN}
 fi
