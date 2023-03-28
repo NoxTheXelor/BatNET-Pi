@@ -39,6 +39,24 @@ install_scripts() {
   ln -sf ${my_dir}/scripts/* /usr/local/bin/
 }
 
+install_birdnet_analysis_timer() {
+  echo "Installing birdnet_analysis.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_analysis.timer
+[Unit]
+Description=BirdNET Analysis Timer
+
+[Timer]
+OnCalendar= *-*-* 17:40:00 UTC+02:00
+OnCalendar= *-*-* 17:44:00 UTC+02:00
+Unit= birdnet_analysis.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.timer /usr/lib/systemd/system
+  systemctl enable birdnet_analysis.timer
+}
+
 install_birdnet_analysis() {
   cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_analysis.service
 [Unit]
