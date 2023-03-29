@@ -24,7 +24,7 @@ if ! diff ${LAST_RUN} ${THIS_RUN};then
     echo "Recording element changed -- restarting 'birdnet_recording.service'"
     sudo systemctl stop birdnet_recording.service
     sudo rm -rf ${RECS_DIR}/$(date +%B-%Y/%d-%A)/*
-    sudo systemctl start birdnet_recording.timer
+    sudo systemctl start birdnet_recording.service
   fi
   cat ${THIS_RUN} > ${LAST_RUN}
 fi
@@ -54,6 +54,7 @@ get_files() {
   | sort \
   | awk -F "/" '{print $NF}' ))
   [ -n "${files[1]}" ] && echo "Files loaded"
+  echo "$files"
 }
 
 # Move all files that have been analyzed already into newly created "Analyzed"
@@ -67,8 +68,8 @@ move_analyzed() {
       if [ ! -d "${1}-Analyzed" ];then
         mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
       fi
-      mv "${1}/${i}" "${1}-Analyzed/"
-      mv "${1}/${j}" "${1}-Analyzed/"
+      mv "${1}/${i}" "${1}-Analyzed/" #moving wav file
+      mv "${1}/${j}" "${1}-Analyzed/" #moving csv file
     fi
   done
 }
@@ -168,6 +169,7 @@ run_birdnet() {
   get_files "${1}"
   move_analyzed "${1}"
   run_analysis "${1}"
+  wait 130
 }
 
 until grep 5050 <(netstat -tulpn 2>&1) &> /dev/null 2>&1;do

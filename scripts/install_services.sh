@@ -46,8 +46,8 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 17:40:00 UTC+02:00
-OnCalendar= *-*-* 17:44:00 UTC+02:00
+OnCalendar= *-*-* 15:50:00 UTC+02:00
+OnCalendar= *-*-* 16:05:00 UTC+02:00
 Unit= birdnet_analysis.service
 
 [Install]
@@ -64,16 +64,31 @@ Description=BirdNET Analysis
 After=birdnet_server.service
 Requires=birdnet_server.service
 [Service]
-Restart=always
 Type=simple
-RestartSec=2
 User=${USER}
 ExecStart=/usr/local/bin/birdnet_analysis.sh
 [Install]
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.service /usr/lib/systemd/system
-  systemctl enable birdnet_analysis.service
+}
+
+install_birdnet_server_timer() {
+  echo "Installing birdnet_server.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_server.timer
+[Unit]
+Description=BirdNET Analysis Timer
+
+[Timer]
+OnCalendar= *-*-* 15:50:00 UTC+02:00
+OnCalendar= *-*-* 16:05:00 UTC+02:00
+Unit= birdnet_server.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.timer /usr/lib/systemd/system
+  systemctl enable birdnet_server.timer
 }
 
 install_birdnet_server() {
@@ -82,16 +97,13 @@ install_birdnet_server() {
 Description=BirdNET Analysis Server
 Before=birdnet_analysis.service
 [Service]
-Restart=always
 Type=simple
-RestartSec=10
 User=${USER}
 ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/server.py
 [Install]
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.service /usr/lib/systemd/system
-  systemctl enable birdnet_server.service
 }
 
 install_extraction_service() {
@@ -171,8 +183,8 @@ install_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 17:40:00 UTC+02:00
-OnCalendar= *-*-* 17:44:00 UTC+02:00
+OnCalendar= *-*-* 15:50:00 UTC+02:00
+OnCalendar= *-*-* 15:51:00 UTC+02:00
 Unit= birdnet_recording.service
 
 [Install]
@@ -189,16 +201,13 @@ install_recording_service() {
 Description=BirdNET Recording
 [Service]
 Environment=XDG_RUNTIME_DIR=/run/user/1000
-Restart=always
 Type=simple
-RestartSec=3
 User=${USER}
 ExecStart=/usr/local/bin/birdnet_recording.sh
 [Install]
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.service /usr/lib/systemd/system
-  systemctl enable birdnet_recording.service
 }
 
 install_custom_recording_service() {
@@ -208,9 +217,7 @@ install_custom_recording_service() {
 Description=BirdNET Custom Recording
 [Service]
 Environment=XDG_RUNTIME_DIR=/run/user/1000
-Restart=always
 Type=simple
-RestartSec=3
 User=${USER}
 ExecStart=/usr/local/bin/custom_recording.sh
 [Install]
