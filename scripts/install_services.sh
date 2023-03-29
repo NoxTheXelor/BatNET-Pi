@@ -71,7 +71,7 @@ ExecStart=/usr/local/bin/birdnet_analysis.sh
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.service /usr/lib/systemd/system
-  systemctl deamon-reload
+  systemctl daemon-reload
 }
 
 install_birdnet_server_timer() {
@@ -105,7 +105,7 @@ ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/server.py
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.service /usr/lib/systemd/system
-  systemctl deamon-reload
+  systemctl daemon-reload
 }
 
 install_extraction_service() {
@@ -210,7 +210,7 @@ ExecStart=/usr/local/bin/birdnet_recording.sh
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.service /usr/lib/systemd/system
-  systemctl deamon-reload
+  systemctl daemon-reload
 }
 
 install_custom_recording_service() {
