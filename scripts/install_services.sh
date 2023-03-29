@@ -46,8 +46,8 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 15:50:00 UTC+02:00
-OnCalendar= *-*-* 16:05:00 UTC+02:00
+OnCalendar= *-*-* 17:20:00 UTC+2
+OnCalendar= *-*-* 20:05:00 UTC+2
 Unit= birdnet_analysis.service
 
 [Install]
@@ -71,6 +71,7 @@ ExecStart=/usr/local/bin/birdnet_analysis.sh
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.service /usr/lib/systemd/system
+  systemctl deamon-reload
 }
 
 install_birdnet_server_timer() {
@@ -80,8 +81,8 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 15:50:00 UTC+02:00
-OnCalendar= *-*-* 16:05:00 UTC+02:00
+OnCalendar= *-*-* 17:20:00 UTC+2
+OnCalendar= *-*-* 20:05:00 UTC+2
 Unit= birdnet_server.service
 
 [Install]
@@ -104,6 +105,7 @@ ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/server.py
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.service /usr/lib/systemd/system
+  systemctl deamon-reload
 }
 
 install_extraction_service() {
@@ -183,8 +185,8 @@ install_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 15:50:00 UTC+02:00
-OnCalendar= *-*-* 15:51:00 UTC+02:00
+OnCalendar= *-*-* 17:20:00 UTC+2
+OnCalendar= *-*-* 17:21:00 UTC+2
 Unit= birdnet_recording.service
 
 [Install]
@@ -208,6 +210,7 @@ ExecStart=/usr/local/bin/birdnet_recording.sh
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.service /usr/lib/systemd/system
+  systemctl deamon-reload
 }
 
 install_custom_recording_service() {
@@ -472,11 +475,13 @@ install_services() {
   install_Caddyfile
   install_avahi_aliases
   install_birdnet_analysis
+  install_birdnet_analysis_timer  # analysis timer
   install_birdnet_server
+  install_birdnet_server_timer    # server timer
   install_birdnet_stats_service
   install_recording_service
+  install_recording_timer          # recording timer
   install_custom_recording_service # But does not enable
-  install_recording_timer          # time recording
   install_extraction_service
   install_spectrogram_service
   install_chart_viewer_service
