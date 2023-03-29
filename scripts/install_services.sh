@@ -177,10 +177,47 @@ ExecStart=-/sbin/agetty --autologin $USER --noclear %I \$TERM
 EOF
   fi
 }
+#############################################################################################
+#Stop recording TIMER
+install_stop_recording_timer() {
+  echo "Installing stop_recording.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_stop_recording.timer
+[Unit]
+Description= BirdNET Stop Recording TIMER
 
-install_recording_timer() {
+[Timer]
+OnCalendar= *-*-* 06:00:00
+AccuracySec= 1s
+Unit= birdnet_stop_recording.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_stop_recording.timer /usr/lib/systemd/system
+  systemctl enable birdnet_recording.timer
+}
+#Stop recording SERVICE
+install_stop_recording_service() {
+  echo "Installing stop_recording.service"
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_recording.service
+[Unit]
+Description=BirdNET Stop Recording SERVICE
+
+[Service]
+Type=simple
+User=${USER}
+ExecStart= systemctl stop birdnet_recording.service
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/stop_recording.service /usr/lib/systemd/system
+  systemctl daemon-reload
+}
+
+install_start_recording_timer() {
   echo "Installing birdnet_recording.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_recording.timer
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_start_recording.timer
 [Unit]
 Description=BirdNET Recording Timer
 
@@ -192,7 +229,7 @@ Unit= birdnet_recording.service
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.timer /usr/lib/systemd/system
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_start_recording.timer /usr/lib/systemd/system
   systemctl enable birdnet_recording.timer
 }
 
@@ -212,7 +249,7 @@ EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
-
+#############################################################################################
 install_custom_recording_service() {
   echo "Installing custom_recording.service"
   cat << EOF > $HOME/BirdNET-Pi/templates/custom_recording.service
