@@ -46,8 +46,8 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 17:20:00 UTC+2
-OnCalendar= *-*-* 20:05:00 UTC+2
+OnCalendar= *-03-21..09-20 18:50:00..19:10:00
+AccuracySec= 1s
 Unit= birdnet_analysis.service
 
 [Install]
@@ -81,8 +81,8 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 17:20:00 UTC+2
-OnCalendar= *-*-* 20:05:00 UTC+2
+OnCalendar= *-03-21..09-20 18:50:00..19:10:00
+AccuracySec= 1s
 Unit= birdnet_server.service
 
 [Install]
@@ -185,8 +185,8 @@ install_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 17:20:00 UTC+2
-OnCalendar= *-*-* 17:21:00 UTC+2
+OnCalendar= *-03-21..09-20 18:50:00..18:51:30
+AccuracySec= 1s
 Unit= birdnet_recording.service
 
 [Install]
