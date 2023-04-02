@@ -269,6 +269,7 @@ def handle_client(conn, addr):
                 on_GPU = False   # True if tensorflow runs on GPU, False otherwise
                 chunk_size = 4.0    # The size of an audio chunk
                 do_time_expansion = True  # set to True if audio is not already time expanded
+                confident_result = False
 
                 model_file_classif = MODEL["model_file_classif"]
                 model_name = MODEL["model_name"]
@@ -312,6 +313,13 @@ def handle_client(conn, addr):
                     call_time, call_prob, call_classes, t = run_classifier(model_cls, audio, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
                     toc = time.time()
 
+                    # enough confident result to keep a record of it
+                    num_calls = len(call_time)
+                    if num_calls >0:
+                        for prob in call_prob:
+                            if prob>min_conf:
+                                confident_result = True
+
                     # capturing duration
                     data["file"] =  file_name
                     data["ai"] = model_name
@@ -329,7 +337,6 @@ def handle_client(conn, addr):
                     record_perf(data)
                     perf_lock.release() 
 
-                    num_calls = len(call_time)
                     if num_calls>0:
                         call_classes = np.concatenate(np.array(call_classes, dtype= object)).ravel()
                         call_species = [group_names[i] for i in call_classes]
@@ -347,8 +354,8 @@ def handle_client(conn, addr):
                                                 call_classes, call_prob,
                                                 samp_rate_orig, group_names)"""
 
-                        # save as dictionary
-                        if num_calls > 0:
+                        # save as csv file if enough confidence in result
+                        if confident_result:
 
                             results['filename'] = file_name
                             results['time'] = call_time
