@@ -14,7 +14,7 @@ def store_data_4debug(x,fs, ms, overlap ):
     if not os.path.exists(path+log_file_name) :
         with open(path+log_file_name, "w") as log_file:
             head_title = "size_audio_sample,sampling_rate,length_fft,overlap,nfft,noverlap"
-            head_title =+ "step,shape,strides\n"
+            head_title += "step,shape,strides\n"
             log_file.write(head_title + '\n')
     with open(path + log_file_name, "a") as log_file:
         nfft = int(ms*fs)
@@ -22,9 +22,9 @@ def store_data_4debug(x,fs, ms, overlap ):
         shape = (nfft, (x.shape[-1]-overlap)//step) # (size of window, number of windows)
         strides = (x.strides[0], step*x.strides[0]) # (nbr of bytes to move from an element of the array to the other, 
                                                 #  nbr of bytes to move from a window to the other)
-        payload =+ str(len(x))+","+str(fs)+","+str(ms)+","+str(overlap)
-        payload =+","+str(nfft)+","+str(overlap*nfft)+","+str(step)
-        payload =+","+str(shape)+","+str(strides[0])+","+str(strides[1])
+        payload = str(len(x))+","+str(fs)+","+str(ms)+","+str(overlap)
+        payload +=","+str(nfft)+","+str(overlap*nfft)+","+str(step)
+        payload +=","+str(shape)+","+str(strides[0])+","+str(strides[1])
         log_file.write(payload+"\n")
 def denoise(spec_noisy, mask=None):
     """
