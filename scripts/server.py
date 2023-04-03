@@ -134,7 +134,7 @@ def record_perf(data):
     log_file_name = 'log.csv'
     if not os.path.exists(path+log_file_name) :
         with open(path+log_file_name, "w") as log_file:
-            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,total_dur"
+            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,total_dur\n"
             log_file.write(head_title + '\n')
     with open(path + log_file_name, "a") as log_file:
         timestamp = str(time.strftime('%x-%X'))

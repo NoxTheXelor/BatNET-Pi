@@ -2,8 +2,30 @@ from skimage import filters
 import numpy as np
 from skimage.util.shape import view_as_windows
 from scipy.ndimage import zoom
+import os
 
+def store_data_4debug(x,fs, ms, overlap ):
 
+    userDir = os.path.expanduser('~')
+    path = userDir+'/BirdNET-Pi/perf_logs/'
+
+    log_file_name = 'debug.csv'
+
+    if not os.path.exists(path+log_file_name) :
+        with open(path+log_file_name, "w") as log_file:
+            head_title = "size_audio_sample,sampling_rate,length_fft,overlap,nfft,noverlap"
+            head_title =+ "step,shape,strides\n"
+            log_file.write(head_title + '\n')
+    with open(path + log_file_name, "a") as log_file:
+        nfft = int(ms*fs)
+        step = nfft - overlap
+        shape = (nfft, (x.shape[-1]-overlap)//step) # (size of window, number of windows)
+        strides = (x.strides[0], step*x.strides[0]) # (nbr of bytes to move from an element of the array to the other, 
+                                                #  nbr of bytes to move from a window to the other)
+        payload =+ str(len(x))+","+str(fs)+","+str(ms)+","+str(overlap)
+        payload =+","+str(nfft)+","+str(overlap*nfft)+","+str(step)
+        payload =+","+str(shape)+","+str(strides[0])+","+str(strides[1])
+        log_file.write(payload+"\n")
 def denoise(spec_noisy, mask=None):
     """
     Performs denoising of the spectrogram by subtracting the mean from each frequency band.
@@ -67,9 +89,15 @@ def gen_mag_spectrogram(x, fs, ms, overlap_perc):
         The number of windows in the audio samples.
     """
 
+    print(f"audio sample: {x}")
+    print(f"sampling rate :{fs}")
+    print(f"lenght fft: {ms}")
     nfft = int(ms*fs)
+    print(f"product sampling rate and fft : {nfft}")
     noverlap = int(overlap_perc*nfft)
-
+    print(f"overlap percentage : {overlap_perc}")
+    print(f"product overlap percentage and nfft : {noverlap}")
+    store_data_4debug(x, fs, ms, overlap_perc)
     # window data
     step = nfft - noverlap
     shape = (nfft, (x.shape[-1]-noverlap)//step) # (size of window, number of windows)
