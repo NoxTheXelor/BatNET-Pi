@@ -126,7 +126,7 @@ def pre_loading_model(path):
     model_cls.model.network_features = None
     model_cls.model.model_feat = network_feat
 
-    return model_cls, model_file_classif
+    return model_cls
 
 def record_perf(data):
 
@@ -224,7 +224,7 @@ def handle_client(conn, addr):
                 classification_result_file = args.o
                 path_file = args.i
 
-                threshold_classes =  np.load(path_model+'_thresholds.npy')
+                threshold_classes =  np.load(userDir+'/BirdNET-Pi/model/25_05_21_15_09_28_classif_cnn2_hnm0_thresholds.npy')
                 threshold_classes = threshold_classes/100
                 
                 results = [] # array with group name according to class number
@@ -295,8 +295,8 @@ def handle_client(conn, addr):
 
 def start():
     # Load model
-    global MODEL, path_model, INCLUDE_LIST, EXCLUDE_LIST
-    MODEL, path_model = pre_loading_model(userDir+'/BirdNET-Pi/scripts/') 
+    global MODEL, INCLUDE_LIST, EXCLUDE_LIST
+    MODEL = pre_loading_model(userDir+'/BirdNET-Pi/scripts/') 
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:
