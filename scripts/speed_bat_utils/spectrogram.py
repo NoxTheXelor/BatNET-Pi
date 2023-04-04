@@ -13,7 +13,7 @@ def store_data_4debug(x,fs, ms, overlap ):
 
     if not os.path.exists(path+log_file_name) :
         with open(path+log_file_name, "w") as log_file:
-            head_title = "size_audio_sample,sampling_rate,length_fft,overlap,nfft,noverlap"
+            head_title = "size_audio_sample,sampling_rate,length_fft,overlap,nfft,noverlap,"
             head_title += "step,shape,strides\n"
             log_file.write(head_title + '\n')
     with open(path + log_file_name, "a") as log_file:
