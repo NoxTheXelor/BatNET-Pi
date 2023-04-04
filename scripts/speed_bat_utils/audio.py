@@ -1,5 +1,6 @@
 from scipy.io import wavfile
 import numpy as np
+import time as time
 
 def read_audio(file_name, do_time_expansion, chunk_size, win_size):
     """

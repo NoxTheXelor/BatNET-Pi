@@ -126,7 +126,7 @@ def pre_loading_model(path):
     model_cls.model.network_features = None
     model_cls.model.model_feat = network_feat
 
-    return model_cls
+    return model_cls, model_file_classif
 
 def record_perf(data):
 
@@ -216,14 +216,18 @@ def handle_client(conn, addr):
                     EXCLUDE_LIST = []"""
 
                 #birdweather_id = args.birdweather_id
-                # array with group name according to class number
-                results = []
+
                 save_res = True
                 do_time_expansion = True  # set to True if audio is not already time expanded
                 chunk_size = 4.0    # The size of an audio chunk
                 group_names = ['not call', 'Barbarg', 'Envsp', 'Myosp', 'Pip35', ' Pip50', 'Plesp', 'Rhisp']
                 classification_result_file = args.o
                 path_file = args.i
+
+                threshold_classes =  np.load(path_model+'_thresholds.npy')
+                threshold_classes = threshold_classes/100
+                
+                results = [] # array with group name according to class number
                 # read audio file - skip file if cannot read
                 read_fail, audio, file_dur, samp_rate, samp_rate_orig = read_audio(file_name,
                                         do_time_expansion, chunk_size, MODEL.params.window_size)
@@ -291,8 +295,8 @@ def handle_client(conn, addr):
 
 def start():
     # Load model
-    global MODEL, INCLUDE_LIST, EXCLUDE_LIST
-    MODEL = pre_loading_model(userDir+'/BirdNET-Pi/scripts/')
+    global MODEL, path_model, INCLUDE_LIST, EXCLUDE_LIST
+    MODEL, path_model = pre_loading_model(userDir+'/BirdNET-Pi/scripts/') 
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:
