@@ -3,7 +3,7 @@ import numpy as np
 import datetime as dt
 
 
-def save_to_txt(op_file, results):
+def save_to_txt(op_file, results, min_conf):
     """
     Takes a list of dictionaries of results and saves them to file.
 
@@ -15,17 +15,22 @@ def save_to_txt(op_file, results):
         Contains dictionaries with each the four following fields: filename, time, prob, pred_classes.
     """
 
-    with open(op_file, 'w') as file:
-        head_str = 'file_name,predicted_time,predicted_species,predicted_prob'
-        file.write(head_str + '\n')
-        for ii in range(len(results)):
-            for jj in range(len(results[ii]['prob'])):
-                row_str = results[ii]['filename'] + ','
-                tm = round(results[ii]['time'][jj],3)
-                pr = round(results[ii]['prob'][jj],3)
-                sp = results[ii]['pred_classes'][jj]
-                row_str += str(tm) + ',' +str(sp) + ',' + str(pr)
-                file.write(row_str + '\n')
+    if not os.path.exists(op_file+'/daily_result.csv'):
+        with open(op_file+'/daily_result.csv', 'w') as file:
+            head_str = 'file_name,predicted_time,predicted_species,predicted_prob'
+            file.write(head_str + '\n')
+   
+    with open(op_file+'/daily_result.csv', 'a') as filling_file:
+            for jj in range(len(results['prob'])):
+                row_str = results['filename'] + ','
+                tm = round(results['time'][jj],3)
+                sp = results['pred_classes'][jj]
+                pr = round(results['prob'][jj],3)
+
+                if(pr>=min_conf):
+
+                    row_str += str(tm) + ',' +str(sp) + ',' + str(pr)
+                    filling_file.write(row_str + '\n')
 
 
 def create_audio_tagger_op(ip_file_name, op_file_name, st_times,

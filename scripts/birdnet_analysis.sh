@@ -62,13 +62,13 @@ get_files() {
 #   - {DIRECTORY}
 move_analyzed() {
   for i in "${files[@]}";do
-    j="${i}.csv"
-    if [ -f "${1}/${j}" ];then
-      if [ ! -d "${1}-Analyzed" ];then
-        mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
+    if [ -f "${1}/${i}" ];then
+      if [grep -q ${1} "${1}/daily_result.csv"];then
+        if [ ! -d "${1}-Analyzed" ];then
+          mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
+        fi
+        mv "${1}/${i}" "${1}-Analyzed/"
       fi
-      mv "${1}/${i}" "${1}-Analyzed/"
-      mv "${1}/${j}" "${1}-Analyzed/"
     fi
   done
 }
