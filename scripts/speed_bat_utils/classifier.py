@@ -30,12 +30,14 @@ class Classifier:
         """
         self.model.save_features(goal, files)
     
-    def test_single(self, audio_samples, sampling_rate):
+    def test_single(self, full_path, audio_samples, sampling_rate):
         """
         Makes a prediction on the position, probability and class of the calls present in the raw audio samples.
 
         Parameters
         -----------
+        full_path : String
+            path of the wav file
         audio_samples : numpy array
             Data read from a wav file.
         sampling_rate : int
@@ -51,8 +53,8 @@ class Classifier:
             Predicted class of each prediction.
         """
         duration = audio_samples.shape[0]/float(sampling_rate)
-        nms_pos, nms_prob, pred_classes, _ = self.model.test("classification", file_duration=duration, audio_samples=audio_samples, sampling_rate=sampling_rate) # modif: renvoit aussi matches=classes
-        return nms_pos, nms_prob, pred_classes
+        nms_pos, nms_prob, pred_classes, nb_windows = self.model.test("classification", full_path, file_duration=duration, audio_samples=audio_samples, sampling_rate=sampling_rate) # modif: renvoit aussi matches=classes
+        return nms_pos, nms_prob, pred_classes, nb_windows
 
     def test_batch(self, goal, full_path, file, durations):
         """
@@ -64,7 +66,7 @@ class Classifier:
             Indicates whether the files need to be tested for detection or classification.
             Can be either "detection" or "classification".
         full_path : String
-            path to the filename
+            path of the wav file
         file : String
             Name of the wav file used to test the model.
         durations : numpy array
