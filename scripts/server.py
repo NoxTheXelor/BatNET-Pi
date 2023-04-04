@@ -19,6 +19,7 @@ from utils.parse_settings import config_to_settings
 from speed_bat_utils import classifier as clss
 from speed_bat_utils import write_op as wo
 from speed_bat_utils.data_set_params import DataSetParams
+from speed_bat_utils.audio import read_audio, run_classifier
 #from tensorflow.keras.models import Model, load_model
 #from speed_bat_utils.run_classifier import read_audio, run_classifier
 
@@ -218,65 +219,72 @@ def handle_client(conn, addr):
                 # array with group name according to class number
                 results = []
                 save_res = True
+                do_time_expansion = True  # set to True if audio is not already time expanded
+                chunk_size = 4.0    # The size of an audio chunk
                 group_names = ['not call', 'Barbarg', 'Envsp', 'Myosp', 'Pip35', ' Pip50', 'Plesp', 'Rhisp']
                 classification_result_file = args.o
                 path_file = args.i
-                file_dur = librosa.get_duration(filename=path_file)
-                file_name = [val for val in path_file.split("/")][-1]
-                tic = time.time()
-                #call_time, call_prob, call_classes, nb_window = MODEL.test_batch("classification", path_file,file_name,file_dur)
-                call_time, call_prob, call_classes, nb_window = MODEL.test_single(path_file,file_name,file_dur)
-                toc = time.time()
-                data = {}
-                data["file"] =  file_name
-                data["ai"] = "XgBoost"
-                data["nbr_detection"] = str(max(0,len(call_classes)-1))
-                data["tot_time"] = str(round(toc-tic,3))
-                print("total time = ",toc-tic)
-                #need to avoid concurrence writing
-                perf_lock.acquire()     
-                print("WRITING PERF")               
-                record_perf(data)
-                perf_lock.release()                    
-                num_calls = len(call_time)
-                if num_calls>0:
-                    call_classes = np.concatenate(np.array(call_classes, dtype= object)).ravel()
-                    call_species = [group_names[i] for i in call_classes]
-                    #print("call pos=",call_time)
-                    #print("call species=", call_species)
-                    #print("call proba=",call_prob)
-                print('  ' + str(num_calls) + ' calls found')
+                # read audio file - skip file if cannot read
+                read_fail, audio, file_dur, samp_rate, samp_rate_orig = read_audio(file_name,
+                                        do_time_expansion, chunk_size, MODEL.params.window_size)
+                if read_fail:
+                    continue
+                if file_dur>4:
+                    file_name = [val for val in path_file.split("/")][-1]
+                    tic = time.time()
+                    #call_time, call_prob, call_classes, nb_window = MODEL.test_batch("classification", path_file,file_name,file_dur)
+                    call_time, call_prob, call_classes, nb_window = run_classifier(MODEL, audio, file_dur, samp_rate, threshold_classes, chunk_size)
+                    toc = time.time()
+                    data = {}
+                    data["file"] =  file_name
+                    data["ai"] = "XgBoost"
+                    data["nbr_detection"] = str(max(0,len(call_classes)-1))
+                    data["tot_time"] = str(round(toc-tic,3))
+                    print("total time = ",toc-tic)
+                    #need to avoid concurrence writing
+                    perf_lock.acquire()     
+                    print("WRITING PERF")               
+                    record_perf(data)
+                    perf_lock.release()                    
+                    num_calls = len(call_time)
+                    if num_calls>0:
+                        call_classes = np.concatenate(np.array(call_classes, dtype= object)).ravel()
+                        call_species = [group_names[i] for i in call_classes]
+                        #print("call pos=",call_time)
+                        #print("call species=", call_species)
+                        #print("call proba=",call_prob)
+                    print('  ' + str(num_calls) + ' calls found')
 
-                # save results
-                if save_res:
-                    #no use
-                    """# save to AudioTagger format
-                    op_file_name = file_name + '-sceneRect.csv'
-                    wo.create_audio_tagger_op(file_name, op_file_name, call_time,
-                                            call_classes, call_prob,
-                                            samp_rate_orig, group_names)"""
+                    # save results
+                    if save_res:
+                        #no use
+                        """# save to AudioTagger format
+                        op_file_name = file_name + '-sceneRect.csv'
+                        wo.create_audio_tagger_op(file_name, op_file_name, call_time,
+                                                call_classes, call_prob,
+                                                samp_rate_orig, group_names)"""
 
-                    # save as dictionary
-                    if num_calls > 0:
-                        res = {'filename':file_name, 'time':call_time,
-                            'prob':call_prob, 'pred_classes':call_species}
-                        results.append(res)
+                        # save as dictionary
+                        if num_calls > 0:
+                            res = {'filename':file_name, 'time':call_time,
+                                'prob':call_prob, 'pred_classes':call_species}
+                            results.append(res)
 
-            spliter_position = classification_result_file.rfind("/")
-            path_daily_result = classification_result_file[:spliter_position]
-            # save to large csv
-            if save_res and (len(results) > 0):
-                print('\nsaving results to', path_daily_result)
-                print("min conf : "+str(min_conf))
-                #need to avoid concurrence writing
-                result_lock.acquire()
-                print("wrinting result to file")
-                wo.save_to_txt(path_daily_result, results, min_conf)
-                result_lock.release()
-            else:
-                print('no detections to save')
-                os.system('rm '+ path_file)
-                print(file_name+' removed')
+                spliter_position = classification_result_file.rfind("/")
+                path_daily_result = classification_result_file[:spliter_position]
+                # save to large csv
+                if save_res and (len(results) > 0):
+                    print('\nsaving results to', path_daily_result)
+                    print("min conf : "+str(min_conf))
+                    #need to avoid concurrence writing
+                    result_lock.acquire()
+                    print("wrinting result to file")
+                    wo.save_to_txt(path_daily_result, results, min_conf)
+                    result_lock.release()
+                else:
+                    print('no detections to save')
+                    os.system('rm '+ path_file)
+                    print(file_name+' removed')
 
     conn.close()
 
