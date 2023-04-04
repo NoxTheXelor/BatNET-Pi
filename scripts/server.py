@@ -223,21 +223,22 @@ def handle_client(conn, addr):
                 group_names = ['not call', 'Barbarg', 'Envsp', 'Myosp', 'Pip35', ' Pip50', 'Plesp', 'Rhisp']
                 classification_result_file = args.o
                 path_file = args.i
+                file_name = [val for val in path_file.split("/")][-1]
+
 
                 threshold_classes =  np.load(userDir+'/BirdNET-Pi/model/25_05_21_15_09_28_classif_cnn2_hnm0_thresholds.npy')
                 threshold_classes = threshold_classes/100
                 
                 results = [] # array with group name according to class number
                 # read audio file - skip file if cannot read
-                read_fail, audio, file_dur, samp_rate, samp_rate_orig = read_audio(file_name,
+                read_fail, audio, file_dur, samp_rate, samp_rate_orig = read_audio(path_file,
                                         do_time_expansion, chunk_size, MODEL.params.window_size)
                 if read_fail:
                     continue
                 if file_dur>4:
-                    file_name = [val for val in path_file.split("/")][-1]
                     tic = time.time()
                     #call_time, call_prob, call_classes, nb_window = MODEL.test_batch("classification", path_file,file_name,file_dur)
-                    call_time, call_prob, call_classes, nb_window = run_classifier(MODEL, audio, file_dur, samp_rate, threshold_classes, chunk_size)
+                    call_time, call_prob, call_classes, nb_window = run_classifier(MODEL, audio, path_file, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
                     toc = time.time()
                     data = {}
                     data["file"] =  file_name

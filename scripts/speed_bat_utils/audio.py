@@ -58,7 +58,7 @@ def read_audio(file_name, do_time_expansion, chunk_size, win_size):
     read_fail = False
     return read_fail, audio_pad, file_dur, samp_rate, samp_rate_orig
 
-def run_classifier(model, audio, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion):
+def run_classifier(model, audio, file_path, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion):
     """
     Uses the model to predict the time, class and confidence level of bat calls in the file.
 
@@ -68,6 +68,8 @@ def run_classifier(model, audio, file_dur, samp_rate, threshold_classes, chunk_s
         Model used to detect and classify.
     audio : numpy array
         Audio samples of the file.
+    file_path : String
+        path of the wav file
     file_dur : float
         Duration of the file.
     samp_rate : float
@@ -104,7 +106,7 @@ def run_classifier(model, audio, file_dur, samp_rate, threshold_classes, chunk_s
 
         # make predictions
         tic = time.time()
-        pos, prob, classes = model.test_single(audio_chunk, samp_rate)
+        pos, prob, classes = model.test_single(file_path, audio_chunk, samp_rate)
         toc = time.time()
         test_time.append(round(toc-tic, 3))
 
