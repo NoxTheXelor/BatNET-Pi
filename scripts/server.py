@@ -224,7 +224,7 @@ def handle_client(conn, addr):
                 file_dur = librosa.get_duration(filename=path_file)
                 file_name = [val for val in path_file.split("/")][-1]
                 tic = time.time()
-                call_time, call_prob, call_classes, nb_window = MODEL.test_batch("classification", path_file,file_name,file_dur)
+                call_time, call_prob, call_classes, nb_window = MODEL.test_single("classification", path_file,file_name,file_dur)
                 toc = time.time()
                 data = {}
                 data["file"] =  file_name

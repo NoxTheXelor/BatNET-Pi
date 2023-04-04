@@ -29,6 +29,30 @@ class Classifier:
             Name of the wav file used to make a prediction.
         """
         self.model.save_features(goal, files)
+    
+    def test_single(self, audio_samples, sampling_rate):
+        """
+        Makes a prediction on the position, probability and class of the calls present in the raw audio samples.
+
+        Parameters
+        -----------
+        audio_samples : numpy array
+            Data read from a wav file.
+        sampling_rate : int
+            Sample rate of a wav file.
+        
+        Returns
+        --------
+        nms_pos : numpy array
+            Predicted positions of calls.
+        nms_prob : numpy array
+            Confidence level of each prediction.
+        pred_classes : numpy array
+            Predicted class of each prediction.
+        """
+        duration = audio_samples.shape[0]/float(sampling_rate)
+        nms_pos, nms_prob, pred_classes, _ = self.model.test("classification", file_duration=duration, audio_samples=audio_samples, sampling_rate=sampling_rate) # modif: renvoit aussi matches=classes
+        return nms_pos, nms_prob, pred_classes
 
     def test_batch(self, goal, full_path, file, durations):
         """
