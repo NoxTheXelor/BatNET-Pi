@@ -89,14 +89,14 @@ def gen_mag_spectrogram(x, fs, ms, overlap_perc):
         The number of windows in the audio samples.
     """
 
-    print(f"audio sample: {x}")
-    print(f"sampling rate :{fs}")
-    print(f"lenght fft: {ms}")
+    #print(f"audio sample: {x}")
+    #print(f"sampling rate :{fs}")
+    #print(f"lenght fft: {ms}")
     nfft = int(ms*fs)
-    print(f"product sampling rate and fft : {nfft}")
+    #print(f"product sampling rate and fft : {nfft}")
     noverlap = int(overlap_perc*nfft)
-    print(f"overlap percentage : {overlap_perc}")
-    print(f"product overlap percentage and nfft : {noverlap}")
+    #print(f"overlap percentage : {overlap_perc}")
+    #print(f"product overlap percentage and nfft : {noverlap}")
     #store_data_4debug(x, fs, ms, overlap_perc)
     # window data
     step = nfft - noverlap
