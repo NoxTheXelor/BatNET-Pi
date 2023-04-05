@@ -72,6 +72,22 @@ with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
 
+def store_data_4debug(name,  time, prob, specie):
+
+    userDir = os.path.expanduser('~')
+    path = userDir+'/BirdNET-Pi/perf_logs/'
+
+    log_file_name = 'debug.csv'
+
+    if not os.path.exists(path+log_file_name) :
+        with open(path+log_file_name, "w") as log_file:
+            head_title = "name,time, prob, specie\n"
+            log_file.write(head_title + '\n')
+    with open(path + log_file_name, "a") as log_file:
+        payload = str(name)+", "+str(time)+", "+str(prob)+", "+str(specie)
+
+        log_file.write(payload+"\n")
+
 def pre_loading_model(path):
     """
     model_dir : str - name of the used model. Can be either 
@@ -255,6 +271,8 @@ def handle_client(conn, addr):
                     if num_calls>0:
                         call_classes = np.concatenate(np.array(call_classes, dtype= object)).ravel()
                         call_species = [group_names[i] for i in call_classes]
+                        store_data_4debug(file_name, call_time, call_prob, call_species)
+
                         #print("call pos=",call_time)
                         #print("call species=", call_species)
                         #print("call proba=",call_prob)

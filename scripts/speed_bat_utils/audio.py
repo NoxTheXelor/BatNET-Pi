@@ -129,7 +129,7 @@ def run_classifier(model, audio, file_path, file_dur, samp_rate, threshold_class
         pos = pos.reshape(-1,1)
         store_data_4debug(st_position, pos, prob, classes)
         if pos.shape[0] > 0:
-            prob = prob[:, 0]
+            prob = prob.reshape(-1,1)
 
             # remove predictions near the end (if not last chunk) and ones that are
             # below the detection threshold
