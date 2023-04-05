@@ -126,6 +126,7 @@ def run_classifier(model, audio, file_path, file_dur, samp_rate, threshold_class
         pos, prob, classes = model.test_single(file_path, audio_chunk, samp_rate)
         toc = time.time()
         test_time.append(round(toc-tic, 3))
+        pos = pos.reshape(-1,1)
         store_data_4debug(st_position, pos, prob, classes)
         if pos.shape[0] > 0:
             prob = prob[:, 0]
