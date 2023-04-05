@@ -1,6 +1,23 @@
 from scipy.io import wavfile
 import numpy as np
 import time as time
+import os
+
+def store_data_4debug(start_positions,  position_array, classes_array):
+
+    userDir = os.path.expanduser('~')
+    path = userDir+'/BirdNET-Pi/perf_logs/'
+
+    log_file_name = 'debug.csv'
+
+    if not os.path.exists(path+log_file_name) :
+        with open(path+log_file_name, "w") as log_file:
+            head_title = "nbr_of_start_position, shape_call_found, shape_class\n"
+            log_file.write(head_title + '\n')
+    with open(path + log_file_name, "a") as log_file:
+        payload = str(start_positions.shape)+", "+str(position_array.shape)+", "+str(classes_array.shape)
+
+        log_file.write(payload+"\n")
 
 def read_audio(file_name, do_time_expansion, chunk_size, win_size):
     """
@@ -109,7 +126,7 @@ def run_classifier(model, audio, file_path, file_dur, samp_rate, threshold_class
         pos, prob, classes = model.test_single(file_path, audio_chunk, samp_rate)
         toc = time.time()
         test_time.append(round(toc-tic, 3))
-
+        store_data_4debug(st_position, pos, classes)
         if pos.shape[0] > 0:
             prob = prob[:, 0]
 

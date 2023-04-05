@@ -97,7 +97,7 @@ def gen_mag_spectrogram(x, fs, ms, overlap_perc):
     noverlap = int(overlap_perc*nfft)
     print(f"overlap percentage : {overlap_perc}")
     print(f"product overlap percentage and nfft : {noverlap}")
-    store_data_4debug(x, fs, ms, overlap_perc)
+    #store_data_4debug(x, fs, ms, overlap_perc)
     # window data
     step = nfft - noverlap
     shape = (nfft, (x.shape[-1]-noverlap)//step) # (size of window, number of windows)
