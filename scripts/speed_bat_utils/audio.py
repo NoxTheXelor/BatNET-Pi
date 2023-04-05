@@ -15,7 +15,7 @@ def store_data_4debug(start_positions,  position_array, prob_array, classes_arra
             head_title = "size_start_pos,shape_pos, prob_shape, shape_class\n"
             log_file.write(head_title + '\n')
     with open(path + log_file_name, "a") as log_file:
-        payload = str(start_positions)+", "+str(position_array.shape)+", "+str(prob_array.shape)+", "+str(classes_array.shape)
+        payload = str(start_positions.shape)+", "+str(position_array.shape)+", "+str(prob_array.shape)+", "+str(classes_array.shape)
 
         log_file.write(payload+"\n")
 
