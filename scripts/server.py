@@ -232,7 +232,8 @@ def handle_client(conn, addr):
                     EXCLUDE_LIST = []"""
 
                 #birdweather_id = args.birdweather_id
-
+                result = {}
+                confident_result= False #allow to skip
                 save_res = True
                 do_time_expansion = True  # set to True if audio is not already time expanded
                 chunk_size = 4.0    # The size of an audio chunk
@@ -245,7 +246,6 @@ def handle_client(conn, addr):
                 threshold_classes =  np.load(userDir+'/BirdNET-Pi/model/25_05_21_15_09_28_classif_cnn2_hnm0_thresholds.npy')
                 threshold_classes = threshold_classes/100
                 
-                results = [] # array with group name according to class number
                 # read audio file - skip file if cannot read
                 read_fail, audio, file_dur, samp_rate, samp_rate_orig = read_audio(path_file,
                                         do_time_expansion, chunk_size, MODEL.params.window_size)
@@ -256,22 +256,30 @@ def handle_client(conn, addr):
                     #call_time, call_prob, call_classes, nb_window = MODEL.test_batch("classification", path_file,file_name,file_dur)
                     call_time, call_prob, call_classes, nb_window = run_classifier(MODEL, audio, path_file, file_dur, samp_rate, threshold_classes, chunk_size, do_time_expansion)
                     toc = time.time()
+
+                    num_calls = len(call_time)
+                    if num_calls>0:
+                        for prob in call_prob:
+                            if prob>min_conf:
+                                confident_result=True
+                    
                     data = {}
                     data["file"] =  file_name
                     data["ai"] = "XgBoost"
                     data["nbr_detection"] = str(max(0,len(call_classes)-1))
                     data["tot_time"] = str(round(toc-tic,3))
                     print("total time = ",toc-tic)
+
                     #need to avoid concurrence writing
                     perf_lock.acquire()     
                     print("WRITING PERF")               
                     record_perf(data)
-                    perf_lock.release()                    
-                    num_calls = len(call_time)
+                    perf_lock.release()     
+
                     if num_calls>0:
                         call_classes = np.concatenate(np.array(call_classes, dtype= object)).ravel()
                         call_species = [group_names[i] for i in call_classes]
-                        store_data_4debug(file_name, call_time, call_prob, call_species)
+                        #store_data_4debug(file_name, call_time, call_prob, call_species)
 
                         #print("call pos=",call_time)
                         #print("call species=", call_species)
@@ -280,34 +288,29 @@ def handle_client(conn, addr):
 
                     # save results
                     if save_res:
-                        #no use
-                        """# save to AudioTagger format
-                        op_file_name = file_name + '-sceneRect.csv'
-                        wo.create_audio_tagger_op(file_name, op_file_name, call_time,
-                                                call_classes, call_prob,
-                                                samp_rate_orig, group_names)"""
 
                         # save as dictionary
                         if num_calls > 0:
-                            res = {'filename':file_name, 'time':call_time,
-                                'prob':call_prob, 'pred_classes':call_species}
-                            results.append(res)
+                            result = {'filename':file_name, 
+                                      'time':call_time,
+                                      'prob':call_prob, 
+                                      'pred_classes':call_species}
 
-                spliter_position = classification_result_file.rfind("/")
-                path_daily_result = classification_result_file[:spliter_position]
-                # save to large csv
-                if save_res and (len(results) > 0):
-                    print('\nsaving results to', path_daily_result)
-                    print("min conf : "+str(min_conf))
-                    #need to avoid concurrence writing
-                    result_lock.acquire()
-                    print("wrinting result to file")
-                    wo.save_to_txt(path_daily_result, results, min_conf)
-                    result_lock.release()
-                else:
-                    print('no detections to save')
-                    os.system('rm '+ path_file)
-                    print(file_name+' removed')
+                            spliter_position = classification_result_file.rfind("/")
+                            path_daily_result = classification_result_file[:spliter_position]
+                            
+                            # save to large csv
+                            print('\nsaving results to', path_daily_result)
+                            print("min conf : "+str(min_conf))
+                            #need to avoid concurrence writing
+                            result_lock.acquire()
+                            print("wrinting result to file")
+                            wo.save_to_txt(path_daily_result, result, min_conf)
+                            result_lock.release()
+                        else:
+                            print('no detections to save')
+                            os.system('rm '+ path_file)
+                            print(file_name+' has been removed')
 
     conn.close()
 
