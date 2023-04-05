@@ -178,6 +178,81 @@ EOF
   fi
 }
 #############################################################################################
+#Stop recording TIMER ==> determines when to stop the service
+install_stop_record_perf_timer() {
+  echo "Installing stop_perf_recorder.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_perf_recorder.timer
+[Unit]
+Description= Stop Recording CPU and RAM usage TIMER
+
+[Timer]
+OnCalendar= *-*-* 06:05:00
+AccuracySec= 1s
+Unit= stop_perf_recorder.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/stop_perf_recorder.timer /usr/lib/systemd/system
+  systemctl enable stop_perf_recorder.timer
+}
+#Stop recording SERVICE ==> stop the service when timer says so
+install_stop_record_perf_service() {
+  echo "Installing stop_perf_recorder.service"
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_perf_recorder.service
+[Unit]
+Description=BirdNET Stop Recording SERVICE
+
+[Service]
+Type=simple
+User=${USER}
+ExecStart= systemctl stop perf_recorder.service
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/stop_perf_recorder.service /usr/lib/systemd/system
+  systemctl daemon-reload
+}
+#start recording perf timer
+install_start_record_perf_timer() {
+  echo "Installing perf_recorder.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.timer
+[Unit]
+Description= Start Recording CPU and RAM usage TIMER
+
+[Timer]
+OnCalendar= *-*-* 19:59:50
+OnUnitActiveSec=500ms
+AccuracySec= 500ms
+Unit= perf_recorder.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/perf_recorder.timer /usr/lib/systemd/system
+  systemctl enable perf_recorder.timer
+}
+#service to start and stop
+#service storing cpu and ram usage
+install_recording_perf_service() {
+  echo "Installing perf_recorder.service"
+  cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.service
+[Unit]
+Description=Recorder of CPU and RAM usage
+[Service]
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+Type=simple
+User=${USER}
+ExecStart=/usr/local/bin/perf_recorder.sh
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/perf_recorder.service /usr/lib/systemd/system
+  systemctl daemon-reload
+}
+#############################################################################################
+#############################################################################################
 #Stop recording TIMER
 install_stop_recording_timer() {
   echo "Installing stop_recording.timer"
@@ -516,9 +591,20 @@ install_services() {
   install_birdnet_server
   install_birdnet_server_timer    # server timer
   install_birdnet_stats_service
+
+  install_stop_recording_timer
+  install_stop_recording_service
+  install_start_recording_timer
   install_recording_service
+
   install_recording_timer          # recording timer
   install_custom_recording_service # But does not enable
+
+  install_stop_record_perf_timer    #
+  install_stop_record_perf_service  #
+  install_start_record_perf_timer   #
+  install_recording_perf_service    #
+
   install_extraction_service
   install_spectrogram_service
   install_chart_viewer_service
