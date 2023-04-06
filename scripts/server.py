@@ -290,7 +290,7 @@ def handle_client(conn, addr):
                     if save_res:
 
                         # save as dictionary
-                        if num_calls > 0:
+                        if confident_result:
                             result = {'filename':file_name, 
                                       'time':call_time,
                                       'prob':call_prob, 
