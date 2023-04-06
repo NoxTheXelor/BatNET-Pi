@@ -234,6 +234,7 @@ def handle_client(conn, addr):
                 #birdweather_id = args.birdweather_id
                 result = {}
                 confident_result= False #allow to skip
+                
                 save_res = True
                 do_time_expansion = True  # set to True if audio is not already time expanded
                 chunk_size = 4.0    # The size of an audio chunk
@@ -311,6 +312,13 @@ def handle_client(conn, addr):
                             print('no detections to save')
                             os.system('rm '+ path_file)
                             print(file_name+' has been removed')
+                            #answer to analyse.py
+
+                to_return = '  ' + str(num_calls) + ' calls found'
+                if type(to_return) is None :
+                    to_return = "Analyse ended"
+                print(to_return)
+                conn.send(to_return.encode(FORMAT))
 
     conn.close()
 
