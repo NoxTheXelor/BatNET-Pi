@@ -80,8 +80,21 @@ move_analyzed() {
 run_analysis() {
   PYTHON_VIRTUAL_ENV="$HOME/BirdNET-Pi/birdnet/bin/python3"
   DIR="$HOME/BirdNET-Pi/scripts"
-
   sleep .5
+  
+  # building limit running process
+  max_processes=2
+  semaphore=$(mktemp -u)
+
+  mkfifo "$semaphore"
+  exec 3<>"$semaphore"
+
+  rm "$semaphore"
+
+  for((i=1;i<=max_processes;i++));do
+    echo >&3
+  done
+
 
   ### TESTING NEW WEEK CALCULATION
   WEEK_OF_YEAR="$(echo "($(date +%m)-1) * 4" | bc -l)"
@@ -138,9 +151,13 @@ run_analysis() {
 --overlap "${OVERLAP}" \
 --sensitivity "${SENSITIVITY}" \
 --min_conf "${CONFIDENCE}" \
+--nbr_thread "${max_processes}" \
 ${INCLUDEPARAM} \
 ${EXCLUDEPARAM} \
 ${BIRDWEATHER_ID_LOG}
+
+    read -u 3
+
     $PYTHON_VIRTUAL_ENV $DIR/analyze.py \
       --i "${1}/${i}" \
       --o "${1}/${i}.csv" \
@@ -150,10 +167,11 @@ ${BIRDWEATHER_ID_LOG}
       --overlap "${OVERLAP}" \
       --sensitivity "${SENSITIVITY}" \
       --min_conf "${CONFIDENCE}" \
+      --nbr_thread "${max_processes}" \
       ${INCLUDEPARAM} \
       ${EXCLUDEPARAM} \
       ${BIRDWEATHER_ID_PARAM}
-    wait
+    echo >&3
     if [ ! -z $HEARTBEAT_URL ]; then
       echo "Performing Heartbeat"
       IP=`curl -s ${HEARTBEAT_URL}`

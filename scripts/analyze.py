@@ -76,6 +76,10 @@ def main():
         '--birdweather_id',
         default='99999',
         help='Private Station ID for BirdWeather.')
+    parser.add_argument(
+        '--nbr_thread',
+        default='1',
+        help='Number of ai instance running.')
 
     args = parser.parse_args()
 
@@ -102,6 +106,8 @@ def main():
         sockParams += 'lat=' + str(args.lat) + '||'
     if args.lon:
         sockParams += 'lon=' + str(args.lon) + '||'
+    if args.nbr_thread:
+        sockParams += 'nbr_thread=' + str(args.nbr_thread) + '||'
 
     send(sockParams)
     send(DISCONNECT_MESSAGE)

@@ -98,7 +98,7 @@ def gen_mag_spectrogram(x, fs, ms, overlap_perc):
     step = nfft - noverlap
     shape = (nfft, (x.shape[-1]-noverlap)//step) # (size of window, number of windows)
     strides = (x.strides[0], step*x.strides[0]) # (nbr of bytes to move from an element of the array to the other, nbr of bytes to move from a window to the other)
-    store_data_4debug(x, fs, ms, overlap_perc)
+    #store_data_4debug(x, fs, ms, overlap_perc)
     x_wins = np.lib.stride_tricks.as_strided(x, shape=shape, strides=strides)
 
     # apply Hanning window (smoothing values)

@@ -173,13 +173,16 @@ def pre_loading_model():
 def record_perf(data):
 
     path = userDir+'/BirdNET-Pi/perf_logs/'
-
     log_file_name = 'log.csv'
+
     if not os.path.exists(path+log_file_name) :
+
         with open(path+log_file_name, "w") as log_file:
-            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur"
+            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur,nbr_thread"
             log_file.write(head_title + '\n')
+
     with open(path + log_file_name, "a") as log_file:
+
         timestamp = str(time.strftime('%x-%X'))
         data_file = data["file"]
         ai_used = data["ai"]
@@ -189,7 +192,9 @@ def record_perf(data):
         detection_dur = data["detect_time"]
         classif_dur = data["classif_time"]
         tot_dur = data["tot_time"]
-        payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+feat_dur+","+nms_dur+","+detection_dur+","+classif_dur+","+tot_dur
+        thread = data["nbr_thread"]
+
+        payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+feat_dur+","+nms_dur+","+detection_dur+","+classif_dur+","+tot_dur+","+thread
         log_file.write(payload+"\n")
 
 def handle_client(conn, addr):
@@ -246,6 +251,8 @@ def handle_client(conn, addr):
                         args.lat = float(inputvars[1])
                     elif inputvars[0] == 'lon':
                         args.lon = float(inputvars[1])
+                    elif inputvars[0] == 'nbr_thread':
+                        args.nbr_thread = float(inputvars[1])
 
                 min_conf = max(0.01, min(args.min_conf, 0.99))
                 #print(min_conf)
@@ -329,6 +336,7 @@ def handle_client(conn, addr):
                     data["detect_time"] =  str(round(t["detection"],3))
                     data["classif_time"] = str(round(t["classification"],3))
                     data["tot_time"] = str(round(toc-tic,3))
+                    data["nbr_thread"] = str(int(args.nbr_thread))
                     print("total time = ",toc-tic)
 
                     #need to avoid concurrence writing
