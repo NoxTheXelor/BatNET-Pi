@@ -68,7 +68,7 @@ class NeuralNet:
         tic = time.time()
 
         # perform detection
-        print(features.shape)
+        #print(features.shape)
         feat_test = self.model_feat.predict(features)
         toc=time.time()
         self.params.detect_time += toc - tic
