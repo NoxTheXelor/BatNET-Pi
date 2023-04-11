@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 20:00:00
+OnCalendar= *-*-* 08:00:00
 AccuracySec= 1s
 Unit= birdnet_analysis.service
 
@@ -81,7 +81,7 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 20:00:00
+OnCalendar= *-*-* 08:00:00
 AccuracySec= 1s
 Unit= birdnet_server.service
 
@@ -222,7 +222,7 @@ install_start_record_perf_timer() {
 Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 19:59:50
+OnCalendar= *-*-* 07:59:50
 OnUnitActiveSec=500ms
 AccuracySec= 500ms
 Unit= perf_recorder.service
@@ -297,7 +297,8 @@ install_start_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 20:00:00
+OnCalendar= *-*-* 08:00:00
+OnBootSec = 1
 AccuracySec= 1s
 Unit= birdnet_recording.service
 
@@ -305,6 +306,7 @@ Unit= birdnet_recording.service
 WantedBy=timers.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_start_recording.timer /usr/lib/systemd/system
+  systemctl daemon-reload
   systemctl enable birdnet_recording.timer
 }
 
