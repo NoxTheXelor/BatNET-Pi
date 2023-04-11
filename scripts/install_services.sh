@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 19:50:00
+OnCalendar= *-*-* 23:02:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
@@ -84,7 +84,7 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 19:50:00
+OnCalendar= *-*-* 23:01:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
@@ -192,8 +192,7 @@ install_stop_record_perf_timer() {
 Description= Stop Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 20:05:00
-OnBootSec = 1s
+OnCalendar= *-*-* 23:05:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_perf_recorder.service
@@ -231,7 +230,7 @@ install_record_perf_timer() {
 Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 19:50:00
+OnCalendar= *-*-* 23:00:00
 AccuracySec= 1s
 OnBootSec = 1s
 Persistent=True
@@ -272,8 +271,7 @@ install_stop_recording_timer() {
 Description= BirdNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* 20:00:00
-OnBootSec = 1s
+OnCalendar= *-*-* 23:05:00
 AccuracySec= 1min
 Persistent=True
 Unit= birdnet_stop_recording.service
@@ -311,7 +309,7 @@ install_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 19:50:00
+OnCalendar= *-*-* 23:00:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
