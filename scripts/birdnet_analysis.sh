@@ -187,7 +187,6 @@ run_birdnet() {
   get_files "${1}"
   move_analyzed "${1}"
   run_analysis "${1}"
-  wait 130
 }
 
 until grep 5050 <(netstat -tulpn 2>&1) &> /dev/null 2>&1;do
