@@ -47,8 +47,7 @@ Description=BirdNET Analysis Timer
 
 [Timer]
 OnCalendar= *-*-* 23:02:00
-OnBootSec = 1s
-AccuracySec= 1min
+AccuracySec= 10s
 Persistent=True
 Unit= birdnet_analysis.service
 
@@ -85,7 +84,6 @@ Description=BirdNET Analysis Timer
 
 [Timer]
 OnCalendar= *-*-* 23:01:00
-OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
 Unit= birdnet_server.service
@@ -232,7 +230,6 @@ Description= Start Recording CPU and RAM usage TIMER
 [Timer]
 OnCalendar= *-*-* 23:00:00
 AccuracySec= 1s
-OnBootSec = 1s
 Persistent=True
 Unit= perf_recorder.service
 
@@ -310,7 +307,6 @@ Description=BirdNET Recording Timer
 
 [Timer]
 OnCalendar= *-*-* 23:00:00
-OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
 Unit= birdnet_recording.service
