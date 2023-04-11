@@ -231,7 +231,7 @@ install_start_record_perf_timer() {
 Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 19:00:00
+OnCalendar= *-*-* 18:30:00
 AccuracySec= 1s
 OnBootSec = 1s
 Persistent=True
