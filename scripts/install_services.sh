@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 18:30:00
+OnCalendar= *-*-* 19:50:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
@@ -84,7 +84,7 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 18:30:00
+OnCalendar= *-*-* 19:50:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
@@ -192,7 +192,7 @@ install_stop_record_perf_timer() {
 Description= Stop Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 19:00:00
+OnCalendar= *-*-* 20:05:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
@@ -224,14 +224,14 @@ EOF
   systemctl daemon-reload
 }
 #start recording perf timer
-install_start_record_perf_timer() {
+install_record_perf_timer() {
   echo "Installing perf_recorder.timer"
   cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.timer
 [Unit]
 Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 18:30:00
+OnCalendar= *-*-* 19:50:00
 AccuracySec= 1s
 OnBootSec = 1s
 Persistent=True
@@ -272,7 +272,7 @@ install_stop_recording_timer() {
 Description= BirdNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* 19:00:00
+OnCalendar= *-*-* 20:00:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
@@ -304,14 +304,14 @@ EOF
   systemctl daemon-reload
 }
 #Start recording TIMER
-install_start_recording_timer() {
+install_recording_timer() {
   echo "Installing birdnet_recording.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_start_recording.timer
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_recording.timer
 [Unit]
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 18:30:00
+OnCalendar= *-*-* 19:50:00
 OnBootSec = 1s
 AccuracySec= 1min
 Persistent=True
@@ -320,7 +320,7 @@ Unit= birdnet_recording.service
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_start_recording.timer /usr/lib/systemd/system
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.timer /usr/lib/systemd/system
   systemctl daemon-reload
   systemctl enable birdnet_recording.timer
 }
@@ -611,14 +611,14 @@ install_services() {
 
   install_stop_recording_timer
   install_stop_recording_service
-  install_start_recording_timer
+  install_recording_timer
   install_recording_service
 
   install_custom_recording_service # But does not enable
 
   install_stop_record_perf_timer    #
   install_stop_record_perf_service  #
-  install_start_record_perf_timer   #
+  install_record_perf_timer   #
   install_recording_perf_service    #
 
   install_extraction_service
