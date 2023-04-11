@@ -47,13 +47,16 @@ Description=BirdNET Analysis Timer
 
 [Timer]
 OnCalendar= *-*-* 08:00:00
-AccuracySec= 1s
+OnBootSec = 1s
+AccuracySec= 1min
+Persistent=True
 Unit= birdnet_analysis.service
 
 [Install]
 WantedBy=timers.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.timer /usr/lib/systemd/system
+  systemctl daemon-reload
   systemctl enable birdnet_analysis.timer
 }
 
@@ -82,13 +85,16 @@ Description=BirdNET Analysis Timer
 
 [Timer]
 OnCalendar= *-*-* 08:00:00
-AccuracySec= 1s
+OnBootSec = 1s
+AccuracySec= 1min
+Persistent=True
 Unit= birdnet_server.service
 
 [Install]
 WantedBy=timers.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.timer /usr/lib/systemd/system
+  systemctl daemon-reload
   systemctl enable birdnet_server.timer
 }
 
@@ -187,13 +193,16 @@ Description= Stop Recording CPU and RAM usage TIMER
 
 [Timer]
 OnCalendar= *-*-* 06:05:00
-AccuracySec= 1s
+OnBootSec = 1s
+AccuracySec= 1min
+Persistent=True
 Unit= stop_perf_recorder.service
 
 [Install]
 WantedBy=timers.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/stop_perf_recorder.timer /usr/lib/systemd/system
+  systemctl daemon-reload
   systemctl enable stop_perf_recorder.timer
 }
 #Stop recording SERVICE ==> stop the service when timer says so
@@ -223,14 +232,16 @@ Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
 OnCalendar= *-*-* 07:59:50
-OnUnitActiveSec=500ms
-AccuracySec= 500ms
+AccuracySec= 1s
+OnBootSec = 1s
+Persistent=True
 Unit= perf_recorder.service
 
 [Install]
 WantedBy=timers.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/perf_recorder.timer /usr/lib/systemd/system
+  systemctl daemon-reload
   systemctl enable perf_recorder.timer
 }
 #service to start and stop
@@ -261,14 +272,17 @@ install_stop_recording_timer() {
 Description= BirdNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* 06:00:00
-AccuracySec= 1s
+OnCalendar= *-*-* 21:00:00
+OnBootSec = 1s
+AccuracySec= 1min
+Persistent=True
 Unit= birdnet_stop_recording.service
 
 [Install]
 WantedBy=timers.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_stop_recording.timer /usr/lib/systemd/system
+  systemctl daemon-reload
   systemctl enable birdnet_recording.timer
 }
 #Stop recording SERVICE
@@ -289,7 +303,7 @@ EOF
   ln -sf $HOME/BirdNET-Pi/templates/stop_recording.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
-
+#Start recording TIMER
 install_start_recording_timer() {
   echo "Installing birdnet_recording.timer"
   cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_start_recording.timer
@@ -298,8 +312,9 @@ Description=BirdNET Recording Timer
 
 [Timer]
 OnCalendar= *-*-* 08:00:00
-OnBootSec = 1
-AccuracySec= 1s
+OnBootSec = 1s
+AccuracySec= 1min
+Persistent=True
 Unit= birdnet_recording.service
 
 [Install]
