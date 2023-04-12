@@ -5,7 +5,7 @@
 output_file=$HOME/BirdNET-Pi/perf_logs/perf.csv
 
 # Create the output file with column headers if it doesn't exist
-if [ ! -e "$output_file" ]; then
+if [ ! -f "$output_file" ]; then
   echo -e "\tTimestamp\tCPU \tMem used \tMem free \tSwap used \tSwap free " >> "$output_file"
 fi
 while true; do
