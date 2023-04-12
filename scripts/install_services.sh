@@ -288,7 +288,7 @@ Description=BirdNET Stop Recording SERVICE
 [Service]
 Type=simple
 User=${USER}
-ExecStart= systemctl stop birdnet_recording.service
+ExecStart= sudo systemctl stop birdnet_recording.service
 
 [Install]
 WantedBy=multi-user.target
