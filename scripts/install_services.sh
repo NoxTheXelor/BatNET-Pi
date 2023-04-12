@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* *:00:00
+OnCalendar= *-*-* *:05:00
 AccuracySec= 10s
 Persistent=True
 Unit= birdnet_analysis.service
@@ -67,6 +67,7 @@ After=birdnet_server.service
 Requires=birdnet_server.service
 [Service]
 Type=simple
+Restart=on-success
 User=${USER}
 ExecStart=/usr/local/bin/birdnet_analysis.sh
 [Install]
@@ -249,7 +250,7 @@ install_recording_perf_service() {
 Description=Recorder of CPU and RAM usage
 [Service]
 Type=simple
-ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh
+ExecStart=/usr/bin/env bash -c "perf_recorder.sh"
 [Install]
 WantedBy=multi-user.target
 EOF
