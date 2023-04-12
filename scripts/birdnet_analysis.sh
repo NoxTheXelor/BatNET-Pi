@@ -83,7 +83,7 @@ run_analysis() {
   sleep .5
   
   # building limit running process
-  max_processes=2
+  max_processes=1
   semaphore=$(mktemp -u)
 
   mkfifo "$semaphore"
