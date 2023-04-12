@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 23:12:00
+OnCalendar= *-*-* 10:32:00
 AccuracySec= 10s
 Persistent=True
 Unit= birdnet_analysis.service
@@ -83,7 +83,7 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 23:11:00
+OnCalendar= *-*-* 10:31:00
 AccuracySec= 1min
 Persistent=True
 Unit= birdnet_server.service
@@ -190,7 +190,7 @@ install_stop_record_perf_timer() {
 Description= Stop Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 23:15:00
+OnCalendar= *-*-* 10:35:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_perf_recorder.service
@@ -228,7 +228,7 @@ install_record_perf_timer() {
 Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 23:10:00
+OnCalendar= *-*-* 10:30:00
 AccuracySec= 1s
 Persistent=True
 Unit= perf_recorder.service
@@ -248,10 +248,8 @@ install_recording_perf_service() {
 [Unit]
 Description=Recorder of CPU and RAM usage
 [Service]
-Environment=XDG_RUNTIME_DIR=/run/user/1000
 Type=simple
-User=${USER}
-ExecStart=/usr/local/bin/perf_recorder.sh
+ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -263,22 +261,22 @@ EOF
 #Stop recording TIMER
 install_stop_recording_timer() {
   echo "Installing stop_recording.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_stop_recording.timer
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_recording.timer
 [Unit]
 Description= BirdNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* 23:15:00
+OnCalendar= *-*-* 10:35:00
 AccuracySec= 1min
 Persistent=True
-Unit= birdnet_stop_recording.service
+Unit= stop_recording.service
 
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_stop_recording.timer /usr/lib/systemd/system
+  ln -sf $HOME/BirdNET-Pi/templates/stop_recording.timer /usr/lib/systemd/system
   systemctl daemon-reload
-  systemctl enable birdnet_recording.timer
+  systemctl enable stop_recording.timer
 }
 #Stop recording SERVICE
 install_stop_recording_service() {
@@ -306,7 +304,7 @@ install_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 23:10:00
+OnCalendar= *-*-* 10:30:00
 AccuracySec= 1min
 Persistent=True
 Unit= birdnet_recording.service
