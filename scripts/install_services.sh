@@ -250,7 +250,7 @@ install_recording_perf_service() {
 Description=Recorder of CPU and RAM usage
 [Service]
 Type=simple
-ExecStart=/usr/bin/env bash -c "perf_recorder.sh"
+ExecStart=/usr/local/bin/perf_recorder.sh
 [Install]
 WantedBy=multi-user.target
 EOF
