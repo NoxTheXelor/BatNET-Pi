@@ -243,6 +243,9 @@ EOF
 }
 #service to start and stop
 #service storing cpu and ram usage
+#ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh current
+#ExecStart=/usr/local/bin/perf_recorder.sh previous ==> error 203
+#ExecStart=/usr/bin/env bash -c"perf_recorder.sh" pre-previous
 install_recording_perf_service() {
   echo "Installing perf_recorder.service"
   cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.service
@@ -250,7 +253,7 @@ install_recording_perf_service() {
 Description=Recorder of CPU and RAM usage
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/perf_recorder.sh
+ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh
 [Install]
 WantedBy=multi-user.target
 EOF
