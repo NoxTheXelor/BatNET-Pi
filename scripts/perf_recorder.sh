@@ -2,7 +2,7 @@
 # record ram and cpu usage
 # set -x
 source /etc/birdnet/birdnet.conf
-output_file="home/bird/BirdNET-Pi/perf_logs/perf.csv"
+output_file="/home/bird/BirdNET-Pi/perf_logs/perf.csv"
 
 # Create the output file with column headers if it doesn't exist
 if [ ! -f ${output_file} ]; then
