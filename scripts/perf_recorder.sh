@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # record ram and cpu usage
 # set -x
-
+source /etc/birdnet/birdnet.conf
 output_file=$HOME/BirdNET-Pi/perf_logs/perf.csv
 
 # Create the output file with column headers if it doesn't exist
 if [ ! -f $output_file ]; then
+  sudo touch $output_file
   echo -e "\tTimestamp\tCPU \tMem used \tMem free \tSwap used \tSwap free " > $output_file
 fi
 while true; do
