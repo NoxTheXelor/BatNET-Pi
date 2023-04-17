@@ -104,6 +104,7 @@ Description=BirdNET Analysis Server
 Before=birdnet_analysis.service
 [Service]
 Type=simple
+Restart=on-success
 User=${USER}
 ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/server.py
 [Install]

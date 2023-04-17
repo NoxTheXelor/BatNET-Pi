@@ -9,7 +9,7 @@ set -e
 # Remove temporary file
 trap 'rm -f $TMPFILE' EXIT
 source /etc/birdnet/birdnet.conf
-[ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=10
+[ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=5
 
 # Set Variables
 TMPFILE=$(mktemp)
