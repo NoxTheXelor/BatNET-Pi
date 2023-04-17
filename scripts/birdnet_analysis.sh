@@ -62,14 +62,17 @@ get_files() {
 # Takes one argument:
 #   - {DIRECTORY}
 move_analyzed() {
+  # daily result record wave files if both conditions are met
+  # 1) bat detected
+  # 2) identification conf above threshold
   for i in "${files[@]}";do
-    j="${i}.csv"
-    if [ -f "${1}/${j}" ];then
-      if [ ! -d "${1}-Analyzed" ];then
-        mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
+    if [ -f "${1}/${i}" ];then
+      if grep -q ${i} "${1}/daily_result.csv";then #if name of wav file is in daily result
+        if [ ! -d "${1}-Analyzed" ];then
+          mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
+        fi
+        mv "${1}/${i}" "${1}-Analyzed/"
       fi
-      mv "${1}/${i}" "${1}-Analyzed/" #moving wav file
-      mv "${1}/${j}" "${1}-Analyzed/" #moving csv file
     fi
   done
 }
