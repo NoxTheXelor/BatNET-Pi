@@ -2,7 +2,7 @@
 set -x
 source /etc/birdnet/birdnet.conf
 
-[ -z $RECORDING_LENGTH ] && RECORDING_LENGTH=15
+[ -z $RECORDING_LENGTH ] && RECORDING_LENGTH=10
 
 if [ ! -z $RTSP_STREAM ];then
   [ -d $RECS_DIR/StreamData ] || mkdir -p $RECS_DIR/StreamData
