@@ -62,16 +62,17 @@ get_files() {
 # Takes one argument:
 #   - {DIRECTORY}
 move_analyzed() {
-  # daily result record wave files if both conditions are met
-  # 1) bat detected
+  # daily_result contains wave file if both conditions are met
+  # 1) bat detected in wav file
   # 2) identification conf above threshold
+  # otherwise the file will be delete by server.py
   for i in "${files[@]}";do
     if [ -f "${1}/${i}" ];then
       if grep -q ${i} "${1}/daily_result.csv";then #if name of wav file is in daily result
         if [ ! -d "${1}-Analyzed" ];then
           mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
         fi
-        mv "${1}/${i}" "${1}-Analyzed/"
+        mv "${1}/${i}" "${1}-Analyzed/" #move wav file to Analyzed directory
       fi
     fi
   done
