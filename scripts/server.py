@@ -178,7 +178,7 @@ def record_perf(data):
     if not os.path.exists(path+log_file_name) :
 
         with open(path+log_file_name, "w") as log_file:
-            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur,nbr_thread"
+            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,feat_dur, nms_dur,detection_dur,classication_dur,total_dur,nbr_thread,file_duration"
             log_file.write(head_title + '\n')
 
     with open(path + log_file_name, "a") as log_file:
@@ -193,8 +193,9 @@ def record_perf(data):
         classif_dur = data["classif_time"]
         tot_dur = data["tot_time"]
         thread = data["nbr_thread"]
+        file_dur = data["file_dur"]
 
-        payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+feat_dur+","+nms_dur+","+detection_dur+","+classif_dur+","+tot_dur+","+thread
+        payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+feat_dur+","+nms_dur+","+detection_dur+","+classif_dur+","+tot_dur+","+thread+","+file_dur
         log_file.write(payload+"\n")
 
 def handle_client(conn, addr):
@@ -337,6 +338,7 @@ def handle_client(conn, addr):
                     data["classif_time"] = str(round(t["classification"],3))
                     data["tot_time"] = str(round(toc-tic,3))
                     data["nbr_thread"] = str(int(args.nbr_thread))
+                    data["file_dur"] = str(file_dur)
                     print("total time = ",toc-tic)
 
                     #need to avoid concurrence writing
