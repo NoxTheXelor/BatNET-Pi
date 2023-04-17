@@ -173,7 +173,7 @@ def pre_loading_model():
 def record_perf(data):
 
     path = userDir+'/BirdNET-Pi/perf_logs/'
-    log_file_name = 'log.csv'
+    log_file_name = 'ai_log.csv'
 
     if not os.path.exists(path+log_file_name) :
 
