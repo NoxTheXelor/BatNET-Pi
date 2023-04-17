@@ -338,7 +338,7 @@ def handle_client(conn, addr):
                     data["classif_time"] = str(round(t["classification"],3))
                     data["tot_time"] = str(round(toc-tic,3))
                     data["nbr_thread"] = str(int(args.nbr_thread))
-                    data["file_dur"] = str(file_dur)
+                    data["file_dur"] = str(file_dur/10)
                     print("total time = ",toc-tic)
 
                     #need to avoid concurrence writing
