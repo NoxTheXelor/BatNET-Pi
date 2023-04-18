@@ -39,6 +39,26 @@ install_scripts() {
   ln -sf ${my_dir}/scripts/* /usr/local/bin/
 }
 
+install_birdnet_analysis_timer() {
+  echo "Installing birdnet_analysis.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_analysis.timer
+[Unit]
+Description=BirdNET Analysis Timer
+
+[Timer]
+OnCalendar= *-*-* *:06:00
+AccuracySec= 10s
+Persistent=True
+Unit= birdnet_analysis.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.timer /usr/lib/systemd/system
+  systemctl daemon-reload
+  systemctl enable birdnet_analysis.timer
+}
+
 install_birdnet_analysis() {
   cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_analysis.service
 [Unit]
@@ -46,16 +66,35 @@ Description=BirdNET Analysis
 After=birdnet_server.service
 Requires=birdnet_server.service
 [Service]
-Restart=always
 Type=simple
-RestartSec=2
+Restart=on-success
 User=${USER}
 ExecStart=/usr/local/bin/birdnet_analysis.sh
 [Install]
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.service /usr/lib/systemd/system
-  systemctl enable birdnet_analysis.service
+  systemctl daemon-reload
+}
+
+install_birdnet_server_timer() {
+  echo "Installing birdnet_server.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_server.timer
+[Unit]
+Description=BirdNET Analysis Timer
+
+[Timer]
+OnCalendar= *-*-* *:05:00
+AccuracySec= 1s 
+Persistent=True
+Unit= birdnet_server.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.timer /usr/lib/systemd/system
+  systemctl daemon-reload
+  systemctl enable birdnet_server.timer
 }
 
 install_birdnet_server() {
@@ -64,16 +103,15 @@ install_birdnet_server() {
 Description=BirdNET Analysis Server
 Before=birdnet_analysis.service
 [Service]
-Restart=always
 Type=simple
-RestartSec=10
+Restart=on-success
 User=${USER}
 ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/server.py
 [Install]
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.service /usr/lib/systemd/system
-  systemctl enable birdnet_server.service
+  systemctl daemon-reload
 }
 
 install_extraction_service() {
@@ -100,11 +138,11 @@ create_necessary_dirs() {
   [ -d ${EXTRACTED}/Charts ] || sudo -u ${USER} mkdir -p ${EXTRACTED}/Charts
   [ -d ${PROCESSED} ] || sudo -u ${USER} mkdir -p ${PROCESSED}
   [ -d $HOME/BirdNET-Pi/perf_logs/ ] || sudo -u ${USER} mkdir -p $HOME/BirdNET-Pi/perf_logs/
-  
+
+
   sudo -u ${USER} ln -fs $my_dir/exclude_species_list.txt $my_dir/scripts
   sudo -u ${USER} ln -fs $my_dir/include_species_list.txt $my_dir/scripts
   sudo -u ${USER} ln -fs $my_dir/homepage/* ${EXTRACTED}
-  sudo -u ${USER} ln -fs $my_dir/perf_logs/*
   sudo -u ${USER} ln -fs $my_dir/model/labels.txt ${my_dir}/scripts
   sudo -u ${USER} ln -fs $my_dir/scripts ${EXTRACTED}
   sudo -u ${USER} ln -fs $my_dir/scripts/play.php ${EXTRACTED}
@@ -145,6 +183,143 @@ ExecStart=-/sbin/agetty --autologin $USER --noclear %I \$TERM
 EOF
   fi
 }
+#############################################################################################
+#Stop recording TIMER ==> determines when to stop the service
+install_stop_record_perf_timer() {
+  echo "Installing stop_perf_recorder.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_perf_recorder.timer
+[Unit]
+Description= Stop Recording CPU and RAM usage TIMER
+
+[Timer]
+OnCalendar= *-*-* *:58:00
+AccuracySec= 1min
+Persistent=True
+Unit= stop_perf_recorder.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/stop_perf_recorder.timer /usr/lib/systemd/system
+  systemctl daemon-reload
+  systemctl enable stop_perf_recorder.timer
+}
+#Stop recording SERVICE ==> stop the service when timer says so
+install_stop_record_perf_service() {
+  echo "Installing stop_perf_recorder.service"
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_perf_recorder.service
+[Unit]
+Description=BirdNET Stop Recording SERVICE
+
+[Service]
+Type=simple
+User=${USER}
+ExecStart= systemctl stop perf_recorder.service
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/stop_perf_recorder.service /usr/lib/systemd/system
+  systemctl daemon-reload
+}
+#start recording perf timer
+install_record_perf_timer() {
+  echo "Installing perf_recorder.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.timer
+[Unit]
+Description= Start Recording CPU and RAM usage TIMER
+
+[Timer]
+OnCalendar= *-*-* *:00:00
+AccuracySec= 1s
+Persistent=True
+Unit= perf_recorder.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/perf_recorder.timer /usr/lib/systemd/system
+  systemctl daemon-reload
+  systemctl enable perf_recorder.timer
+}
+#service to start and stop
+#service storing cpu and ram usage
+#ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh current
+#ExecStart=/usr/local/bin/perf_recorder.sh previous ==> error 203
+#ExecStart=/usr/bin/env bash -c"perf_recorder.sh" pre-previous
+install_recording_perf_service() {
+  echo "Installing perf_recorder.service"
+  cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.service
+[Unit]
+Description=Recorder of CPU and RAM usage
+[Service]
+Type=simple
+ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/perf_recorder.service /usr/lib/systemd/system
+  systemctl daemon-reload
+}
+#############################################################################################
+#############################################################################################
+#Stop recording TIMER
+install_stop_recording_timer() {
+  echo "Installing stop_recording.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_recording.timer
+[Unit]
+Description= BirdNET Stop Recording TIMER
+
+[Timer]
+OnCalendar= *-*-* *:10:00
+AccuracySec= 1min
+Persistent=True
+Unit= stop_recording.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/stop_recording.timer /usr/lib/systemd/system
+  systemctl daemon-reload
+  systemctl enable stop_recording.timer
+}
+#Stop recording SERVICE
+install_stop_recording_service() {
+  echo "Installing stop_recording.service"
+  cat << EOF > $HOME/BirdNET-Pi/templates/stop_recording.service
+[Unit]
+Description=BirdNET Stop Recording SERVICE
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash -c "sudo systemctl stop birdnet_recording.service"
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/stop_recording.service /usr/lib/systemd/system
+  systemctl daemon-reload
+}
+#Start recording TIMER
+install_recording_timer() {
+  echo "Installing birdnet_recording.timer"
+  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_recording.timer
+[Unit]
+Description=BirdNET Recording Timer
+
+[Timer]
+OnCalendar= *-*-* *:05:00
+AccuracySec= 1s
+Persistent=True
+Unit= birdnet_recording.service
+
+[Install]
+WantedBy=timers.target
+EOF
+  ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.timer /usr/lib/systemd/system
+  systemctl daemon-reload
+  systemctl enable birdnet_recording.timer
+}
 
 install_recording_service() {
   echo "Installing birdnet_recording.service"
@@ -153,18 +328,16 @@ install_recording_service() {
 Description=BirdNET Recording
 [Service]
 Environment=XDG_RUNTIME_DIR=/run/user/1000
-Restart=always
 Type=simple
-RestartSec=3
 User=${USER}
 ExecStart=/usr/local/bin/birdnet_recording.sh
 [Install]
 WantedBy=multi-user.target
 EOF
   ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.service /usr/lib/systemd/system
-  systemctl enable birdnet_recording.service
+  systemctl daemon-reload
 }
-
+#############################################################################################
 install_custom_recording_service() {
   echo "Installing custom_recording.service"
   cat << EOF > $HOME/BirdNET-Pi/templates/custom_recording.service
@@ -172,9 +345,7 @@ install_custom_recording_service() {
 Description=BirdNET Custom Recording
 [Service]
 Environment=XDG_RUNTIME_DIR=/run/user/1000
-Restart=always
 Type=simple
-RestartSec=3
 User=${USER}
 ExecStart=/usr/local/bin/custom_recording.sh
 [Install]
@@ -429,10 +600,23 @@ install_services() {
   install_Caddyfile
   install_avahi_aliases
   install_birdnet_analysis
+  install_birdnet_analysis_timer  # analysis timer
   install_birdnet_server
+  install_birdnet_server_timer    # server timer
   install_birdnet_stats_service
+
+  install_stop_recording_timer
+  install_stop_recording_service
+  install_recording_timer
   install_recording_service
+
   install_custom_recording_service # But does not enable
+
+  install_stop_record_perf_timer    #
+  install_stop_record_perf_service  #
+  install_record_perf_timer   #
+  install_recording_perf_service    #
+
   install_extraction_service
   install_spectrogram_service
   install_chart_viewer_service
