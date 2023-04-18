@@ -151,7 +151,7 @@ def record_perf(data):
     log_file_name = 'log.csv'
     if not os.path.exists(path+log_file_name) :
         with open(path+log_file_name, "w") as log_file:
-            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,total_dur\n"
+            head_title = "timestamp_writing_perf,data_file,AI_used,nbr_detection,total_dur,nbr_thread,file_duration\n"
             log_file.write(head_title + '\n')
     with open(path + log_file_name, "a") as log_file:
         timestamp = str(time.strftime('%x-%X'))
@@ -159,7 +159,9 @@ def record_perf(data):
         ai_used = data["ai"]
         nbr_detect = data["nbr_detection"]
         tot_dur = data["tot_time"]
-        payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+tot_dur
+        nb_thread = data["nb_thread"]
+        file_duration = data["file_dur"]
+        payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+tot_dur+","+nb_thread+","+file_duration
         log_file.write(payload+"\n")
 
 def handle_client(conn, addr):
@@ -216,6 +218,8 @@ def handle_client(conn, addr):
                         args.lat = float(inputvars[1])
                     elif inputvars[0] == 'lon':
                         args.lon = float(inputvars[1])
+                    elif inputvars[0] == 'nbr_thread':
+                        args.nbr_thread = float(inputvars[1])
                 
 
                 min_conf = max(0.01, min(args.min_conf, 0.99))
@@ -266,9 +270,11 @@ def handle_client(conn, addr):
                     
                     data = {}
                     data["file"] =  file_name
-                    data["ai"] = "XgBoost"
+                    data["ai"] = "BNN_XgBoost"
                     data["nbr_detection"] = str(max(0,len(call_classes)-1))
                     data["tot_time"] = str(round(toc-tic,3))
+                    data["nbr_thread"] = str(args.nbr_thread)
+                    data["file_dur"] = str(file_dur/10)
                     print("total time = ",toc-tic)
 
                     #need to avoid concurrence writing
