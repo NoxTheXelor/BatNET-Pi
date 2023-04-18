@@ -21,6 +21,7 @@ def send(msg):
     client.send(message)
     print(client.recv(2048).decode(FORMAT))
 
+
 def main():
 
     global INCLUDE_LIST
@@ -61,7 +62,7 @@ def main():
     parser.add_argument(
         '--min_conf',
         type=float,
-        default=0.1,
+        default=0.7,
         help='Minimum confidence threshold. Values in [0.01, 0.99]. Defaults to 0.1.')
     parser.add_argument(
         '--include_list',
@@ -75,6 +76,10 @@ def main():
         '--birdweather_id',
         default='99999',
         help='Private Station ID for BirdWeather.')
+    parser.add_argument(
+        '--nbr_thread',
+        default='1',
+        help='Number of ai instance running.')
 
     args = parser.parse_args()
 
@@ -101,6 +106,8 @@ def main():
         sockParams += 'lat=' + str(args.lat) + '||'
     if args.lon:
         sockParams += 'lon=' + str(args.lon) + '||'
+    if args.nbr_thread:
+        sockParams += 'nbr_thread=' + str(args.nbr_thread) + '||'
 
     send(sockParams)
     send(DISCONNECT_MESSAGE)
