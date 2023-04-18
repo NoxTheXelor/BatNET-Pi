@@ -159,7 +159,7 @@ def record_perf(data):
         ai_used = data["ai"]
         nbr_detect = data["nbr_detection"]
         tot_dur = data["tot_time"]
-        nb_thread = data["nb_thread"]
+        nb_thread = data["nbr_thread"]
         file_duration = data["file_dur"]
         payload = timestamp+","+data_file+","+ai_used+","+nbr_detect+","+tot_dur+","+nb_thread+","+file_duration
         log_file.write(payload+"\n")
