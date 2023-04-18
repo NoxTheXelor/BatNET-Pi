@@ -54,6 +54,7 @@ get_files() {
   | sort \
   | awk -F "/" '{print $NF}' ))
   [ -n "${files[1]}" ] && echo "Files loaded"
+  echo "$files"
 }
 
 # Move all files that have been analyzed already into newly created "Analyzed"
@@ -61,16 +62,17 @@ get_files() {
 # Takes one argument:
 #   - {DIRECTORY}
 move_analyzed() {
-  # daily result record wave files if both conditions are met
-  # 1) bat detected
+  # daily_result contains wave file if both conditions are met
+  # 1) bat detected in wav file
   # 2) identification conf above threshold
+  # otherwise the file will be delete by server.py
   for i in "${files[@]}";do
     if [ -f "${1}/${i}" ];then
       if grep -q ${i} "${1}/daily_result.csv";then #if name of wav file is in daily result
         if [ ! -d "${1}-Analyzed" ];then
           mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
         fi
-        mv "${1}/${i}" "${1}-Analyzed/"
+        mv "${1}/${i}" "${1}-Analyzed/" #move wav file to Analyzed directory
       fi
     fi
   done
@@ -82,8 +84,21 @@ move_analyzed() {
 run_analysis() {
   PYTHON_VIRTUAL_ENV="$HOME/BirdNET-Pi/birdnet/bin/python3"
   DIR="$HOME/BirdNET-Pi/scripts"
-
   sleep .5
+  
+  # building limit running process
+  max_processes=1
+  semaphore=$(mktemp -u)
+
+  mkfifo "$semaphore"
+  exec 3<>"$semaphore"
+
+  rm "$semaphore"
+
+  for((i=1;i<=max_processes;i++));do
+    echo >&3
+  done
+
 
   ### TESTING NEW WEEK CALCULATION
   WEEK_OF_YEAR="$(echo "($(date +%m)-1) * 4" | bc -l)"
@@ -101,7 +116,7 @@ run_analysis() {
   for i in "${files[@]}";do
     [ ! -f ${1}/${i} ] && continue
     echo "${1}/${i}" > $HOME/BirdNET-Pi/analyzing_now.txt
-    [ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=15
+    [ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=5
     echo "RECORDING_LENGTH set to ${RECORDING_LENGTH}"
     until [ -z "$(lsof -t ${1}/${i})" ];do
       sleep 2
@@ -140,9 +155,13 @@ run_analysis() {
 --overlap "${OVERLAP}" \
 --sensitivity "${SENSITIVITY}" \
 --min_conf "${CONFIDENCE}" \
+--nbr_thread "${max_processes}" \
 ${INCLUDEPARAM} \
 ${EXCLUDEPARAM} \
 ${BIRDWEATHER_ID_LOG}
+
+    read -u 3
+
     $PYTHON_VIRTUAL_ENV $DIR/analyze.py \
       --i "${1}/${i}" \
       --o "${1}/${i}.csv" \
@@ -152,10 +171,11 @@ ${BIRDWEATHER_ID_LOG}
       --overlap "${OVERLAP}" \
       --sensitivity "${SENSITIVITY}" \
       --min_conf "${CONFIDENCE}" \
+      --nbr_thread "${max_processes}" \
       ${INCLUDEPARAM} \
       ${EXCLUDEPARAM} \
       ${BIRDWEATHER_ID_PARAM}
-    wait
+    echo >&3
     if [ ! -z $HEARTBEAT_URL ]; then
       echo "Performing Heartbeat"
       IP=`curl -s ${HEARTBEAT_URL}`
