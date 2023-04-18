@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* *:06:00
+OnCalendar= *-*-* 22:06:00
 AccuracySec= 10s
 Persistent=True
 Unit= birdnet_analysis.service
@@ -84,7 +84,7 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* *:05:00
+OnCalendar= *-*-* 22:05:00
 AccuracySec= 1s 
 Persistent=True
 Unit= birdnet_server.service
@@ -192,7 +192,7 @@ install_stop_record_perf_timer() {
 Description= Stop Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* *:58:00
+OnCalendar= *-*-* 10:30:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_perf_recorder.service
@@ -214,7 +214,7 @@ Description=BirdNET Stop Recording SERVICE
 [Service]
 Type=simple
 User=${USER}
-ExecStart= systemctl stop perf_recorder.service
+ExecStart=/usr/bin/env bash -c "sudo systemctl stop perf_recorder.service"
 
 [Install]
 WantedBy=multi-user.target
@@ -230,7 +230,7 @@ install_record_perf_timer() {
 Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* *:00:00
+OnCalendar= *-*-* 22:00:00
 AccuracySec= 1s
 Persistent=True
 Unit= perf_recorder.service
@@ -271,7 +271,7 @@ install_stop_recording_timer() {
 Description= BirdNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* *:10:00
+OnCalendar= *-*-* 00:10:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_recording.service
@@ -308,7 +308,7 @@ install_recording_timer() {
 Description=BirdNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* *:05:00
+OnCalendar= *-*-* 22:05:00
 AccuracySec= 1s
 Persistent=True
 Unit= birdnet_recording.service
