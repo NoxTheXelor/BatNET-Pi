@@ -46,11 +46,12 @@ if [ "$(du ${EXCLUDE_LIST} | awk '{print $1}')" -lt 4 ];then
 	EXCLUDE_LIST=null
 fi
 
-# Create an array of the audio files
+# Create an array of max 5 audio files
 # Takes one argument:
 #   - {DIRECTORY}
 get_files() {
   files=($( find ${1} -maxdepth 1 -name '*wav' ! -size 0\
+  | head -n 5 \
   | sort \
   | awk -F "/" '{print $NF}' ))
   [ -n "${files[1]}" ] && echo "Files loaded"
