@@ -226,15 +226,15 @@ def handle_client(conn, addr):
                         print("wrinting result to file")
                         nbr_detection = wo.save_batdetect2(path_daily_result, results, min_conf)
                         result_lock.release()
-                    else:
-                        print('no detections to save')
-                        os.system('rm '+file_path)
-                        print('removing '+file_name)
 
             #answer to analyse.py
                 #to_return = '  ' + str(num_calls) + ' calls found'
                 if nbr_detection>0:
                     to_return = f"{nbr_detection} calls found"
+                else:
+                    print('no detections to save')
+                    os.system('rm '+file_path)
+                    print('removing '+file_name)
                 print(to_return)
                 conn.send(to_return.encode(FORMAT))
                 #session.close()
