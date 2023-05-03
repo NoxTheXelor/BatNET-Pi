@@ -51,6 +51,7 @@ fi
 #   - {DIRECTORY}
 get_files() {
   files=($( find ${1} -maxdepth 1 -name '*wav' ! -size 0\
+  | head -n 5 \
   | sort \
   | awk -F "/" '{print $NF}' ))
   [ -n "${files[1]}" ] && echo "Files loaded"
