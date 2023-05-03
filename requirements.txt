@@ -20,4 +20,4 @@ xgboost
 scikit-learn
 scikit-multilearn
 apprise
-torch
+batdetect2
