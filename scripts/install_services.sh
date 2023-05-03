@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* *:06:00
+OnCalendar= *-*-* *:05:30
 AccuracySec= 10s
 Persistent=True
 Unit= birdnet_analysis.service
@@ -271,7 +271,7 @@ install_stop_recording_timer() {
 Description= BirdNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* *:10:00
+OnCalendar= *-*-* *:40:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_recording.service
