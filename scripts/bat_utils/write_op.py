@@ -33,6 +33,45 @@ def save_to_txt(op_file, results, min_conf):
                     row_str += str(tm) + ',' +str(sp) + ',' + str(pr)
                     filling_file.write(row_str + '\n')
 
+def save_batdetect2(op_file, results, min_conf):
+    """
+    Takes a list of dictionaries of results and saves them to file.
+
+    Parameters
+    -----------
+    op_file : String
+        Path to the file in which the results will be saved.
+    results : list
+        Contains dictionaries with each the four following fields: filename, time, prob, pred_classes.
+    min_conf : float
+        minimum threshold of confidence in species prediction. Below this threshold, the data is not written in the file.
+    """
+    if not os.path.exists(op_file+'/daily_result.csv'):
+        with open(op_file+'/daily_result.csv', 'w') as file:
+            head_str = 'file_name,start_call,end_call,confidence_detection,predicted_species,confidence_pred'
+            file.write(head_str + '\n')
+   
+    with open(op_file+'/daily_result.csv', 'a') as filling_file:
+            
+            data = results['annotation']
+            counter = 0
+            for jj in range(len(data)):
+                
+                row_str = results['id'] + ','
+                start_time = data[jj]['start_time']
+                end_time = data[jj]['end_time']
+                detection_prediction = data[jj]['class_prob']
+                specie = data[jj]["class"]
+                specie_prediction = data[jj]['class_prob']
+                #print("getting data")
+
+                if specie_prediction>=min_conf and detection_prediction>=min_conf:
+                    #print("writing data")
+                    counter +=1
+                    row_str += str(start_time) + ',' +str(end_time) + ',' +str(detection_prediction) + ',' +str(specie) + ',' + str(specie_prediction)
+                    filling_file.write(row_str + '\n')
+            return counter
+
 
 def create_audio_tagger_op(ip_file_name, op_file_name, st_times,
                            class_pred, class_prob, samp_rate, class_names):
