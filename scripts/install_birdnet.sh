@@ -26,8 +26,8 @@ source /etc/birdnet/birdnet.conf
 install_birdnet() {
   cd ~/BirdNET-Pi || exit 1
   echo "Establishing a python virtual environment"
-  sudo -y apt-get update #missing ensurepip - fix 1
-  sudo -y apt-get install python3-venv
+  sudo apt-get -y update #missing ensurepip - fix 1
+  sudo apt-get -y install python3-venv
   python3 -m venv birdnet
   source ./birdnet/bin/activate
   pip3 install -U -r $HOME/BirdNET-Pi/requirements.txt
