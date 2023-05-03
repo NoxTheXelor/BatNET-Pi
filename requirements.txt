@@ -19,3 +19,4 @@ hyperopt
 xgboost
 scikit-learn
 scikit-multilearn
+apprise
