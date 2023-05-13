@@ -271,7 +271,7 @@ install_stop_recording_timer() {
 Description= BirdNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* 02:20:00
+OnCalendar= *-*-* *:20:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_recording.service

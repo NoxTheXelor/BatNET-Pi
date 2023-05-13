@@ -2,7 +2,8 @@
 # record ram and cpu usage
 # set -x
 source /etc/birdnet/birdnet.conf
-output_file="/home/bird/BirdNET-Pi/perf_logs/perf.csv"
+name=$(date "+%d-%m-%Y")
+output_file="/home/bird/BirdNET-Pi/perf_logs/batnet_perf_$name.csv"
 max_file="/home/bird/BirdNET-Pi/perf_logs/max.csv"
 
 # Create the output file with column headers if it doesn't exist

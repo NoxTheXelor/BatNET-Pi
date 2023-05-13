@@ -57,7 +57,7 @@ with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
 def record_perf(data):
 
     path = userDir+'/BirdNET-Pi/perf_logs/'
-    log_file_name = 'ai_log.csv'
+    log_file_name = str(data["file"].split("birdnet")[0])+"_ai_logs.csv"
 
     if not os.path.exists(path+log_file_name) :
 
