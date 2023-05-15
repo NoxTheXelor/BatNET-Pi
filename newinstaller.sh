@@ -23,7 +23,7 @@ if [[ ! -z $PACKAGES_MISSING ]] ; then
   sudo apt -y install $PACKAGES_MISSING
 fi
 
-branch=main
+branch=batnet
 git clone -b $branch --depth=1 https://github.com/NoxTheXelor/BatNET-Pi.git ${HOME}/BatNET-Pi &&
 
 $HOME/BatNET-Pi/scripts/install_batnet.sh
