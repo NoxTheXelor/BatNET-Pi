@@ -2,7 +2,7 @@
 error_reporting(E_ERROR);
 ini_set('display_errors',1);
 
-$db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+$db = new SQLite3('./scripts/bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -23,13 +23,13 @@ if(isset($_GET['deletefile'])) {
   if(isset($_SERVER['PHP_AUTH_USER'])) {
     $submittedpwd = $_SERVER['PHP_AUTH_PW'];
     $submitteduser = $_SERVER['PHP_AUTH_USER'];
-    if($submittedpwd == $config['CADDY_PWD'] && $submitteduser == 'birdnet'){
+    if($submittedpwd == $config['CADDY_PWD'] && $submitteduser == 'batnet'){
       $statement1 = $db->prepare('DELETE FROM detections WHERE File_Name = "'.explode("/",$_GET['deletefile'])[2].'" LIMIT 1');
       if($statement1 == False){
         echo "Error";
         header("refresh: 0;");
       } else {
-        $file_pointer = $home."/BirdSongs/Extracted/By_Date/".$_GET['deletefile'];
+        $file_pointer = $home."/BatSongs/Extracted/By_Date/".$_GET['deletefile'];
         if (!exec("sudo rm $file_pointer && sudo rm $file_pointer.png")) {
           echo "OK";
         } else {
@@ -57,12 +57,12 @@ if(isset($_GET['excludefile'])) {
   if(isset($_SERVER['PHP_AUTH_USER'])) {
     $submittedpwd = $_SERVER['PHP_AUTH_PW'];
     $submitteduser = $_SERVER['PHP_AUTH_USER'];
-    if($submittedpwd == $config['CADDY_PWD'] && $submitteduser == 'birdnet'){
-      if(!file_exists($home."/BirdNET-Pi/scripts/disk_check_exclude.txt")) {
-        file_put_contents($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", "##start\n##end\n");
+    if($submittedpwd == $config['CADDY_PWD'] && $submitteduser == 'batnet'){
+      if(!file_exists($home."/BatNET-Pi/scripts/disk_check_exclude.txt")) {
+        file_put_contents($home."/BatNET-Pi/scripts/disk_check_exclude.txt", "##start\n##end\n");
       }
       if(isset($_GET['exclude_add'])) {
-        $myfile = fopen($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", "a") or die("Unable to open file!");
+        $myfile = fopen($home."/BatNET-Pi/scripts/disk_check_exclude.txt", "a") or die("Unable to open file!");
         $txt = $_GET['excludefile'];
         fwrite($myfile, $txt."\n");
         fwrite($myfile, $txt.".png\n");
@@ -70,7 +70,7 @@ if(isset($_GET['excludefile'])) {
         echo "OK";
         die();
       } else {
-        $lines  = file($home."/BirdNET-Pi/scripts/disk_check_exclude.txt");
+        $lines  = file($home."/BatNET-Pi/scripts/disk_check_exclude.txt");
         $search = $_GET['excludefile'];
 
         $result = '';
@@ -79,7 +79,7 @@ if(isset($_GET['excludefile'])) {
             $result .= $line;
           }
         }
-        file_put_contents($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", $result);
+        file_put_contents($home."/BatNET-Pi/scripts/disk_check_exclude.txt", $result);
         echo "OK";
         die();
       }
@@ -97,7 +97,7 @@ if(isset($_GET['excludefile'])) {
   }
 }
 
-$shifted_path = $home."/BirdSongs/Extracted/By_Date/shifted/";
+$shifted_path = $home."/BatSongs/Extracted/By_Date/shifted/";
 
 if(isset($_GET['shiftfile'])) {
 
@@ -106,7 +106,7 @@ if(isset($_GET['shiftfile'])) {
     $dir = $pp['dirname'];
     $fn  = $pp['filename'];
     $ext = $pp['extension'];
-    $pi = $home."/BirdSongs/Extracted/By_Date/";
+    $pi = $home."/BatSongs/Extracted/By_Date/";
 
     if(isset($_GET['doshift'])) {
 	$freqshift_tool = $config['FREQSHIFT_TOOL'];
@@ -319,7 +319,7 @@ if(!isset($_GET['species']) && !isset($_GET['filename'])){
   if($view == "bydate") {
     while($results=$result->fetchArray(SQLITE3_ASSOC)){
       $date = $results['Date'];
-      if(realpath($home."/BirdSongs/Extracted/By_Date/".$date) !== false){
+      if(realpath($home."/BatSongs/Extracted/By_Date/".$date) !== false){
         echo "<td>
           <button action=\"submit\" name=\"date\" value=\"$date\">".($date == date('Y-m-d') ? "Today" : $date)."</button></td></tr>";}}
 
@@ -335,7 +335,7 @@ if(!isset($_GET['species']) && !isset($_GET['filename'])){
   } elseif($view == "date") {
     while($results=$result->fetchArray(SQLITE3_ASSOC)){
       $name = $results['Com_Name'];
-      if(realpath($home."/BirdSongs/Extracted/By_Date/".$date."/".str_replace(" ", "_",$name)) !== false){
+      if(realpath($home."/BatSongs/Extracted/By_Date/".$date."/".str_replace(" ", "_",$name)) !== false){
         echo "<td>
           <button action=\"submit\" name=\"species\" value=\"$name\">$name</button></td></tr>";
       }
@@ -373,9 +373,9 @@ if(isset($_GET['species'])){ ?>
 </div>
 <?php
   // add disk_check_exclude.txt lines into an array for grepping
-  $fp = @fopen($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", 'r'); 
+  $fp = @fopen($home."/BatNET-Pi/scripts/disk_check_exclude.txt", 'r'); 
 if ($fp) {
-  $disk_check_exclude_arr = explode("\n", fread($fp, filesize($home."/BirdNET-Pi/scripts/disk_check_exclude.txt")));
+  $disk_check_exclude_arr = explode("\n", fread($fp, filesize($home."/BatNET-Pi/scripts/disk_check_exclude.txt")));
 }
 
 $name = $_GET['species'];
@@ -418,7 +418,7 @@ echo "<table>
     $filename_formatted = $date."/".$comname."/".$results['File_Name'];
 
     // file was deleted by disk check, no need to show the detection in recordings
-    if(!file_exists($home."/BirdSongs/Extracted/".$filename)) {
+    if(!file_exists($home."/BatSongs/Extracted/".$filename)) {
       continue;
     }
     if(!in_array($filename_formatted, $disk_check_exclude_arr) && isset($_GET['only_excluded'])) {
@@ -494,9 +494,9 @@ echo "<table>
         $filename_formatted = $date."/".$comname."/".$results['File_Name'];
 
         // add disk_check_exclude.txt lines into an array for grepping
-        $fp = @fopen($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", 'r'); 
+        $fp = @fopen($home."/BatNET-Pi/scripts/disk_check_exclude.txt", 'r'); 
         if ($fp) {
-          $disk_check_exclude_arr = explode("\n", fread($fp, filesize($home."/BirdNET-Pi/scripts/disk_check_exclude.txt")));
+          $disk_check_exclude_arr = explode("\n", fread($fp, filesize($home."/BatNET-Pi/scripts/disk_check_exclude.txt")));
         }
 
         if($config["FULL_DISK"] == "purge") {

@@ -43,7 +43,7 @@ def test_notifications(mocker):
     notify_call = mocker.patch('scripts.utils.notifications.notify')
     create_test_db("test.db")
     settings_dict = {
-        "APPRISE_NOTIFICATION_TITLE": "New backyard bird!",
+        "APPRISE_NOTIFICATION_TITLE": "New backyard bat!",
         "APPRISE_NOTIFICATION_BODY": "A $comname ($sciname) was just detected with a confidence of $confidence",
         "APPRISE_NOTIFY_EACH_DETECTION": "0",
         "APPRISE_NOTIFY_NEW_SPECIES": "0",

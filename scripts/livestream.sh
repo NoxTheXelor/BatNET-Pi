@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Live Audio Stream Service Script
-source /etc/birdnet/birdnet.conf
+source /etc/batnet/batnet.conf
 
 if [ -z ${REC_CARD} ];then
   echo "Stream not supported"

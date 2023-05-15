@@ -1,4 +1,4 @@
-<title>BirdNET-Pi</title>
+<title>BatNET-Pi</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body::-webkit-scrollbar {
@@ -11,9 +11,9 @@ body::-webkit-scrollbar {
 <div class="banner">
   <div class="logo">
 <?php if(isset($_GET['logo'])) {
-echo "<a href=\"https://github.com/mcguirepr89/BirdNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/bird.png\"></a>";
+echo "<a href=\"https://github.com/mcguirepr89/BatNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/bat.png\"></a>";
 } else {
-echo "<a href=\"https://github.com/mcguirepr89/BirdNET-Pi.git\" target=\"_blank\"><img src=\"images/bird.png\"></a>";
+echo "<a href=\"https://github.com/mcguirepr89/BatNET-Pi.git\" target=\"_blank\"><img src=\"images/bat.png\"></a>";
 }?>
   </div>
   <div class="stream">
@@ -33,7 +33,7 @@ if(isset($_GET['stream'])){
   } else {
     $submittedpwd = $_SERVER['PHP_AUTH_PW'];
     $submitteduser = $_SERVER['PHP_AUTH_USER'];
-    if($submittedpwd == $caddypwd && $submitteduser == 'birdnet'){
+    if($submittedpwd == $caddypwd && $submitteduser == 'batnet'){
       echo "
   <audio controls autoplay><source src=\"/stream\"></audio>
   </div>

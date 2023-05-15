@@ -5,11 +5,11 @@ trap 'rm -f ${tmpfile}' EXIT
 trap 'exit 1' SIGINT SIGHUP
 tmpfile=$(mktemp)
 
-config_file=$my_dir/birdnet.conf
+config_file=$my_dir/batnet.conf
 export USER=$USER
 export HOME=$HOME
 
-export PYTHON_VIRTUAL_ENV="$HOME/BirdNET-Pi/birdnet/bin/python3"
+export PYTHON_VIRTUAL_ENV="$HOME/BatNET-Pi/batnet/bin/python3"
 
 install_depends() {
   apt install -y debian-keyring debian-archive-keyring apt-transport-https
@@ -26,82 +26,82 @@ install_depends() {
 
 set_hostname() {
   if [ "$(hostname)" == "raspberrypi" ];then
-    hostnamectl set-hostname birdnetpi
-    sed -i 's/raspberrypi/birdnetpi/g' /etc/hosts
+    hostnamectl set-hostname batnetpi
+    sed -i 's/raspberrypi/batnetpi/g' /etc/hosts
   fi
 }
 
 update_etc_hosts() {
-  sed -ie s/'$(hostname).local'/"$(hostname).local ${BIRDNETPI_URL//https:\/\/} ${WEBTERMINAL_URL//https:\/\/} ${BIRDNETLOG_URL//https:\/\/}"/g /etc/hosts
+  sed -ie s/'$(hostname).local'/"$(hostname).local ${BATNETPI_URL//https:\/\/} ${WEBTERMINAL_URL//https:\/\/} ${BATNETLOG_URL//https:\/\/}"/g /etc/hosts
 }
 
 install_scripts() {
   ln -sf ${my_dir}/scripts/* /usr/local/bin/
 }
 
-install_birdnet_analysis_timer() {
-  echo "Installing birdnet_analysis.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_analysis.timer
+install_batnet_analysis_timer() {
+  echo "Installing batnet_analysis.timer"
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_analysis.timer
 [Unit]
-Description=BirdNET Analysis Timer
+Description=BatNET Analysis Timer
 
 [Timer]
 OnCalendar= *-*-* 21:00:15
 AccuracySec= 1s
 Persistent=True
-Unit= birdnet_analysis.service
+Unit= batnet_analysis.service
 
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.timer /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/batnet_analysis.timer /usr/lib/systemd/system
   systemctl daemon-reload
-  systemctl enable birdnet_analysis.timer
+  systemctl enable batnet_analysis.timer
 }
 
-install_birdnet_analysis() {
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_analysis.service
+install_batnet_analysis() {
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_analysis.service
 [Unit]
-Description=BirdNET Analysis
-After=birdnet_server.service
-Requires=birdnet_server.service
+Description=BatNET Analysis
+After=batnet_server.service
+Requires=batnet_server.service
 [Service]
 Type=simple
 Restart=on-success
 User=${USER}
-ExecStart=/usr/local/bin/birdnet_analysis.sh
+ExecStart=/usr/local/bin/batnet_analysis.sh
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_analysis.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/batnet_analysis.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
 
-install_birdnet_server_timer() {
-  echo "Installing birdnet_server.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_server.timer
+install_batnet_server_timer() {
+  echo "Installing batnet_server.timer"
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_server.timer
 [Unit]
-Description=BirdNET Analysis Timer
+Description=BatNET Analysis Timer
 
 [Timer]
 OnCalendar= *-*-* 21:00:10
 AccuracySec= 1s 
 Persistent=True
-Unit= birdnet_server.service
+Unit= batnet_server.service
 
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.timer /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/batnet_server.timer /usr/lib/systemd/system
   systemctl daemon-reload
-  systemctl enable birdnet_server.timer
+  systemctl enable batnet_server.timer
 }
 
-install_birdnet_server() {
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_server.service
+install_batnet_server() {
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_server.service
 [Unit]
-Description=BirdNET Analysis Server
-Before=birdnet_analysis.service
+Description=BatNET Analysis Server
+Before=batnet_analysis.service
 [Service]
 Type=simple
 Restart=on-success
@@ -110,24 +110,24 @@ ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/server.py
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_server.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/batnet_server.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
 
 install_extraction_service() {
-  cat << EOF > $HOME/BirdNET-Pi/templates/extraction.service
+  cat << EOF > $HOME/BatNET-Pi/templates/extraction.service
 [Unit]
-Description=BirdNET BirdSound Extraction
+Description=BatNET BatSound Extraction
 [Service]
 Restart=on-failure
 RestartSec=3
 Type=simple
 User=${USER}
-ExecStart=/usr/bin/env bash -c 'while true;do extract_new_birdsounds.sh;sleep 3;done'
+ExecStart=/usr/bin/env bash -c 'while true;do extract_new_batsounds.sh;sleep 3;done'
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/extraction.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/extraction.service /usr/lib/systemd/system
   systemctl enable extraction.service
 }
 
@@ -137,7 +137,7 @@ create_necessary_dirs() {
   [ -d ${EXTRACTED}/By_Date ] || sudo -u ${USER} mkdir -p ${EXTRACTED}/By_Date
   [ -d ${EXTRACTED}/Charts ] || sudo -u ${USER} mkdir -p ${EXTRACTED}/Charts
   [ -d ${PROCESSED} ] || sudo -u ${USER} mkdir -p ${PROCESSED}
-  [ -d $HOME/BirdNET-Pi/perf_logs/ ] || sudo -u ${USER} mkdir -p $HOME/BirdNET-Pi/perf_logs/
+  [ -d $HOME/BatNET-Pi/perf_logs/ ] || sudo -u ${USER} mkdir -p $HOME/BatNET-Pi/perf_logs/
 
 
   sudo -u ${USER} ln -fs $my_dir/exclude_species_list.txt $my_dir/scripts
@@ -161,15 +161,15 @@ create_necessary_dirs() {
   chmod -R g+rw ${RECS_DIR}
 }
 
-generate_BirdDB() {
-  echo "Generating BirdDB.txt"
-  if ! [ -f $my_dir/BirdDB.txt ];then
-    sudo -u ${USER} touch $my_dir/BirdDB.txt
-    echo "Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap" | sudo -u ${USER} tee -a $my_dir/BirdDB.txt
-  elif ! grep Date $my_dir/BirdDB.txt;then
-    sudo -u ${USER} sed -i '1 i\Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap' $my_dir/BirdDB.txt
+generate_BatDB() {
+  echo "Generating BatDB.txt"
+  if ! [ -f $my_dir/BatDB.txt ];then
+    sudo -u ${USER} touch $my_dir/BatDB.txt
+    echo "Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap" | sudo -u ${USER} tee -a $my_dir/BatDB.txt
+  elif ! grep Date $my_dir/BatDB.txt;then
+    sudo -u ${USER} sed -i '1 i\Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap' $my_dir/BatDB.txt
   fi
-  chown $USER:$USER ${my_dir}/BirdDB.txt && chmod g+rw ${my_dir}/BirdDB.txt
+  chown $USER:$USER ${my_dir}/BatDB.txt && chmod g+rw ${my_dir}/BatDB.txt
 }
 
 set_login() {
@@ -187,7 +187,7 @@ EOF
 #Stop recording TIMER ==> determines when to stop the service
 install_stop_record_perf_timer() {
   echo "Installing stop_perf_recorder.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/stop_perf_recorder.timer
+  cat << EOF > $HOME/BatNET-Pi/templates/stop_perf_recorder.timer
 [Unit]
 Description= Stop Recording CPU and RAM usage TIMER
 
@@ -200,16 +200,16 @@ Unit= stop_perf_recorder.service
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/stop_perf_recorder.timer /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/stop_perf_recorder.timer /usr/lib/systemd/system
   systemctl daemon-reload
   systemctl enable stop_perf_recorder.timer
 }
 #Stop recording SERVICE ==> stop the service when timer says so
 install_stop_record_perf_service() {
   echo "Installing stop_perf_recorder.service"
-  cat << EOF > $HOME/BirdNET-Pi/templates/stop_perf_recorder.service
+  cat << EOF > $HOME/BatNET-Pi/templates/stop_perf_recorder.service
 [Unit]
-Description=BirdNET Stop Recording SERVICE
+Description=BatNET Stop Recording SERVICE
 
 [Service]
 Type=simple
@@ -219,13 +219,13 @@ ExecStart= systemctl stop perf_recorder.service
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/stop_perf_recorder.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/stop_perf_recorder.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
 #start recording perf timer
 install_record_perf_timer() {
   echo "Installing perf_recorder.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.timer
+  cat << EOF > $HOME/BatNET-Pi/templates/perf_recorder.timer
 [Unit]
 Description= Start Recording CPU and RAM usage TIMER
 
@@ -238,27 +238,27 @@ Unit= perf_recorder.service
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/perf_recorder.timer /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/perf_recorder.timer /usr/lib/systemd/system
   systemctl daemon-reload
   systemctl enable perf_recorder.timer
 }
 #service to start and stop
 #service storing cpu and ram usage
-#ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh current
+#ExecStart=/bin/bash $HOME/BatNET-Pi/scripts/perf_recorder.sh current
 #ExecStart=/usr/local/bin/perf_recorder.sh previous ==> error 203
 #ExecStart=/usr/bin/env bash -c"perf_recorder.sh" pre-previous
 install_recording_perf_service() {
   echo "Installing perf_recorder.service"
-  cat << EOF > $HOME/BirdNET-Pi/templates/perf_recorder.service
+  cat << EOF > $HOME/BatNET-Pi/templates/perf_recorder.service
 [Unit]
 Description=Recorder of CPU and RAM usage
 [Service]
 Type=simple
-ExecStart=/bin/bash $HOME/BirdNET-Pi/scripts/perf_recorder.sh
+ExecStart=/bin/bash $HOME/BatNET-Pi/scripts/perf_recorder.sh
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/perf_recorder.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/perf_recorder.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
 #############################################################################################
@@ -266,9 +266,9 @@ EOF
 #Stop recording TIMER
 install_stop_recording_timer() {
   echo "Installing stop_recording.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/stop_recording.timer
+  cat << EOF > $HOME/BatNET-Pi/templates/stop_recording.timer
 [Unit]
-Description= BirdNET Stop Recording TIMER
+Description= BatNET Stop Recording TIMER
 
 [Timer]
 OnCalendar= *-*-* 07:00:00
@@ -279,70 +279,70 @@ Unit= stop_recording.service
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/stop_recording.timer /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/stop_recording.timer /usr/lib/systemd/system
   systemctl daemon-reload
   systemctl enable stop_recording.timer
 }
 #Stop recording SERVICE
 install_stop_recording_service() {
   echo "Installing stop_recording.service"
-  cat << EOF > $HOME/BirdNET-Pi/templates/stop_recording.service
+  cat << EOF > $HOME/BatNET-Pi/templates/stop_recording.service
 [Unit]
-Description=BirdNET Stop Recording SERVICE
+Description=BatNET Stop Recording SERVICE
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env bash -c "sudo systemctl stop birdnet_recording.service"
+ExecStart=/usr/bin/env bash -c "sudo systemctl stop batnet_recording.service"
 
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/stop_recording.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/stop_recording.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
 #Start recording TIMER
 install_recording_timer() {
-  echo "Installing birdnet_recording.timer"
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_recording.timer
+  echo "Installing batnet_recording.timer"
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_recording.timer
 [Unit]
-Description=BirdNET Recording Timer
+Description=BatNET Recording Timer
 
 [Timer]
 OnCalendar= *-*-* 21:00:00
 AccuracySec= 1s
 Persistent=True
-Unit= birdnet_recording.service
+Unit= batnet_recording.service
 
 [Install]
 WantedBy=timers.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.timer /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/batnet_recording.timer /usr/lib/systemd/system
   systemctl daemon-reload
-  systemctl enable birdnet_recording.timer
+  systemctl enable batnet_recording.timer
 }
 
 install_recording_service() {
-  echo "Installing birdnet_recording.service"
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_recording.service
+  echo "Installing batnet_recording.service"
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_recording.service
 [Unit]
-Description=BirdNET Recording
+Description=BatNET Recording
 [Service]
 Environment=XDG_RUNTIME_DIR=/run/user/1000
 Type=simple
 User=${USER}
-ExecStart=/usr/local/bin/birdnet_recording.sh
+ExecStart=/usr/local/bin/batnet_recording.sh
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_recording.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/batnet_recording.service /usr/lib/systemd/system
   systemctl daemon-reload
 }
 #############################################################################################
 install_custom_recording_service() {
   echo "Installing custom_recording.service"
-  cat << EOF > $HOME/BirdNET-Pi/templates/custom_recording.service
+  cat << EOF > $HOME/BatNET-Pi/templates/custom_recording.service
 [Unit]
-Description=BirdNET Custom Recording
+Description=BatNET Custom Recording
 [Service]
 Environment=XDG_RUNTIME_DIR=/run/user/1000
 Type=simple
@@ -351,7 +351,7 @@ ExecStart=/usr/local/bin/custom_recording.sh
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/custom_recording.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/custom_recording.service /usr/lib/systemd/system
 }
 
 install_Caddyfile() {
@@ -362,7 +362,7 @@ install_Caddyfile() {
   if ! [ -z ${CADDY_PWD} ];then
   HASHWORD=$(caddy hash-password --plaintext ${CADDY_PWD})
   cat << EOF > /etc/caddy/Caddyfile
-http:// ${BIRDNETPI_URL} {
+http:// ${BATNETPI_URL} {
   root * ${EXTRACTED}
   file_server browse
   handle /By_Date/* {
@@ -372,22 +372,22 @@ http:// ${BIRDNETPI_URL} {
     file_server browse
   }
   basicauth /views.php?view=File* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /Processed* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /scripts* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /stream {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /phpsysinfo* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /terminal* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   reverse_proxy /stream localhost:8000
   php_fastcgi unix//run/php/php7.4-fpm.sock
@@ -398,7 +398,7 @@ http:// ${BIRDNETPI_URL} {
 EOF
   else
     cat << EOF > /etc/caddy/Caddyfile
-http:// ${BIRDNETPI_URL} {
+http:// ${BATNETPI_URL} {
   root * ${EXTRACTED}
   file_server browse
   handle /By_Date/* {
@@ -422,7 +422,7 @@ EOF
 }
 
 install_avahi_aliases() {
-  cat << 'EOF' > $HOME/BirdNET-Pi/templates/avahi-alias@.service
+  cat << 'EOF' > $HOME/BatNET-Pi/templates/avahi-alias@.service
 [Unit]
 Description=Publish %I as alias for %H.local via mdns
 After=network.target network-online.target
@@ -435,32 +435,32 @@ ExecStart=/bin/bash -c "/usr/bin/avahi-publish -a -R %I $(hostname -I |cut -d' '
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/avahi-alias@.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/avahi-alias@.service /usr/lib/systemd/system
   systemctl enable avahi-alias@"$(hostname)".local.service
 }
 
-install_birdnet_stats_service() {
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_stats.service
+install_batnet_stats_service() {
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_stats.service
 [Unit]
-Description=BirdNET Stats
+Description=BatNET Stats
 [Service]
 Restart=on-failure
 RestartSec=5
 Type=simple
 User=${USER}
-ExecStart=$HOME/BirdNET-Pi/birdnet/bin/streamlit run $HOME/BirdNET-Pi/scripts/plotly_streamlit.py --browser.gatherUsageStats false --server.address localhost --server.baseUrlPath "/stats"
+ExecStart=$HOME/BatNET-Pi/batnet/bin/streamlit run $HOME/BatNET-Pi/scripts/plotly_streamlit.py --browser.gatherUsageStats false --server.address localhost --server.baseUrlPath "/stats"
 
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_stats.service /usr/lib/systemd/system
-  systemctl enable birdnet_stats.service
+  ln -sf $HOME/BatNET-Pi/templates/batnet_stats.service /usr/lib/systemd/system
+  systemctl enable batnet_stats.service
 }
 
 install_spectrogram_service() {
-  cat << EOF > $HOME/BirdNET-Pi/templates/spectrogram_viewer.service
+  cat << EOF > $HOME/BatNET-Pi/templates/spectrogram_viewer.service
 [Unit]
-Description=BirdNET-Pi Spectrogram Viewer
+Description=BatNET-Pi Spectrogram Viewer
 [Service]
 Restart=always
 RestartSec=10
@@ -470,15 +470,15 @@ ExecStart=/usr/local/bin/spectrogram.sh
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/spectrogram_viewer.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/spectrogram_viewer.service /usr/lib/systemd/system
   systemctl enable spectrogram_viewer.service
 }
 
 install_chart_viewer_service() {
   echo "Installing the chart_viewer.service"
-  cat << EOF > $HOME/BirdNET-Pi/templates/chart_viewer.service
+  cat << EOF > $HOME/BatNET-Pi/templates/chart_viewer.service
 [Unit]
-Description=BirdNET-Pi Chart Viewer Service
+Description=BatNET-Pi Chart Viewer Service
 [Service]
 Restart=always
 RestartSec=120
@@ -488,7 +488,7 @@ ExecStart=$PYTHON_VIRTUAL_ENV /usr/local/bin/daily_plot.py
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/chart_viewer.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/chart_viewer.service /usr/lib/systemd/system
   systemctl enable chart_viewer.service
 }
 
@@ -497,34 +497,34 @@ install_gotty_logs() {
     ${HOME}/.gotty
   sudo -u ${USER} ln -sf $my_dir/templates/bashrc \
     ${HOME}/.bashrc
-  cat << EOF > $HOME/BirdNET-Pi/templates/birdnet_log.service
+  cat << EOF > $HOME/BatNET-Pi/templates/batnet_log.service
 [Unit]
-Description=BirdNET Analysis Log
+Description=BatNET Analysis Log
 [Service]
 Restart=on-failure
 RestartSec=3
 Type=simple
 User=${USER}
 Environment=TERM=xterm-256color
-ExecStart=/usr/local/bin/gotty --address localhost -p 8080 -P log --title-format "BirdNET-Pi Log" birdnet_log.sh
+ExecStart=/usr/local/bin/gotty --address localhost -p 8080 -P log --title-format "BatNET-Pi Log" batnet_log.sh
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/birdnet_log.service /usr/lib/systemd/system
-  systemctl enable birdnet_log.service
-  cat << EOF > $HOME/BirdNET-Pi/templates/web_terminal.service
+  ln -sf $HOME/BatNET-Pi/templates/batnet_log.service /usr/lib/systemd/system
+  systemctl enable batnet_log.service
+  cat << EOF > $HOME/BatNET-Pi/templates/web_terminal.service
 [Unit]
-Description=BirdNET-Pi Web Terminal
+Description=BatNET-Pi Web Terminal
 [Service]
 Restart=on-failure
 RestartSec=3
 Type=simple
 Environment=TERM=xterm-256color
-ExecStart=/usr/local/bin/gotty --address localhost -w -p 8888 -P terminal --title-format "BirdNET-Pi Terminal" login
+ExecStart=/usr/local/bin/gotty --address localhost -w -p 8888 -P terminal --title-format "BatNET-Pi Terminal" login
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/web_terminal.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/web_terminal.service /usr/lib/systemd/system
   systemctl enable web_terminal.service
 }
 
@@ -546,9 +546,9 @@ install_phpsysinfo() {
 
 config_icecast() {
   if [ -f /etc/icecast2/icecast.xml ];then
-    cp /etc/icecast2/icecast.xml{,.prebirdnetpi}
+    cp /etc/icecast2/icecast.xml{,.prebatnetpi}
   fi
-  sed -i 's/>admin</>birdnet</g' /etc/icecast2/icecast.xml
+  sed -i 's/>admin</>batnet</g' /etc/icecast2/icecast.xml
   passwords=("source-" "relay-" "admin-" "master-" "")
   for i in "${passwords[@]}";do
   sed -i "s/<${i}password>.*<\/${i}password>/<${i}password>${ICE_PWD}<\/${i}password>/g" /etc/icecast2/icecast.xml
@@ -559,9 +559,9 @@ config_icecast() {
 }
 
 install_livestream_service() {
-  cat << EOF > $HOME/BirdNET-Pi/templates/livestream.service
+  cat << EOF > $HOME/BatNET-Pi/templates/livestream.service
 [Unit]
-Description=BirdNET-Pi Live Stream
+Description=BatNET-Pi Live Stream
 After=network-online.target
 Requires=network-online.target
 [Service]
@@ -574,7 +574,7 @@ ExecStart=/usr/local/bin/livestream.sh
 [Install]
 WantedBy=multi-user.target
 EOF
-  ln -sf $HOME/BirdNET-Pi/templates/livestream.service /usr/lib/systemd/system
+  ln -sf $HOME/BatNET-Pi/templates/livestream.service /usr/lib/systemd/system
   systemctl enable livestream.service
 }
 
@@ -587,7 +587,7 @@ install_weekly_cron() {
 }
 
 chown_things() {
-  chown -R $USER:$USER $HOME/Bird*
+  chown -R $USER:$USER $HOME/Bat*
 }
 
 install_services() {
@@ -599,11 +599,11 @@ install_services() {
   install_scripts
   install_Caddyfile
   install_avahi_aliases
-  install_birdnet_analysis
-  install_birdnet_analysis_timer  # analysis timer
-  install_birdnet_server
-  install_birdnet_server_timer    # server timer
-  install_birdnet_stats_service
+  install_batnet_analysis
+  install_batnet_analysis_timer  # analysis timer
+  install_batnet_server
+  install_batnet_server_timer    # server timer
+  install_batnet_stats_service
 
   install_stop_recording_timer
   install_stop_recording_service
@@ -627,7 +627,7 @@ install_services() {
   install_weekly_cron
 
   create_necessary_dirs
-  generate_BirdDB
+  generate_BatDB
   configure_caddy_php
   config_icecast
   USER=$USER HOME=$HOME ${my_dir}/scripts/createdb.sh

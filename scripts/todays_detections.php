@@ -5,7 +5,7 @@ session_start();
 error_reporting(E_ERROR);
 ini_set('display_errors',1);
 
-$db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+$db = new SQLite3('./scripts/bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False){
   echo "Database is busy";
   header("refresh: 0;");
@@ -119,7 +119,7 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true"  ) {
   $filename = "/By_Date/".date('Y-m-d')."/".$comname."/".$todaytable['File_Name'];
   $sciname = preg_replace('/ /', '_', $todaytable['Sci_Name']);
   $args = "&license=2%2C3%2C4%2C5%2C6%2C9&orientation=square,portrait";
-  $comnameprefix = "%20bird";
+  $comnameprefix = "%20bat";
 
   if (!empty($config["FLICKR_API_KEY"]) && (isset($_GET['display_limit']) || isset($_GET['hard_limit']))) {
 
@@ -144,7 +144,7 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true"  ) {
     } else {
       // only open the file once per script execution
       if(!isset($lines)) {
-        $lines = file($home."/BirdNET-Pi/model/labels_flickr.txt");
+        $lines = file($home."/BatNET-Pi/model/labels_flickr.txt");
       }
       // convert sci name to English name
       foreach($lines as $line){ 
@@ -172,7 +172,7 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true"  ) {
             <?php } ?>
 
             <?php echo $todaytable['Time'];?><br> 
-          <b><a class="a2" href="https://allaboutbirds.org/guide/<?php echo $comname;?>" target="top"><?php echo $todaytable['Com_Name'];?></a></b><br>
+          <b><a class="a2" href="https://allaboutbats.org/guide/<?php echo $comname;?>" target="top"><?php echo $todaytable['Com_Name'];?></a></b><br>
           <a class="a2" href="https://wikipedia.org/wiki/<?php echo $sciname;?>" target="top"><i><?php echo $todaytable['Sci_Name'];?></i></a><br>
           <b>Confidence:</b> <?php echo round((float)round($todaytable['Confidence'],2) * 100 ) . '%';?><br></div><br>
           <video onplay='setLiveStreamVolume(0)' onended='setLiveStreamVolume(1)' onpause='setLiveStreamVolume(1)' controls poster="<?php echo $filename.".png";?>" preload="none" title="<?php echo $filename;?>"><source preload="none" src="<?php echo $filename;?>"></video>
@@ -183,11 +183,11 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true"  ) {
           <div>
             <div>
             <?php if(!empty($config["FLICKR_API_KEY"]) && isset($_GET['hard_limit']) && strlen($image[2]) > 0) { ?>
-              <img style="float:left;height:75px;" onclick='setModalText(<?php echo $iterations; ?>,"<?php echo urlencode($image[2]); ?>",  "<?php echo $image[3]; ?>", "<?php echo $image[4]; ?>", "<?php echo $image[1]; ?>")' src="<?php echo $image[1]; ?>" id="birdimage" class="img1">
+              <img style="float:left;height:75px;" onclick='setModalText(<?php echo $iterations; ?>,"<?php echo urlencode($image[2]); ?>",  "<?php echo $image[3]; ?>", "<?php echo $image[4]; ?>", "<?php echo $image[1]; ?>")' src="<?php echo $image[1]; ?>" id="batimage" class="img1">
             <?php } ?>
           </div>
             <div>
-            <b><a class="a2" href="https://allaboutbirds.org/guide/<?php echo $comname;?>" target="top"><?php echo $todaytable['Com_Name'];?></a></b><br>
+            <b><a class="a2" href="https://allaboutbats.org/guide/<?php echo $comname;?>" target="top"><?php echo $todaytable['Com_Name'];?></a></b><br>
             <a class="a2" href="https://wikipedia.org/wiki/<?php echo $sciname;?>" target="top"><i><?php echo $todaytable['Sci_Name'];?></i></a><br></td>
         </div></div>
           <td><b>Confidence:</b> <?php echo round((float)round($todaytable['Confidence'],2) * 100 ) . '%';?><br></td>
@@ -223,7 +223,7 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true"  ) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BirdNET-Pi DB</title>
+  <title>BatNET-Pi DB</title>
   <style>
 </style>
 </head>

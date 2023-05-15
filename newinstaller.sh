@@ -24,9 +24,9 @@ if [[ ! -z $PACKAGES_MISSING ]] ; then
 fi
 
 branch=main
-git clone -b $branch --depth=1 https://github.com/NoxTheXelor/BirdNET-Pi.git ${HOME}/BirdNET-Pi &&
+git clone -b $branch --depth=1 https://github.com/NoxTheXelor/BatNET-Pi.git ${HOME}/BatNET-Pi &&
 
-$HOME/BirdNET-Pi/scripts/install_birdnet.sh
+$HOME/BatNET-Pi/scripts/install_batnet.sh
 if [ ${PIPESTATUS[0]} -eq 0 ];then
   echo "Installation completed successfully"
   sudo reboot

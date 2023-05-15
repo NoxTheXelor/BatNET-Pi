@@ -139,7 +139,7 @@ function applyText(text,x,y,opacity) {
 
 var add =0;
 var newest_file;
-var lastbird;
+var lastbat;
 function loadDetectionIfNewExists() {
   const xhttp = new XMLHttpRequest();
   xhttp.onload = function() {
@@ -159,8 +159,8 @@ function loadDetectionIfNewExists() {
           console.log("d2 "+d2)
           timeDiff = (d2-d1)/1000;
 
-          // stagger Y placement if a new bird
-          if(split[i].split(",")[1] != lastbird || split[i].split(",")[1].length > 13) {
+          // stagger Y placement if a new bat
+          if(split[i].split(",")[1] != lastbat || split[i].split(",")[1].length > 13) {
             add+= 15;
             if(add >= 60) {
              add = 0;
@@ -172,7 +172,7 @@ function loadDetectionIfNewExists() {
           }
           console.log(add)
 
-          // Date csv file was created + relative detection time of bird + mic delay
+          // Date csv file was created + relative detection time of bat + mic delay
           secago = Math.abs(timeDiff) - split[i].split(",")[0] - 6.8;
 
           x = document.body.querySelector('canvas').width - ((parseInt(secago))*avgfps);
@@ -189,7 +189,7 @@ function loadDetectionIfNewExists() {
       }
   
 
-          lastbird = split[i].split(",")[1]
+          lastbat = split[i].split(",")[1]
         }
         
       }

@@ -8,7 +8,7 @@ set -e
 #trap 'echo "\"${last_command}\" command exited with code $?."' EXIT
 # Remove temporary file
 trap 'rm -f $TMPFILE' EXIT
-source /etc/birdnet/birdnet.conf
+source /etc/batnet/batnet.conf
 [ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=15
 
 # Set Variables
@@ -17,7 +17,7 @@ TMPFILE=$(mktemp)
 SCAN_DIRS=($(find $RECS_DIR -type d -name '*Analyzed' 2>/dev/null | sort ))
 
 for h in "${SCAN_DIRS[@]}";do
-  # The TMPFILE is created from each .csv file BirdNET creates
+  # The TMPFILE is created from each .csv file BatNET creates
   # within each "Analyzed" directory
   #  Field 1: Start (s)
   #  Field 2: End (s)
@@ -38,20 +38,20 @@ for h in "${SCAN_DIRS[@]}";do
   while read -r line;do
     echo "Line = $line"
     DATE="$(echo "${line}" \
-      | awk -F- '/birdnet/{print $1"-"$2"-"$3}')"
+      | awk -F- '/batnet/{print $1"-"$2"-"$3}')"
     if [ ! -z ${DATE} ];then
-      OLDFILE="$(echo "${line}" | awk -F. '/birdnet/{print $1"."$2}')" ; continue
+      OLDFILE="$(echo "${line}" | awk -F. '/batnet/{print $1"."$2}')" ; continue
     fi
 
     if [ -z ${DATE} ];then
       DATE=$(date "+%F")
     fi
-    START="$(echo "${line}" | awk -F\; '!/birdnet/{print $1}')" 
-    END="$(echo "${line}" | awk -F\; '!/birdnet/{print $2}')" 
+    START="$(echo "${line}" | awk -F\; '!/batnet/{print $1}')" 
+    END="$(echo "${line}" | awk -F\; '!/batnet/{print $2}')" 
     COMMON_NAME=""$(echo ${line} \
-            | awk -F\; '!/birdnet/{print $4}'|tr -d "'")""
+            | awk -F\; '!/batnet/{print $4}'|tr -d "'")""
     SCIENTIFIC_NAME=""$(echo ${line} \
-            | awk -F\; '!/birdnet/{print $3}')""
+            | awk -F\; '!/batnet/{print $3}')""
     CONFIDENCE=""$(echo ${line} \
 	    | awk -F\; '{print $5}')""
 	    

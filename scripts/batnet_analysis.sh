@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Runs BirdNET-Lite
+# Runs BatNET-Lite
 #set -x
-source /etc/birdnet/birdnet.conf
-# Document this run's birdnet.conf settings
-# Make a temporary file to compare the current birdnet.conf with
-# the birdnet.conf as it was the last time this script was called
-my_dir=$HOME/BirdNET-Pi/scripts
+source /etc/batnet/batnet.conf
+# Document this run's batnet.conf settings
+# Make a temporary file to compare the current batnet.conf with
+# the batnet.conf as it was the last time this script was called
+my_dir=$HOME/BatNET-Pi/scripts
 if [ -z ${THIS_RUN} ];then THIS_RUN=$my_dir/thisrun.txt;fi
 [ -f ${THIS_RUN} ] || touch ${THIS_RUN} && chmod g+w ${THIS_RUN}
 if [ -z ${LAST_RUN} ];then LAST_RUN=$my_dir/lastrun.txt;fi
@@ -13,24 +13,24 @@ if [ -z ${LAST_RUN} ];then LAST_RUN=$my_dir/lastrun.txt;fi
 [ -z ${LONGITUDE} ] && echo "LONGITUDE not set, exiting 1" && exit 1
 make_thisrun() {
   sleep .4
-  awk '!/#/ && !/^$/ {print}' /etc/birdnet/birdnet.conf \
+  awk '!/#/ && !/^$/ {print}' /etc/batnet/batnet.conf \
     > >(tee "${THIS_RUN}")
   sleep .5
 }
 make_thisrun &> /dev/null
 if ! diff ${LAST_RUN} ${THIS_RUN};then
-  echo "The birdnet.conf file has changed"
+  echo "The batnet.conf file has changed"
   if grep REC <(diff $LAST_RUN $THIS_RUN);then
-    echo "Recording element changed -- restarting 'birdnet_recording.service'"
-    sudo systemctl stop birdnet_recording.service
+    echo "Recording element changed -- restarting 'batnet_recording.service'"
+    sudo systemctl stop batnet_recording.service
     sudo rm -rf ${RECS_DIR}/$(date +%B-%Y/%d-%A)/*
-    sudo systemctl start birdnet_recording.service
+    sudo systemctl start batnet_recording.service
   fi
   cat ${THIS_RUN} > ${LAST_RUN}
 fi
 
-INCLUDE_LIST="$HOME/BirdNET-Pi/include_species_list.txt"
-EXCLUDE_LIST="$HOME/BirdNET-Pi/exclude_species_list.txt"
+INCLUDE_LIST="$HOME/BatNET-Pi/include_species_list.txt"
+EXCLUDE_LIST="$HOME/BatNET-Pi/exclude_species_list.txt"
 if [ ! -f ${INCLUDE_LIST} ];then
   touch ${INCLUDE_LIST} &&
     chmod g+rw ${INCLUDE_LIST}
@@ -79,12 +79,12 @@ move_analyzed() {
   done
 }
 
-# Run BirdNET-Lite on the WAVE files from get_files()
+# Run BatNET-Lite on the WAVE files from get_files()
 # Uses one argument:
 #   - {DIRECTORY}
 run_analysis() {
-  PYTHON_VIRTUAL_ENV="$HOME/BirdNET-Pi/birdnet/bin/python3"
-  DIR="$HOME/BirdNET-Pi/scripts"
+  PYTHON_VIRTUAL_ENV="$HOME/BatNET-Pi/batnet/bin/python3"
+  DIR="$HOME/BatNET-Pi/scripts"
   sleep .5
   
   # building limit running process
@@ -116,7 +116,7 @@ run_analysis() {
 
   for i in "${files[@]}";do
     [ ! -f ${1}/${i} ] && continue
-    echo "${1}/${i}" > $HOME/BirdNET-Pi/analyzing_now.txt
+    echo "${1}/${i}" > $HOME/BatNET-Pi/analyzing_now.txt
     [ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=15
     echo "RECORDING_LENGTH set to ${RECORDING_LENGTH}"
     until [ -z "$(lsof -t ${1}/${i})" ];do
@@ -140,12 +140,12 @@ run_analysis() {
     else
       EXCLUDEPARAM=""
     fi
-    if [ ! -z $BIRDWEATHER_ID ]; then
-      BIRDWEATHER_ID_PARAM="--birdweather_id ${BIRDWEATHER_ID}"
-      BIRDWEATHER_ID_LOG="--birdweather_id \"IN_USE\""
+    if [ ! -z $BATWEATHER_ID ]; then
+      BATWEATHER_ID_PARAM="--batweather_id ${BATWEATHER_ID}"
+      BATWEATHER_ID_LOG="--batweather_id \"IN_USE\""
     else
-      BIRDWEATHER_ID_PARAM=""
-      BIRDWEATHER_ID_LOG=""
+      BATWEATHER_ID_PARAM=""
+      BATWEATHER_ID_LOG=""
     fi
     echo $PYTHON_VIRTUAL_ENV "$DIR/analyze.py" \
 --i "${1}/${i}" \
@@ -159,7 +159,7 @@ run_analysis() {
 --nbr_thread "${max_processes}" \
 ${INCLUDEPARAM} \
 ${EXCLUDEPARAM} \
-${BIRDWEATHER_ID_LOG}
+${BATWEATHER_ID_LOG}
 
     read -u 3
 
@@ -175,7 +175,7 @@ ${BIRDWEATHER_ID_LOG}
       --nbr_thread "${max_processes}" \
       ${INCLUDEPARAM} \
       ${EXCLUDEPARAM} \
-      ${BIRDWEATHER_ID_PARAM}
+      ${BATWEATHER_ID_PARAM}
     echo >&3
     if [ ! -z $HEARTBEAT_URL ]; then
       echo "Performing Heartbeat"
@@ -188,7 +188,7 @@ ${BIRDWEATHER_ID_LOG}
 # The three main functions
 # Takes one argument:
 #   - {DIRECTORY}
-run_birdnet() {
+run_batnet() {
   get_files "${1}"
   move_analyzed "${1}"
   run_analysis "${1}"
@@ -200,15 +200,15 @@ done
 
 if [ $(find ${RECS_DIR}/StreamData -maxdepth 1 -name '*wav' 2>/dev/null| wc -l) -gt 0 ];then
   find $RECS_DIR -maxdepth 1 -name '*wav' -type f -size 0 -delete
-  run_birdnet "${RECS_DIR}/StreamData"
+  run_batnet "${RECS_DIR}/StreamData"
 fi
 
 YESTERDAY="$RECS_DIR/$(date --date="yesterday" "+%B-%Y/%d-%A")"
 TODAY="$RECS_DIR/$(date "+%B-%Y/%d-%A")"
 if [ $(find ${YESTERDAY} -name '*wav' 2>/dev/null | wc -l) -gt 0 ];then
   find $YESTERDAY -name '*wav' -type f -size 0 -delete
-  run_birdnet "${YESTERDAY}"
+  run_batnet "${YESTERDAY}"
 elif [ $(find ${TODAY} -name '*wav' | wc -l) -gt 0 ];then
   find $TODAY -name '*wav' -type f -size 0 -delete
-  run_birdnet "${TODAY}"
+  run_batnet "${TODAY}"
 fi

@@ -17,7 +17,7 @@ $theDate = date('Y-m-d');
 $chart = "Combo-$theDate.png";
 $chart2 = "Combo2-$theDate.png";
 
-$db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+$db = new SQLite3('./scripts/bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 
 $statement1 = $db->prepare("SELECT COUNT(*) FROM detections
 	WHERE Date == \"$theDate\"");
@@ -130,7 +130,7 @@ function submitID() {
 
   window.open("history.php?blocation="+blocation+"&state="+state+"&country="+country+"&protocol="+protocol+"&num_observers="+num_observers+"&dist_traveled="+dist_traveled+"&notes="+notes+"&date="+"<?php echo $theDate; ?>");
 
-  document.getElementById('attribution-dialog').innerHTML = "<h3>Success!</h3><p>Your checklist will start downloading momentarily.<br><br>Refer to <a target='_blank' href='https://ebird.org/content/eBirdCommon/docs/ebird_import_data_process.pdf'>this guide</a> for information on how to import it in eBird. The checklist file format is: 'eBird Record Format (Extended)'.<br><br><span style='font-size:small'>Note: Only detections with a confidence > 0.75 were included, and entries have been limited to 1 detection per hour per species, to comply with eBird's data quality guidelines.<br>It's always good practice to manually verify your checklist before submitting, especially for nocturnal hours.</span></p><br><br><button onclick=\"closeDialog()\">Close</button>";
+  document.getElementById('attribution-dialog').innerHTML = "<h3>Success!</h3><p>Your checklist will start downloading momentarily.<br><br>Refer to <a target='_blank' href='https://ebat.org/content/eBatCommon/docs/ebat_import_data_process.pdf'>this guide</a> for information on how to import it in eBat. The checklist file format is: 'eBat Record Format (Extended)'.<br><br><span style='font-size:small'>Note: Only detections with a confidence > 0.75 were included, and entries have been limited to 1 detection per hour per species, to comply with eBat's data quality guidelines.<br>It's always good practice to manually verify your checklist before submitting, especially for nocturnal hours.</span></p><br><br><button onclick=\"closeDialog()\">Close</button>";
 
 }
 
@@ -146,7 +146,7 @@ function submitID() {
 				<td><?php echo $totalcount['COUNT(*)'];?></td>
 			</tr>
 		</table>
-    	<?php // <br><button type="button" onclick="showDialog()">Export as CSV for eBird</button><br><br> ?>
+    	<?php // <br><button type="button" onclick="showDialog()">Export as CSV for eBat</button><br><br> ?>
 <?php
 if (file_exists('./Charts/'.$chart)) {
   echo "<img src=\"/Charts/$chart?nocache=time()\" >";

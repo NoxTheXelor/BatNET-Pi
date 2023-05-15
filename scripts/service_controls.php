@@ -4,10 +4,10 @@ function service_status($name) {
   $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
   $home = trim($home);
 
-  if($name == "birdnet_server.service") {
-    $filesinproc=trim(shell_exec("ls ".$home."/BirdSongs/Processed | wc -l"));
+  if($name == "batnet_server.service") {
+    $filesinproc=trim(shell_exec("ls ".$home."/BatSongs/Processed | wc -l"));
     if($filesinproc > 200) { 
-       echo "<span style='color:#fc6603'>(stalled - backlog of ".$filesinproc." files in ~/BirdSongs/Processed/)</span>";
+       echo "<span style='color:#fc6603'>(stalled - backlog of ".$filesinproc." files in ~/BatSongs/Processed/)</span>";
        return;
     }
   } 
@@ -38,11 +38,11 @@ function service_status($name) {
     <button type="submit" name="submit" value="sudo systemctl enable --now web_terminal.service">Enable</button>
   </form>
   <form action="" method="GET">
-    <h3>BirdNET Log <?php echo service_status("birdnet_log.service");?></h3>
-    <button type="submit" name="submit" value="sudo systemctl stop birdnet_log.service">Stop</button>
-    <button type="submit" name="submit" value="sudo systemctl restart birdnet_log.service">Restart </button>
-    <button type="submit" name="submit" value="sudo systemctl disable --now birdnet_log.service">Disable</button>
-    <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_log.service">Enable</button>
+    <h3>BatNET Log <?php echo service_status("batnet_log.service");?></h3>
+    <button type="submit" name="submit" value="sudo systemctl stop batnet_log.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart batnet_log.service">Restart </button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now batnet_log.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now batnet_log.service">Enable</button>
   </form>
   <form action="" method="GET">
     <h3>Extraction Service <?php echo service_status("extraction.service");?></h3>
@@ -52,32 +52,32 @@ function service_status($name) {
     <button type="submit" name="submit" value="sudo systemctl enable --now extraction.service">Enable</button>
   </form>
   <form action="" method="GET">
-    <h3>BirdNET Analysis Server <?php echo service_status("birdnet_server.service");?></h3>
-    <button type="submit" name="submit" value="sudo systemctl stop birdnet_server.service">Stop</button>
-    <button type="submit" name="submit" value="sudo systemctl restart birdnet_server.service">Restart</button>
-    <button type="submit" name="submit" value="sudo systemctl disable --now birdnet_server.service">Disable</button>
-    <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_server.service">Enable</button>
+    <h3>BatNET Analysis Server <?php echo service_status("batnet_server.service");?></h3>
+    <button type="submit" name="submit" value="sudo systemctl stop batnet_server.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart batnet_server.service">Restart</button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now batnet_server.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now batnet_server.service">Enable</button>
   </form>
   <form action="" method="GET">
-    <h3>BirdNET Analysis Client <?php echo service_status("birdnet_analysis.service");?></h3>
-    <button type="submit" name="submit" value="sudo systemctl stop birdnet_analysis.service">Stop</button>
-    <button type="submit" name="submit" value="sudo systemctl restart birdnet_analysis.service">Restart</button>
-    <button type="submit" name="submit" value="sudo systemctl disable --now birdnet_analysis.service">Disable</button>
-    <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_analysis.service">Enable</button>
+    <h3>BatNET Analysis Client <?php echo service_status("batnet_analysis.service");?></h3>
+    <button type="submit" name="submit" value="sudo systemctl stop batnet_analysis.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart batnet_analysis.service">Restart</button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now batnet_analysis.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now batnet_analysis.service">Enable</button>
   </form>
   <form action="" method="GET">
-    <h3>Streamlit Statistics <?php echo service_status("birdnet_stats.service");?></h3>
-    <button type="submit" name="submit" value="sudo systemctl stop birdnet_stats.service">Stop</button>
-    <button type="submit" name="submit" value="sudo systemctl restart birdnet_stats.service">Restart</button>
-    <button type="submit" name="submit" value="sudo systemctl disable --now birdnet_stats.service">Disable</button>
-    <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_stats.service">Enable</button>
+    <h3>Streamlit Statistics <?php echo service_status("batnet_stats.service");?></h3>
+    <button type="submit" name="submit" value="sudo systemctl stop batnet_stats.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart batnet_stats.service">Restart</button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now batnet_stats.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now batnet_stats.service">Enable</button>
   </form>
   <form action="" method="GET">
-    <h3>Recording Service <?php echo service_status("birdnet_recording.service");?></h3>
-    <button type="submit" name="submit" value="sudo systemctl stop birdnet_recording.service">Stop</button>
-    <button type="submit" name="submit" value="sudo systemctl restart birdnet_recording.service">Restart</button>
-    <button type="submit" name="submit" value="sudo systemctl disable --now birdnet_recording.service">Disable</button>
-    <button type="submit" name="submit" value="sudo systemctl enable --now birdnet_recording.service">Enable</button>
+    <h3>Recording Service <?php echo service_status("batnet_recording.service");?></h3>
+    <button type="submit" name="submit" value="sudo systemctl stop batnet_recording.service">Stop</button>
+    <button type="submit" name="submit" value="sudo systemctl restart batnet_recording.service">Restart</button>
+    <button type="submit" name="submit" value="sudo systemctl disable --now batnet_recording.service">Disable</button>
+    <button type="submit" name="submit" value="sudo systemctl enable --now batnet_recording.service">Enable</button>
   </form>
   <form action="" method="GET">
     <h3>Chart Viewer <?php echo service_status("chart_viewer.service");?></h3>

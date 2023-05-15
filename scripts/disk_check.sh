@@ -3,7 +3,7 @@ set -x
 used="$(df -h / | tail -n1 | awk '{print $5}')"
 
 if [ "${used//%}" -ge 95 ]; then
-  source /etc/birdnet/birdnet.conf
+  source /etc/batnet/batnet.conf
 
   case $FULL_DISK in
     purge) echo "Removing oldest data"
@@ -15,7 +15,7 @@ if [ "${used//%}" -ge 95 ]; then
             if [ $iter -ge $filestodelete ]; then
                 break
             fi
-            if ! grep -qxFe "$i" $HOME/BirdNET-Pi/scripts/disk_check_exclude.txt; then
+            if ! grep -qxFe "$i" $HOME/BatNET-Pi/scripts/disk_check_exclude.txt; then
                 rm "$i"
             fi
             ((iter++))

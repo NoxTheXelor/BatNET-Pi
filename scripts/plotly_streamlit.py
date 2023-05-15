@@ -15,7 +15,7 @@ from sklearn.preprocessing import normalize
 pio.templates.default = "plotly_white"
 
 userDir = os.path.expanduser('~')
-URI_SQLITE_DB = userDir + '/BirdNET-Pi/scripts/birds.db'
+URI_SQLITE_DB = userDir + '/BatNET-Pi/scripts/bats.db'
 
 st.set_page_config(layout='wide')
 
@@ -143,7 +143,7 @@ def time_resample(df, resample_time):
     return(df_resample)
 
 
-top_bird = df2['Com_Name'].mode()[0]
+top_bat = df2['Com_Name'].mode()[0]
 df5 = time_resample(df2, resample_time)
 
 # Create species count for selected date range
@@ -158,7 +158,7 @@ species = list(hourly.sort_values("All", ascending=False).index)
 
 # cols1, cols2 = st.columns((1, 1))
 top_N = st.sidebar.slider(
-    'Select Number of Birds to Show',
+    'Select Number of Bats to Show',
     min_value=1,
     max_value=len(Specie_Count),
     value=min(10, len(Specie_Count))
@@ -172,7 +172,7 @@ if daily is False:
 
     if resample_time != '1D':
         specie = st.selectbox(
-                'Which bird would you like to explore for the dates '
+                'Which bat would you like to explore for the dates '
                 + str(start_date) + ' to ' + str(end_date) + '?',
                 species,
                 index=0)
@@ -309,12 +309,12 @@ if daily is False:
                     date_specie = df2.loc[df2['File_Name'] == recording, ['Date', 'Com_Name']]
                     date_dir = date_specie['Date'].values[0]
                     specie_dir = date_specie['Com_Name'].values[0].replace(" ", "_")
-                    st.image(userDir + '/BirdSongs/Extracted/By_Date/' + date_dir + '/' + specie_dir + '/' + recording + '.png')
-                    st.audio(userDir + '/BirdSongs/Extracted/By_Date/' + date_dir + '/' + specie_dir + '/' + recording)
+                    st.image(userDir + '/BatSongs/Extracted/By_Date/' + date_dir + '/' + specie_dir + '/' + recording + '.png')
+                    st.audio(userDir + '/BatSongs/Extracted/By_Date/' + date_dir + '/' + specie_dir + '/' + recording)
                 except Exception:
                     st.title('RECORDING NOT AVAILABLE :(')
             # try:
-            #     con = sqlite3.connect(userDir + '/BirdNET-Pi/scripts/birds.db')
+            #     con = sqlite3.connect(userDir + '/BatNET-Pi/scripts/bats.db')
             #     cur = con.cursor()
             cola, colb, colc, cold = st.columns((3, 1, 1, 1))
             with colb:
@@ -324,7 +324,7 @@ if daily is False:
                     verified = st.radio("Verification", ['True Positive', 'False Positive'])
 
                     if verified == "False Positive":
-                        df_names = pd.read_csv(userDir + '/BirdNET-Pi/model/labels.txt', delimiter='_', names=['Sci_Name', 'Com_Name'])
+                        df_names = pd.read_csv(userDir + '/BatNET-Pi/model/labels.txt', delimiter='_', names=['Sci_Name', 'Com_Name'])
                         df_unknown = pd.DataFrame({"Sci_Name": ["UNKNOWN"], "Com_Name": ["UNKNOWN"]})
                         df_names = pd.concat([df_unknown, df_names], ignore_index=True)
                         with cold:
@@ -339,7 +339,7 @@ if daily is False:
 
     else:
 
-        specie = st.selectbox('Which bird would you like to explore for the dates '
+        specie = st.selectbox('Which bat would you like to explore for the dates '
                               + str(start_date) + ' to ' + str(end_date) + '?',
                               species[1:],
                               index=0)
@@ -404,7 +404,7 @@ else:
 
     df6['Hour of Day'] = [r.hour for r in df6.index.time]
     heat = pd.crosstab(df6['Com_Name'], df6['Hour of Day'])
-    # Order heatmap Birds by frequency of occurrance
+    # Order heatmap Bats by frequency of occurrance
     heat.index = pd.CategoricalIndex(heat.index, categories=freq_order)
     heat.sort_index(level=0, inplace=True)
 
@@ -432,6 +432,6 @@ else:
 
 # cols3,cols4=st.columns((1,1))
 # extract_date=Date_Slider
-# audio_file = open('/home/*/BirdSongs/Extracted/By_Date/2022-03-22/Yellow-streaked_Greenbul/Yellow-streaked_Greenbul-77-2022-03-22-birdnet-15:04:28.mp3', 'rb')
+# audio_file = open('/home/*/BatSongs/Extracted/By_Date/2022-03-22/Yellow-streaked_Greenbul/Yellow-streaked_Greenbul-77-2022-03-22-batnet-15:04:28.mp3', 'rb')
 # audio_bytes = audio_file.read()
 # cols4.audio(audio_bytes, format='audio/mp3')

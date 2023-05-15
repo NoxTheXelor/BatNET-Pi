@@ -17,7 +17,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 } else {
   $submittedpwd = $_SERVER['PHP_AUTH_PW'];
   $submitteduser = $_SERVER['PHP_AUTH_USER'];
-  if($submittedpwd !== $caddypwd || $submitteduser !== 'birdnet'){
+  if($submittedpwd !== $caddypwd || $submitteduser !== 'batnet'){
     header('WWW-Authenticate: Basic realm="My Realm"');
     header('HTTP/1.0 401 Unauthorized');
     echo '<table><tr><td>You cannot edit the settings for this installation</td></tr></table>';
@@ -26,7 +26,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 }
 
 if(isset($_GET['submit'])) {
-  $contents = file_get_contents('/etc/birdnet/birdnet.conf');
+  $contents = file_get_contents('/etc/batnet/batnet.conf');
   $contents2 = file_get_contents('./scripts/thisrun.txt');
 
   if(isset($_GET["caddy_pwd"])) {
@@ -34,7 +34,7 @@ if(isset($_GET['submit'])) {
     if(strcmp($caddy_pwd,$config['CADDY_PWD']) !== 0) {
       $contents = preg_replace("/CADDY_PWD=.*/", "CADDY_PWD=\"$caddy_pwd\"", $contents);
       $contents2 = preg_replace("/CADDY_PWD=.*/", "CADDY_PWD=\"$caddy_pwd\"", $contents2);
-      $fh = fopen('/etc/birdnet/birdnet.conf', "w");
+      $fh = fopen('/etc/batnet/batnet.conf', "w");
       $fh2 = fopen("./scripts/thisrun.txt", "w");
       fwrite($fh, $contents);
       fwrite($fh2, $contents2);
@@ -50,12 +50,12 @@ if(isset($_GET['submit'])) {
     }
   }
 
-  if(isset($_GET["birdnetpi_url"])) {
-    $birdnetpi_url = $_GET["birdnetpi_url"];
-    if(strcmp($birdnetpi_url,$config['BIRDNETPI_URL']) !== 0) {
-      $contents = preg_replace("/BIRDNETPI_URL=.*/", "BIRDNETPI_URL=$birdnetpi_url", $contents);
-      $contents2 = preg_replace("/BIRDNETPI_URL=.*/", "BIRDNETPI_URL=$birdnetpi_url", $contents2);
-      $fh = fopen('/etc/birdnet/birdnet.conf', "w");
+  if(isset($_GET["batnetpi_url"])) {
+    $batnetpi_url = $_GET["batnetpi_url"];
+    if(strcmp($batnetpi_url,$config['BATNETPI_URL']) !== 0) {
+      $contents = preg_replace("/BATNETPI_URL=.*/", "BATNETPI_URL=$batnetpi_url", $contents);
+      $contents2 = preg_replace("/BATNETPI_URL=.*/", "BATNETPI_URL=$batnetpi_url", $contents2);
+      $fh = fopen('/etc/batnet/batnet.conf', "w");
       $fh2 = fopen("./scripts/thisrun.txt", "w");
       fwrite($fh, $contents);
       fwrite($fh2, $contents2);
@@ -68,11 +68,11 @@ if(isset($_GET['submit'])) {
     if(strcmp($rtsp_stream,$config['RTSP_STREAM']) !== 0) {
       $contents = preg_replace("/RTSP_STREAM=.*/", "RTSP_STREAM=$rtsp_stream", $contents);
       $contents2 = preg_replace("/RTSP_STREAM=.*/", "RTSP_STREAM=$rtsp_stream", $contents2);
-      $fh = fopen('/etc/birdnet/birdnet.conf', "w");
+      $fh = fopen('/etc/batnet/batnet.conf', "w");
       $fh2 = fopen("./scripts/thisrun.txt", "w");
       fwrite($fh, $contents);
       fwrite($fh2, $contents2);
-      exec('sudo systemctl restart birdnet_recording.service');
+      exec('sudo systemctl restart batnet_recording.service');
     }
   }
   
@@ -199,7 +199,7 @@ if(isset($_GET['submit'])) {
     $contents2 = preg_replace("/SILENCE_UPDATE_INDICATOR=.*/", "SILENCE_UPDATE_INDICATOR=0", $contents2);
   }
 
-  $fh = fopen('/etc/birdnet/birdnet.conf', "w");
+  $fh = fopen('/etc/batnet/batnet.conf', "w");
   $fh2 = fopen("./scripts/thisrun.txt", "w");
   fwrite($fh, $contents);
   fwrite($fh2, $contents2);
@@ -208,7 +208,7 @@ if(isset($_GET['submit'])) {
 $user = trim(shell_exec("awk -F: '/1000/{print $1}' /etc/passwd"));
 $home = trim(shell_exec("awk -F: '/1000/{print $6}' /etc/passwd"));
 
-$count_labels = count(file($home."/BirdNET-Pi/model/labels.txt"));
+$count_labels = count(file($home."/BatNET-Pi/model/labels.txt"));
 $count = $count_labels;
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -257,10 +257,10 @@ if (file_exists('./scripts/thisrun.txt')) {
       <p>Set Channels to the number of channels supported by your sound card. 32 max.</p>
       <label for="rtsp_stream">RTSP Stream: </label>
       <input name="rtsp_stream" type="url" value="<?php echo $newconfig['RTSP_STREAM'];?>"</input><br>
-      <p>If you place an RTSP stream URL here, BirdNET-Pi will use that as its audio source.</p>
+      <p>If you place an RTSP stream URL here, BatNET-Pi will use that as its audio source.</p>
       <label for="recording_length">Recording Length: </label>
       <input name="recording_length" oninput="document.getElementsByName('extraction_length')[0].setAttribute('max', this.value);" type="number" min="3" max="60" step="1" value="<?php print($newconfig['RECORDING_LENGTH']);?>" required/><br>
-      <p>Set Recording Length in seconds between 6 and 60. Multiples of 3 are recommended, as BirdNET analyzes in 3-second chunks.</p> 
+      <p>Set Recording Length in seconds between 6 and 60. Multiples of 3 are recommended, as BatNET analyzes in 3-second chunks.</p> 
       <label for="extraction_length">Extraction Length: </label>
       <input name="extraction_length" oninput="this.setAttribute('max', document.getElementsByName('recording_length')[0].value);" type="number" min="3" value="<?php print($newconfig['EXTRACTION_LENGTH']);?>" /><br>
       <p>Set Extraction Length to something less than your Recording Length. Min=3 Max=Recording Length</p>
@@ -274,19 +274,19 @@ foreach($formats as $format){
 }
 ?>
       </select>
-      <h3>BirdNET-Pi Password</h3>
+      <h3>BatNET-Pi Password</h3>
       <p>This password will protect your "Tools" page and "Live Audio" stream.</p>
       <label for="caddy_pwd">Password: </label>
       <input style="width:40ch" name="caddy_pwd" id="caddy_pwd" type="password" value="<?php print($newconfig['CADDY_PWD']);?>" /><span id="showpassword" onmouseover="document.getElementById('caddy_pwd').type='text';" onmouseout="document.getElementById('caddy_pwd').type='password';">show</span><br>
       <h3>Custom URL</h3>
       <p>When you update the URL below, the web server will reload, so be sure to wait at least 30 seconds and then go to your new URL.</p>
-      <label for="birdnetpi_url">BirdNET-Pi URL: </label>
-      <input style="width:40ch;" name="birdnetpi_url" type="url" value="<?php print($newconfig['BIRDNETPI_URL']);?>" /><br>
-      <p>The BirdNET-Pi URL is how the main page will be reached. If you want your installation to respond to an IP address, place that here, but be sure to indicate "<i>http://</i>".<br>Example for IP: <i>http://192.168.0.109</i><br>Example if you own your own domain: <i>https://virginia.birdnetpi.com</i></p>
+      <label for="batnetpi_url">BatNET-Pi URL: </label>
+      <input style="width:40ch;" name="batnetpi_url" type="url" value="<?php print($newconfig['BATNETPI_URL']);?>" /><br>
+      <p>The BatNET-Pi URL is how the main page will be reached. If you want your installation to respond to an IP address, place that here, but be sure to indicate "<i>http://</i>".<br>Example for IP: <i>http://192.168.0.109</i><br>Example if you own your own domain: <i>https://virginia.batnetpi.com</i></p>
       <label for="silence_update_indicator">Silence Update Indicator: </label>
       <input type="checkbox" name="silence_update_indicator" <?php if($newconfig['SILENCE_UPDATE_INDICATOR'] == 1) { echo "checked"; };?> ><br>
 
-      <h3>BirdNET-Lite Settings</h3>
+      <h3>BatNET-Lite Settings</h3>
 
       <p>
         <label for="overlap">Overlap: </label>
@@ -306,7 +306,7 @@ foreach($formats as $format){
 
       <h3>Accessibility Settings</h3>
 
-      <p>Birdsongs Frequency shifting configuration:<br>
+      <p>Batsongs Frequency shifting configuration:<br>
         this can be useful for earing impaired people.<br>
 
         <p style="margin-left: 40px">

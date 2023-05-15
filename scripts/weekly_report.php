@@ -10,7 +10,7 @@ $debug = false;
 
 if(isset($_GET['ascii'])) {
 
-	$db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+	$db = new SQLite3('./scripts/bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 	if($db == False){
 	  echo "Database is busy";
 	  header("refresh: 0;");
@@ -77,7 +77,7 @@ if(isset($_GET['ascii'])) {
 		$detections[$detection["Com_Name"]] = $detection["COUNT(*)"];
 	}
 
-	echo "# BirdNET-Pi: Week ".date('W', $enddate)." Report\n";
+	echo "# BatNET-Pi: Week ".date('W', $enddate)." Report\n";
 
 	echo "Total Detections: <b>".$totalcount."</b> (".$percentagedifftotal.")<br>";
 	echo "Unique Species Detected: <b>".$totalspeciestally."</b> (".$percentagedifftotaldistinctspecies.")<br><br>";
@@ -145,7 +145,7 @@ if(isset($_GET['ascii'])) {
 echo "<h1>Week ".date('W', $enddate)." Report</h1>".date('F jS, Y',$startdate)." — ".date('F jS, Y',$enddate)."<br>";
 ?></div><?php
 
-$db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+$db = new SQLite3('./scripts/bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False){
   echo "Database is busy";
   header("refresh: 0;");

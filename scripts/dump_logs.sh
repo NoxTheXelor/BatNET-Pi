@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # A comprehensive log dumper
 # set -x # Uncomment to debug
-source /etc/birdnet/birdnet.conf &> /dev/null
-LOG_DIR="${HOME}/BirdNET-Pi/logs"
-my_dir=$HOME/BirdNET-Pi/scripts
+source /etc/batnet/batnet.conf &> /dev/null
+LOG_DIR="${HOME}/BatNET-Pi/logs"
+my_dir=$HOME/BatNET-Pi/scripts
 services=$(awk '/service/ && /systemctl/ && !/php/ {print $3}' ${my_dir}/install_services.sh | sort)
 
 # Create logs directory
@@ -17,8 +17,8 @@ for i in "${services[@]}";do
   fi
 done
 
-# Create password-removed birdnet.conf
-sed -e '/PWD=/d' ${HOME}/BirdNET-Pi/birdnet.conf > ${LOG_DIR}/birdnet.conf 
+# Create password-removed batnet.conf
+sed -e '/PWD=/d' ${HOME}/BatNET-Pi/batnet.conf > ${LOG_DIR}/batnet.conf 
 
 # Create password-removed Caddyfile
 if [ -f /etc/caddy/Caddyfile ];then
@@ -46,6 +46,6 @@ for i in "${CALLS[@]}";do
 done
 
 # TAR the logs into a ball
-tar --remove-files -cvpzf ${HOME}/BirdNET-Pi/logs.tar.gz ${LOG_DIR} &> /dev/null
+tar --remove-files -cvpzf ${HOME}/BatNET-Pi/logs.tar.gz ${LOG_DIR} &> /dev/null
 # Finished
-echo "Your compressed logs are located at ${HOME}/BirdNET-Pi/logs.tar.gz"
+echo "Your compressed logs are located at ${HOME}/BatNET-Pi/logs.tar.gz"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -x
-source /etc/birdnet/birdnet.conf
+source /etc/batnet/batnet.conf
 
 STAMP="%H:%M:%S"
 
@@ -20,12 +20,12 @@ while [ $now -ge ${CUSTOM_WINDOW_START[0]} ] && [ $now -le ${CUSTOM_WINDOW_END[0
   # If you prefer no directory structure under "Raw", comment out the
   # lines below and uncommend the commands at the bottom.
   arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-birdnet-${STAMP}.wav
+    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-batnet-${STAMP}.wav
   
   # Uncomment the lines below if you'd prefer having no directory scructure
   # under the "Raw" directory. Be sure to comment out the command above.
   #arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-  #  --use-strftime ${EXTRACTED}/Raw/%F-birdnet-${STAMP}.wav
+  #  --use-strftime ${EXTRACTED}/Raw/%F-batnet-${STAMP}.wav
   sleep $PAUSE_DURATION
   now=$(date +%H)
 done
@@ -34,12 +34,12 @@ while [ $now -ge ${CUSTOM_WINDOW_START[1]} ] && [ $now -le ${CUSTOM_WINDOW_END[1
   # If you prefer no directory structure under "Raw", comment out the
   # lines below and uncommend the commands at the bottom.
   arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-birdnet-${STAMP}.wav
+    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-batnet-${STAMP}.wav
   
   # Uncomment the lines below if you'd prefer having no directory scructure
   # under the "Raw" directory. Be sure to comment out the command above.
   #arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-  #  --use-strftime ${EXTRACTED}/Raw/%F-birdnet-${STAMP}.wav
+  #  --use-strftime ${EXTRACTED}/Raw/%F-batnet-${STAMP}.wav
   sleep $PAUSE_DURATION
   now=$(date +%H)
 done
@@ -48,12 +48,12 @@ while [ $now -ge ${CUSTOM_WINDOW_START[2]} ] && [ $now -le ${CUSTOM_WINDOW_END[2
   # If you prefer no directory structure under "Raw", comment out the
   # lines below and uncommend the commands at the bottom.
   arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-birdnet-${STAMP}.wav
+    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-batnet-${STAMP}.wav
   
   # Uncomment the lines below if you'd prefer having no directory scructure
   # under the "Raw" directory. Be sure to comment out the command above.
   #arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-  #  --use-strftime ${EXTRACTED}/Raw/%F-birdnet-${STAMP}.wav 
+  #  --use-strftime ${EXTRACTED}/Raw/%F-batnet-${STAMP}.wav 
   sleep $PAUSE_DURATION
   now=$(date +%H)
 done
@@ -62,12 +62,12 @@ while [ $now -ge ${CUSTOM_WINDOW_START[3]} ] && [ $now -le ${CUSTOM_WINDOW_END[3
   # If you prefer no directory structure under "Raw", comment out the
   # lines below and uncommend the commands at the bottom.
   arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-birdnet-${STAMP}.wav
+    --use-strftime ${EXTRACTED}/Raw/%B-%Y/%d-%A/%F-batnet-${STAMP}.wav
   
   # Uncomment the lines below if you'd prefer having no directory scructure
   # under the "Raw" directory. Be sure to comment out the command above.
   #arecord -f S16_LE -c${CHANNELS} -r256000 -t wav -d $RECORDING_DURATION \
-  #  --use-strftime ${EXTRACTED}/Raw/%F-birdnet-${STAMP}.wav
+  #  --use-strftime ${EXTRACTED}/Raw/%F-batnet-${STAMP}.wav
   sleep $PAUSE_DURATION
   now=$(date +%H)
 done

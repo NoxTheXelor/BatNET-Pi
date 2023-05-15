@@ -111,9 +111,9 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-cd ~/BirdNET-Pi
+cd ~/BatNET-Pi
 function remove() {
-  source /etc/birdnet/birdnet.conf
+  source /etc/batnet/batnet.conf
   find $EXTRACTED -iname *${1}* -exec rm -drfv {} +
 }
 alias rerc="source ~/.bashrc"

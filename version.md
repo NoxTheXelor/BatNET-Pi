@@ -8,7 +8,7 @@
 - Privacy server.py for testing
 - New mobile view
 - Moved (nearly) all CSS to style.css
-- Added "try/except" to server.py to fail BirdWeather
+- Added "try/except" to server.py to fail BatWeather
   POSTing gracefully and not kill the service
 
 # main v.11.1
@@ -29,14 +29,14 @@
 # main v.11
 - New "Reconfigure System" GUI
 - labels.txt language support for 20+ languages
-  - Tool in `birdnet-pi-config` for now
+  - Tool in `batnet-pi-config` for now
   - Added German top.html and menu.html
 
 # main v.10 & pre-installed image notes
-- New "BirdWeather" Chromium App (Pre-install image)
+- New "BatWeather" Chromium App (Pre-install image)
 - New Infographics _chart_viewer.service_ (courtesy of @CaiusX)
 - New "Overview"
-- BirdWeather Support
+- BatWeather Support
 - Bug Fix for systemd-networkd-wait-online.service
 - Bug Fix for `install_noip2.sh` for NoIP DUC Support
 - New `disk_check.sh` utitlity/crontab entry to `stop_core_services.sh`
@@ -60,7 +60,7 @@
 - Systemd networkd supported
 
 # newinstaller v0.5
-- New `birdnet-pi-config` tool meant for:
+- New `batnet-pi-config` tool meant for:
   - SSH-only installation
-  - Reconfiguring birdnet.conf
+  - Reconfiguring batnet.conf
   - Configuring system settings

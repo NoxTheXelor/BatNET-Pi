@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-source /etc/birdnet/birdnet.conf
-my_dir=$HOME/BirdNET-Pi/scripts
+source /etc/batnet/batnet.conf
+my_dir=$HOME/BatNET-Pi/scripts
 set -x
 [ -d /etc/caddy ] || mkdir /etc/caddy
 if [ -f /etc/caddy/Caddyfile ];then
@@ -9,7 +9,7 @@ fi
 if ! [ -z ${CADDY_PWD} ];then
 HASHWORD=$(caddy hash-password --plaintext ${CADDY_PWD})
 cat << EOF > /etc/caddy/Caddyfile
-http:// ${BIRDNETPI_URL} {
+http:// ${BATNETPI_URL} {
   root * ${EXTRACTED}
   file_server browse
   handle /By_Date/* {
@@ -19,22 +19,22 @@ http:// ${BIRDNETPI_URL} {
     file_server browse
   }
   basicauth /views.php?view=File* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /Processed* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /scripts* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /stream {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /phpsysinfo* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   basicauth /terminal* {
-    birdnet ${HASHWORD}
+    batnet ${HASHWORD}
   }
   reverse_proxy /stream localhost:8000
   php_fastcgi unix//run/php/php7.4-fpm.sock
@@ -45,7 +45,7 @@ http:// ${BIRDNETPI_URL} {
 EOF
 else
   cat << EOF > /etc/caddy/Caddyfile
-http:// ${BIRDNETPI_URL} {
+http:// ${BATNETPI_URL} {
   root * ${EXTRACTED}
   file_server browse
   handle /By_Date/* {

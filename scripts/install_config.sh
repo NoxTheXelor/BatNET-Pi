@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Creates and installs the /etc/birdnet/birdnet.conf file
+# Creates and installs the /etc/batnet/batnet.conf file
 set -x # Uncomment to enable debugging
 set -e
 trap 'exit 1' SIGINT SIGHUP
 
 echo "Beginning $0"
-birdnet_conf=$my_dir/birdnet.conf
+batnet_conf=$my_dir/batnet.conf
 
 install_config() {
-  cat << EOF > $birdnet_conf
+  cat << EOF > $batnet_conf
 ################################################################################
-#                    Configuration settings for BirdNET-Pi                     #
+#                    Configuration settings for BatNET-Pi                     #
 ################################################################################
 
 #--------------------- Required: Latitude, and Longitude ----------------------#
@@ -22,14 +22,14 @@ install_config() {
 LATITUDE=$(curl -s4 ifconfig.co/json | jq .latitude)
 LONGITUDE=$(curl -s4 ifconfig.co/json | jq .longitude)
 
-#---------------------  BirdWeather Station Information -----------------------#
-#_____________The variable below can be set to have your BirdNET-Pi____________#
-#__________________also act as a BirdWeather listening station_________________#
+#---------------------  BatWeather Station Information -----------------------#
+#_____________The variable below can be set to have your BatNET-Pi____________#
+#__________________also act as a BatWeather listening station_________________#
 
-BIRDWEATHER_ID=
+BATWEATHER_ID=
 
 #-----------------------  Web Interface User Password  ------------------------#
-#____________________The variable below sets the 'birdnet'_____________________#
+#____________________The variable below sets the 'batnet'_____________________#
 #___________________user password for the Live Audio Stream,___________________#
 #_________________Tools, System Links, and the Processed files ________________#
 
@@ -47,31 +47,31 @@ CADDY_PWD=
 ## trusted source for the stream. You will never need to enter this manually
 ## anywhere other than here and it stays on 'localhost.'
 
-ICE_PWD=birdnetpi
+ICE_PWD=batnetpi
 
 #-----------------------  Web-hosting/Caddy File-server -----------------------#
 #_______The three variables below can be set to enable internet access_________#
 #____________to your data,(e.g., extractions, raw data, live___________________#
-#______________audio stream, BirdNET.selection.txt files)______________________#
+#______________audio stream, BatNET.selection.txt files)______________________#
 
 
-## BIRDNETPI_URL is the URL where the extractions, data-set, and live-stream
+## BATNETPI_URL is the URL where the extractions, data-set, and live-stream
 ## will be web-hosted. If you do not own a domain, or would just prefer to keep
-## the BirdNET-Pi on your local network, keep this EMPTY.
+## the BatNET-Pi on your local network, keep this EMPTY.
 
-BIRDNETPI_URL=
+BATNETPI_URL=
 
 #----------------------------  RTSP Stream URL  -------------------------------#
 
 ## If RTSP_STREAM is set, the system will use the RTSP stream as its audio
 ## source instead of recording its own audio. If this variable is kept empty,
-## BirdNET-Pi will default to recording its own audio.
+## BatNET-Pi will default to recording its own audio.
 
 RTSP_STREAM=
 
 #-----------------------  Apprise Miscellanous Configuration -------------------#
 
-APPRISE_NOTIFICATION_TITLE="New BirdNET-Pi Detection"
+APPRISE_NOTIFICATION_TITLE="New BatNET-Pi Detection"
 APPRISE_NOTIFICATION_BODY="A \$sciname \$comname was just detected with a confidence of \$confidence"
 APPRISE_NOTIFY_EACH_DETECTION=0
 APPRISE_NOTIFY_NEW_SPECIES=0
@@ -80,7 +80,7 @@ APPRISE_NOTIFY_NEW_SPECIES_EACH_DAY=0
 APPRISE_MINIMUM_SECONDS_BETWEEN_NOTIFICATIONS_PER_SPECIES=0
 
 #----------------------  Flickr Images API Configuration -----------------------#
-## If FLICKR_API_KEY is set, the web interface will try and display bird images 
+## If FLICKR_API_KEY is set, the web interface will try and display bat images 
 ## for each detection. If FLICKR_FILTER_EMAIL is set, the images will only be 
 ## displayed from a particular Flickr user (e.g. yourself).
 
@@ -91,13 +91,13 @@ FLICKR_FILTER_EMAIL=
 #--------------------------------  Defaults  ----------------------------------#
 ################################################################################
 
-## RECS_DIR is the location birdnet_analysis.service will look for the data-set
+## RECS_DIR is the location batnet_analysis.service will look for the data-set
 ## it needs to analyze. Be sure this directory is readable and writable for
-## the BIRDNET_USER.
+## the BATNET_USER.
 
-RECS_DIR=$HOME/BirdSongs
+RECS_DIR=$HOME/BatSongs
 
-## REC_CARD is the sound card you would want the birdnet_recording.service to
+## REC_CARD is the sound card you would want the batnet_recording.service to
 ## use. Leave this as "default" to use PulseAudio (recommended), or use
 ## the output from "aplay -L" to specify an ALSA device.
 
@@ -105,21 +105,21 @@ REC_CARD=default
 
 ## PROCESSED is the directory where the formerly 'Analyzed' files are moved
 ## after extractions have been made from them. This includes both WAVE and
-## BirdNET.selection.txt files.
+## BatNET.selection.txt files.
 
-PROCESSED=$HOME/BirdSongs/Processed
+PROCESSED=$HOME/BatSongs/Processed
 
 ## EXTRACTED is the directory where the extracted audio selections are moved.
 
-EXTRACTED=$HOME/BirdSongs/Extracted
+EXTRACTED=$HOME/BatSongs/Extracted
 
-## OVERLAP is the value in seconds which BirdNET should use when analyzing
+## OVERLAP is the value in seconds which BatNET should use when analyzing
 ## the data. The values must be between 0.0-2.9.
 
 OVERLAP=0.0
 
-## CONFIDENCE is the minimum confidence level from 0.0-1.0 BirdNET's analysis
-## should reach before creating an entry in the BirdNET.selection.txt file.
+## CONFIDENCE is the minimum confidence level from 0.0-1.0 BatNET's analysis
+## should reach before creating an entry in the BatNET.selection.txt file.
 ## Don't set this to 1.0 or you won't have any results.
 
 CONFIDENCE=0.7
@@ -164,13 +164,13 @@ FULL_DISK=purge
 
 PRIVACY_THRESHOLD=0
 
-## RECORDING_LENGTH sets the length of the recording that BirdNET-Lite will
+## RECORDING_LENGTH sets the length of the recording that BatNET-Lite will
 ## analyze.
 
 RECORDING_LENGTH=15
 
 ## EXTRACTION_LENGTH sets the length of the audio extractions that will be made
-## from each BirdNET-Lite detection. An empty value will use the default of 6
+## from each BatNET-Lite detection. An empty value will use the default of 6
 ## seconds.
 
 EXTRACTION_LENGTH=
@@ -186,7 +186,7 @@ EXTRACTION_LENGTH=
 
 AUDIOFMT=mp3
 
-## DATABASE_LANG is the language used for the bird species database
+## DATABASE_LANG is the language used for the bat species database
 DATABASE_LANG=en
 
 ## HEARTBEAT_URL is a location to ping every time some analysis is done
@@ -204,15 +204,15 @@ SILENCE_UPDATE_INDICATOR=0
 ## These are just for debugging
 LAST_RUN=
 THIS_RUN=
-IDFILE=$HOME/BirdNET-Pi/IdentifiedSoFar.txt
+IDFILE=$HOME/BatNET-Pi/IdentifiedSoFar.txt
 EOF
 }
 
-# Checks for a birdnet.conf file
-if ! [ -f ${birdnet_conf} ];then
+# Checks for a batnet.conf file
+if ! [ -f ${batnet_conf} ];then
   install_config
 fi
-chmod g+w ${birdnet_conf}
-[ -d /etc/birdnet ] || sudo mkdir /etc/birdnet
-sudo ln -sf $birdnet_conf /etc/birdnet/birdnet.conf
-grep -ve '^#' -e '^$' /etc/birdnet/birdnet.conf > $my_dir/firstrun.ini
+chmod g+w ${batnet_conf}
+[ -d /etc/batnet ] || sudo mkdir /etc/batnet
+sudo ln -sf $batnet_conf /etc/batnet/batnet.conf
+grep -ve '^#' -e '^$' /etc/batnet/batnet.conf > $my_dir/firstrun.ini

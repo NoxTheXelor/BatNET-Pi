@@ -4,18 +4,18 @@
 # you are okay will losing all the data that you've collected and processed
 # so far.
 set -x
-source /etc/birdnet/birdnet.conf
+source /etc/batnet/batnet.conf
 USER=$(awk -F: '/1000/ {print $1}' /etc/passwd)
 HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
-my_dir=${HOME}/BirdNET-Pi/scripts
+my_dir=${HOME}/BatNET-Pi/scripts
 echo "Stopping services"
-sudo systemctl stop birdnet_recording.service
-sudo systemctl stop birdnet_analysis.service
-sudo systemctl stop birdnet_server.service
+sudo systemctl stop batnet_recording.service
+sudo systemctl stop batnet_analysis.service
+sudo systemctl stop batnet_server.service
 echo "Removing all data . . . "
 sudo rm -drf "${RECS_DIR}"
 sudo rm -f "${IDFILE}"
-sudo rm -f $(dirname ${my_dir})/BirdDB.txt
+sudo rm -f $(dirname ${my_dir})/BatDB.txt
 
 echo "Re-creating necessary directories"
 [ -d ${EXTRACTED} ] || sudo -u ${USER} mkdir -p ${EXTRACTED}
@@ -46,10 +46,10 @@ chmod -R g+rw ${RECS_DIR}
 
 echo "Dropping and re-creating database"
 createdb.sh
-echo "Re-generating BirdDB.txt"
-touch $(dirname ${my_dir})/BirdDB.txt
-echo "Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap" > $(dirname ${my_dir})/BirdDB.txt
-ln -sf $(dirname ${my_dir})/BirdDB.txt ${my_dir}/BirdDB.txt
-chown $USER:$USER ${my_dir}/BirdDB.txt && chmod g+rw ${my_dir}/BirdDB.txt
+echo "Re-generating BatDB.txt"
+touch $(dirname ${my_dir})/BatDB.txt
+echo "Date;Time;Sci_Name;Com_Name;Confidence;Lat;Lon;Cutoff;Week;Sens;Overlap" > $(dirname ${my_dir})/BatDB.txt
+ln -sf $(dirname ${my_dir})/BatDB.txt ${my_dir}/BatDB.txt
+chown $USER:$USER ${my_dir}/BatDB.txt && chmod g+rw ${my_dir}/BatDB.txt
 echo "Restarting services"
 restart_services.sh

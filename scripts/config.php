@@ -22,7 +22,7 @@ if(isset($_GET['restart_php']) && $_GET['restart_php'] == "true") {
 if(isset($_GET["latitude"])){
   $latitude = $_GET["latitude"];
   $longitude = $_GET["longitude"];
-  $birdweather_id = $_GET["birdweather_id"];
+  $batweather_id = $_GET["batweather_id"];
   $apprise_input = $_GET['apprise_input'];
   $apprise_notification_title = $_GET['apprise_notification_title'];
   $apprise_notification_body = $_GET['apprise_notification_body'];
@@ -89,19 +89,19 @@ if(isset($_GET["latitude"])){
     $home = trim(shell_exec("awk -F: '/1000/{print $6}' /etc/passwd"));
 
     // Archive old language file
-    syslog_shell_exec("cp -f $home/BirdNET-Pi/model/labels.txt $home/BirdNET-Pi/model/labels.txt.old", $user);
+    syslog_shell_exec("cp -f $home/BatNET-Pi/model/labels.txt $home/BatNET-Pi/model/labels.txt.old", $user);
 
     // Install new language label file
-    syslog_shell_exec("$home/BirdNET-Pi/scripts/install_language_label.sh -l $language", $user);
+    syslog_shell_exec("$home/BatNET-Pi/scripts/install_language_label.sh -l $language", $user);
 
     syslog(LOG_INFO, "Successfully changed language to '$language'");
   }
 
 
-  $contents = file_get_contents("/etc/birdnet/birdnet.conf");
+  $contents = file_get_contents("/etc/batnet/batnet.conf");
   $contents = preg_replace("/LATITUDE=.*/", "LATITUDE=$latitude", $contents);
   $contents = preg_replace("/LONGITUDE=.*/", "LONGITUDE=$longitude", $contents);
-  $contents = preg_replace("/BIRDWEATHER_ID=.*/", "BIRDWEATHER_ID=$birdweather_id", $contents);
+  $contents = preg_replace("/BATWEATHER_ID=.*/", "BATWEATHER_ID=$batweather_id", $contents);
   $contents = preg_replace("/APPRISE_NOTIFICATION_TITLE=.*/", "APPRISE_NOTIFICATION_TITLE=\"$apprise_notification_title\"", $contents);
   $contents = preg_replace("/APPRISE_NOTIFICATION_BODY=.*/", "APPRISE_NOTIFICATION_BODY='$apprise_notification_body'", $contents);
   $contents = preg_replace("/APPRISE_NOTIFY_EACH_DETECTION=.*/", "APPRISE_NOTIFY_EACH_DETECTION=$apprise_notify_each_detection", $contents);
@@ -116,7 +116,7 @@ if(isset($_GET["latitude"])){
   $contents2 = file_get_contents("./scripts/thisrun.txt");
   $contents2 = preg_replace("/LATITUDE=.*/", "LATITUDE=$latitude", $contents2);
   $contents2 = preg_replace("/LONGITUDE=.*/", "LONGITUDE=$longitude", $contents2);
-  $contents2 = preg_replace("/BIRDWEATHER_ID=.*/", "BIRDWEATHER_ID=$birdweather_id", $contents2);
+  $contents2 = preg_replace("/BATWEATHER_ID=.*/", "BATWEATHER_ID=$batweather_id", $contents2);
   $contents2 = preg_replace("/APPRISE_NOTIFICATION_TITLE=.*/", "APPRISE_NOTIFICATION_TITLE=\"$apprise_notification_title\"", $contents2);
   $contents2 = preg_replace("/APPRISE_NOTIFICATION_BODY=.*/", "APPRISE_NOTIFICATION_BODY='$apprise_notification_body'", $contents2);
   $contents2 = preg_replace("/APPRISE_NOTIFY_EACH_DETECTION=.*/", "APPRISE_NOTIFY_EACH_DETECTION=$apprise_notify_each_detection", $contents2);
@@ -129,7 +129,7 @@ if(isset($_GET["latitude"])){
   $contents2 = preg_replace("/APPRISE_MINIMUM_SECONDS_BETWEEN_NOTIFICATIONS_PER_SPECIES=.*/", "APPRISE_MINIMUM_SECONDS_BETWEEN_NOTIFICATIONS_PER_SPECIES=$minimum_time_limit", $contents2);
 
 
-  $fh = fopen("/etc/birdnet/birdnet.conf", "w");
+  $fh = fopen("/etc/batnet/batnet.conf", "w");
   $fh2 = fopen("./scripts/thisrun.txt", "w");
   fwrite($fh, $contents);
   fwrite($fh2, $contents2);
@@ -139,7 +139,7 @@ if(isset($_GET["latitude"])){
     $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
     $home = trim($home);
 
-    $appriseconfig = fopen($home."/BirdNET-Pi/apprise.txt", "w");
+    $appriseconfig = fopen($home."/BatNET-Pi/apprise.txt", "w");
     fwrite($appriseconfig, $apprise_input);
   }
 
@@ -148,7 +148,7 @@ if(isset($_GET["latitude"])){
 }
 
 if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
-  $db = new SQLite3('./birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+  $db = new SQLite3('./bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 
   $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
   $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
@@ -184,10 +184,10 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
   $title = $_GET['apprise_notification_title'];
   $body = $_GET['apprise_notification_body'];
 
-  if($config["BIRDNETPI_URL"] != "") {
-    $filename = $config["BIRDNETPI_URL"]."?filename=".$filename;
+  if($config["BATNETPI_URL"] != "") {
+    $filename = $config["BATNETPI_URL"]."?filename=".$filename;
   } else{
-    $filename = "http://birdnetpi.local/"."?filename=".$filename;
+    $filename = "http://batnetpi.local/"."?filename=".$filename;
   }
 
   $attach="";
@@ -227,7 +227,7 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
   $body = str_replace("\$overlap", $overlap, $body);
   $body = str_replace("\$flickrimage", $exampleimage, $body);
 
-  echo "<pre class=\"bash\">".shell_exec($home."/BirdNET-Pi/birdnet/bin/apprise -vv -t '".$title."' -b '".$body."' ".$attach." ".$cf." ")."</pre>";
+  echo "<pre class=\"bash\">".shell_exec($home."/BatNET-Pi/batnet/bin/apprise -vv -t '".$title."' -b '".$body."' ".$attach." ".$cf." ")."</pre>";
 
   die();
 }
@@ -249,8 +249,8 @@ if (file_exists('./scripts/thisrun.txt')) {
 $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
-if (file_exists($home."/BirdNET-Pi/apprise.txt")) {
-  $apprise_config = file_get_contents($home."/BirdNET-Pi/apprise.txt");
+if (file_exists($home."/BatNET-Pi/apprise.txt")) {
+  $apprise_config = file_get_contents($home."/BatNET-Pi/apprise.txt");
 } else {
   $apprise_config = "";
 }
@@ -263,7 +263,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 } else {
   $submittedpwd = $_SERVER['PHP_AUTH_PW'];
   $submitteduser = $_SERVER['PHP_AUTH_USER'];
-  if($submittedpwd !== $caddypwd || $submitteduser !== 'birdnet'){
+  if($submittedpwd !== $caddypwd || $submitteduser !== 'batnet'){
     header('WWW-Authenticate: Basic realm="My Realm"');
     header('HTTP/1.0 401 Unauthorized');
     echo '<table><tr><td>You cannot edit the settings for this installation</td></tr></table>';
@@ -302,10 +302,10 @@ function sendTestNotification(e) {
       <p>Set your Latitude and Longitude to 4 decimal places. Get your coordinates <a href="https://latlong.net" target="_blank">here</a>.</p>
       </td></tr></table><br>
       <table class="settingstable"><tr><td>
-      <h2>BirdWeather</h2>
-      <label for="birdweather_id">BirdWeather ID: </label>
-      <input name="birdweather_id" type="text" value="<?php print($config['BIRDWEATHER_ID']);?>" /><br>
-      <p><a href="https://app.birdweather.com" target="_blank">BirdWeather.com</a> is a weather map for bird sounds. Stations around the world supply audio and video streams to BirdWeather where they are then analyzed by BirdNET and compared to eBird Grid data. BirdWeather catalogues the bird audio and spectrogram visualizations so that you can listen to, view, and read about birds throughout the world. <a href="mailto:tim@birdweather.com?subject=Request%20BirdWeather%20ID&body=<?php include('./scripts/birdweather_request.php'); ?>" target="_blank">Email Tim</a> to request a BirdWeather ID</p>
+      <h2>BatWeather</h2>
+      <label for="batweather_id">BatWeather ID: </label>
+      <input name="batweather_id" type="text" value="<?php print($config['BATWEATHER_ID']);?>" /><br>
+      <p><a href="https://app.batweather.com" target="_blank">BatWeather.com</a> is a weather map for bat sounds. Stations around the world supply audio and video streams to BatWeather where they are then analyzed by BatNET and compared to eBat Grid data. BatWeather catalogues the bat audio and spectrogram visualizations so that you can listen to, view, and read about bats throughout the world. <a href="mailto:tim@batweather.com?subject=Request%20BatWeather%20ID&body=<?php include('./scripts/batweather_request.php'); ?>" target="_blank">Email Tim</a> to request a BatWeather ID</p>
       </td></tr></table><br>
       <table class="settingstable" style="width:100%"><tr><td>
       <h2>Notifications</h2>
@@ -349,13 +349,13 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
       <input name="apprise_notification_title" type="text" value="<?php print($config['APPRISE_NOTIFICATION_TITLE']);?>" /><br>
       <label for="apprise_notification_body">Notification Body: </label>
       <input name="apprise_notification_body" type="text" value='<?php print($config['APPRISE_NOTIFICATION_BODY']);?>' /><br>
-      <input type="checkbox" name="apprise_notify_new_species" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES'] == 1 && filesize($home."/BirdNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
+      <input type="checkbox" name="apprise_notify_new_species" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES'] == 1 && filesize($home."/BatNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
       <label for="apprise_notify_new_species">Notify each new infrequent species detection (<5 visits per week)</label><br>
-      <input type="checkbox" name="apprise_notify_new_species_each_day" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES_EACH_DAY'] == 1 && filesize($home."/BirdNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
+      <input type="checkbox" name="apprise_notify_new_species_each_day" <?php if($config['APPRISE_NOTIFY_NEW_SPECIES_EACH_DAY'] == 1 && filesize($home."/BatNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
       <label for="apprise_notify_new_species_each_day">Notify each species first detection of the day</label><br>
-      <input type="checkbox" name="apprise_notify_each_detection" <?php if($config['APPRISE_NOTIFY_EACH_DETECTION'] == 1 && filesize($home."/BirdNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
+      <input type="checkbox" name="apprise_notify_each_detection" <?php if($config['APPRISE_NOTIFY_EACH_DETECTION'] == 1 && filesize($home."/BatNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
       <label for="apprise_weekly_report">Notify each new detection</label><br>
-      <input type="checkbox" name="apprise_weekly_report" <?php if($config['APPRISE_WEEKLY_REPORT'] == 1 && filesize($home."/BirdNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
+      <input type="checkbox" name="apprise_weekly_report" <?php if($config['APPRISE_WEEKLY_REPORT'] == 1 && filesize($home."/BatNET-Pi/apprise.txt") != 0) { echo "checked"; };?> >
       <label for="apprise_weekly_report">Send weekly report</label><br>
 
       <hr>
@@ -368,12 +368,12 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
       <span id="testsuccessmsg"></span>
       </td></tr></table><br>
       <table class="settingstable"><tr><td>
-      <h2>Bird Photos from Flickr</h2>
+      <h2>Bat Photos from Flickr</h2>
       <label for="flickr_api_key">Flickr API Key: </label>
       <input name="flickr_api_key" type="text" value="<?php print($config['FLICKR_API_KEY']);?>"/><br>
       <label for="flickr_filter_email">Only search photos from this Flickr user: </label>
       <input name="flickr_filter_email" type="email" placeholder="myflickraccount@gmail.com" value="<?php print($config['FLICKR_FILTER_EMAIL']);?>"/><br>
-      <p>Set your Flickr API key to enable the display of bird images next to detections. <a target="_blank" href="https://www.flickr.com/services/api/misc.api_keys.html">Get your free key here.</a></p>
+      <p>Set your Flickr API key to enable the display of bat images next to detections. <a target="_blank" href="https://www.flickr.com/services/api/misc.api_keys.html">Get your free key here.</a></p>
       </td></tr></table><br>
       <table class="settingstable"><tr><td>
       <h2>Localization</h2>

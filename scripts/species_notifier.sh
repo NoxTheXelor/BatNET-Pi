@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sends a notification if a new species is detected
 trap 'rm -f $lastcheck' EXIT
-source /etc/birdnet/birdnet.conf
+source /etc/batnet/batnet.conf
 
 lastcheck="$(mktemp)"
 
@@ -9,7 +9,7 @@ lastcheck="$(mktemp)"
 
 cp ${IDFILE} ${lastcheck}
 
-$HOME/BirdNET-Pi/scripts/update_species.sh
+$HOME/BatNET-Pi/scripts/update_species.sh
 
 if ! diff ${IDFILE} ${lastcheck} &> /dev/null;then
   SPECIES=$(diff ${IDFILE} ${lastcheck} \
@@ -20,8 +20,8 @@ if ! diff ${IDFILE} ${lastcheck} &> /dev/null;then
   echo "Sending the following notification:
 ${NOTIFICATION}"
 
-  if [ -s $HOME/BirdNET-Pi/apprise.txt ];then
-    $HOME/BirdNET-Pi/birdnet/bin/apprise -vv -t 'New Species Detected' -b "${NOTIFICATION}" --config=$HOME/BirdNET-Pi/apprise.txt
+  if [ -s $HOME/BatNET-Pi/apprise.txt ];then
+    $HOME/BatNET-Pi/batnet/bin/apprise -vv -t 'New Species Detected' -b "${NOTIFICATION}" --config=$HOME/BatNET-Pi/apprise.txt
   fi
 fi
 

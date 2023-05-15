@@ -2,10 +2,10 @@
 # Restarts ALL services and removes ALL unprocessed audio
 
 
-services=(birdnet_recording.service
+services=(batnet_recording.service
 custom_recording.service
-birdnet_analysis.service
-birdnet_server.service
+batnet_analysis.service
+batnet_server.service
 chart_viewer.service
 extraction.service
 spectrogram_viewer.service)

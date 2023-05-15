@@ -46,7 +46,7 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 MAXIMAL_ANSWER_LENGTH = 2048
 
 userDir = os.path.expanduser('~')
-DB_PATH = userDir + '/BirdNET-Pi/scripts/birds.db'
+DB_PATH = userDir + '/BatNET-Pi/scripts/bats.db'
 
 result_lock = threading.Lock()
 perf_lock = threading.Lock()
@@ -62,7 +62,7 @@ except BaseException:
 
 
 # Open most recent Configuration and grab DB_PWD as a python variable
-with open(userDir +'/BirdNET-Pi/scripts/thisrun.txt', 'r') as f:
+with open(userDir +'/BatNET-Pi/scripts/thisrun.txt', 'r') as f:
     this_run = f.readlines()
     audiofmt = "." + str(str(str([i for i in this_run if i.startswith('AUDIOFMT')]).split('=')[1]).split('\\')[0])
     priv_thresh = float("." + str(str(str([i for i in this_run if i.startswith('PRIVACY_THRESHOLD')]).split('=')[1]).split('\\')[0])) / 10
@@ -77,7 +77,7 @@ def pre_loading_model():
     ####################################
     # Parameters to be set by the user #
     ####################################
-    model_dir = userDir +'/BirdNET-Pi/model/'  # path to the saved models
+    model_dir = userDir +'/BatNET-Pi/model/'  # path to the saved models
     model_name = "cnn2" # one of: 'batmen', 'cnn2',  'hybrid_cnn_svm',
     # 'hybrid_cnn_xgboost', 'hybrid_call_svm', 'hybrid_call_xgboost'
 
@@ -172,7 +172,7 @@ def pre_loading_model():
 
 def record_perf(data):
 
-    path = userDir+'/BirdNET-Pi/perf_logs/'
+    path = userDir+'/BatNET-Pi/perf_logs/'
     log_file_name = 'ai_log.csv'
 
     if not os.path.exists(path+log_file_name) :
@@ -218,7 +218,7 @@ def handle_client(conn, addr):
 
                 args.i = ''
                 args.o = ''
-                #args.birdweather_id = '99999'
+                #args.batweather_id = '99999'
                 args.include_list = 'null'
                 args.exclude_list = 'null'
                 args.overlap = 0.0
@@ -234,8 +234,8 @@ def handle_client(conn, addr):
                         args.i = inputvars[1]
                     elif inputvars[0] == 'o':
                         args.o = inputvars[1]
-                    #elif inputvars[0] == 'birdweather_id':
-                    #    args.birdweather_id = inputvars[1]
+                    #elif inputvars[0] == 'batweather_id':
+                    #    args.batweather_id = inputvars[1]
                     #elif inputvars[0] == 'include_list':
                     #    args.include_list = inputvars[1]
                     #elif inputvars[0] == 'exclude_list':
@@ -268,7 +268,7 @@ def handle_client(conn, addr):
                 else:
                     EXCLUDE_LIST = []"""
 
-                #birdweather_id = args.birdweather_id
+                #batweather_id = args.batweather_id
                 
                 
                 # name of the result file

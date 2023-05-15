@@ -1,6 +1,6 @@
-#birdnet
+#batnet
 */5 * * * * $USER /usr/local/bin/disk_check.sh >/dev/null 2>&1
-#birdnet
+#batnet
 */3 * * * * $USER /usr/local/bin/cleanup.sh >/dev/null 2>&1
-#birdnet
+#batnet
 @reboot $USER /usr/local/bin/cleanup.sh >/dev/null 2>&1

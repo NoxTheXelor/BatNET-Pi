@@ -2,8 +2,8 @@
 # Uninstall script to remove everything
 #set -x # Uncomment to debug
 trap 'rm -f ${TMPFILE}' EXIT
-my_dir=$HOME/BirdNET-Pi/scripts
-source /etc/birdnet/birdnet.conf &> /dev/null
+my_dir=$HOME/BatNET-Pi/scripts
+source /etc/batnet/batnet.conf &> /dev/null
 SCRIPTS=($(ls -1 ${my_dir}) ${HOME}/.gotty)
 set -x
 services=($(awk '/service/ && /systemctl/ && !/php/ {print $3}' ${my_dir}/install_services.sh | sort) custom_recording.service avahi-alias@.service)
@@ -29,7 +29,7 @@ remove_services() {
 }
 
 remove_crons() {
-  sudo sed -i '/birdnet/,+1d' /etc/crontab
+  sudo sed -i '/batnet/,+1d' /etc/crontab
 }
 
 remove_icecast() {
@@ -49,6 +49,6 @@ remove_scripts() {
 
 remove_services
 remove_scripts
-if [ -d /etc/birdnet ];then sudo rm -drf /etc/birdnet;fi
-if [ -f ${HOME}/BirdNET-Pi/birdnet.conf ];then sudo rm -f ${HOME}/BirdNET-Pi/birdnet.conf;fi
+if [ -d /etc/batnet ];then sudo rm -drf /etc/batnet;fi
+if [ -f ${HOME}/BatNET-Pi/batnet.conf ];then sudo rm -f ${HOME}/BatNET-Pi/batnet.conf;fi
 echo "Uninstall finished. Remove this directory with 'rm -drfv' to finish."

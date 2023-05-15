@@ -2,7 +2,7 @@
 error_reporting(0);
 ini_set('display_errors', 0);
 
-$db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+$db = new SQLite3('./scripts/bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False) {
   echo "Database busy";
   header("refresh: 0;");
@@ -55,9 +55,9 @@ if(isset($_GET['species'])){
 $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
-if(!file_exists($home."/BirdNET-Pi/scripts/disk_check_exclude.txt") || strpos(file_get_contents($home."/BirdNET-Pi/scripts/disk_check_exclude.txt"),"##start") === false) {
-  file_put_contents($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", "");
-  file_put_contents($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", "##start\n##end\n");
+if(!file_exists($home."/BatNET-Pi/scripts/disk_check_exclude.txt") || strpos(file_get_contents($home."/BatNET-Pi/scripts/disk_check_exclude.txt"),"##start") === false) {
+  file_put_contents($home."/BatNET-Pi/scripts/disk_check_exclude.txt", "");
+  file_put_contents($home."/BatNET-Pi/scripts/disk_check_exclude.txt", "##start\n##end\n");
 }
 ?>
 
@@ -66,7 +66,7 @@ if(!file_exists($home."/BirdNET-Pi/scripts/disk_check_exclude.txt") || strpos(fi
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BirdNET-Pi DB</title>
+  <title>BatNET-Pi DB</title>
 <style>
 </style>
 
@@ -159,7 +159,7 @@ while($results=$result3->fetchArray(SQLITE3_ASSOC)){
   <b>Occurrences: </b>$count<br>
   <b>Max Confidence: </b>$maxconf<br>
   <b>Best Recording: </b>$date $time<br>
-  <a href=\"https://allaboutbirds.org/guide/$comname\" target=\"top\"/>All About Birds</a><br>
+  <a href=\"https://allaboutbats.org/guide/$comname\" target=\"top\"/>All About Bats</a><br>
   <video onplay='setLiveStreamVolume(0)' onended='setLiveStreamVolume(1)' onpause='setLiveStreamVolume(1)' controls poster=\"$filename.png\" title=\"$filename\"><source src=\"$filename\"></video></td>
   </tr>
     </table>
@@ -177,7 +177,7 @@ while($results=$result3->fetchArray(SQLITE3_ASSOC)){
   if (! empty($config["FLICKR_API_KEY"])) {
     // only open the file once per script execution
     if(!isset($lines)) {
-      $lines = file($home."/BirdNET-Pi/model/labels_flickr.txt");
+      $lines = file($home."/BatNET-Pi/model/labels_flickr.txt");
     }
     // convert sci name to English name
     foreach($lines as $line){ 
@@ -231,8 +231,8 @@ array_push($excludelines, $results['Date']."/".$comname."/".$results['File_Name'
 <?php
 }
 
-$file = file_get_contents($home."/BirdNET-Pi/scripts/disk_check_exclude.txt");
-file_put_contents($home."/BirdNET-Pi/scripts/disk_check_exclude.txt", "##start"."\n".implode("\n",$excludelines)."\n".substr($file, strpos($file, "##end")));
+$file = file_get_contents($home."/BatNET-Pi/scripts/disk_check_exclude.txt");
+file_put_contents($home."/BatNET-Pi/scripts/disk_check_exclude.txt", "##start"."\n".implode("\n",$excludelines)."\n".substr($file, strpos($file, "##end")));
 ?>
     </table>
       </form>

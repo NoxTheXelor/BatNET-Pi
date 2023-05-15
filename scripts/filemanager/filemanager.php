@@ -12,7 +12,7 @@ $CONFIG = '{"lang":"en","error_reporting":false,"show_hidden":true,"hide_Cols":f
 define('VERSION', '2.4.6');
 
 //Application Title
-define('APP_TITLE', 'BirdNET-Pi Files');
+define('APP_TITLE', 'BatNET-Pi Files');
 
 // --- EDIT BELOW CONFIGURATION CAREFULLY ---
 
@@ -4009,7 +4009,7 @@ function lng($txt) {
     global $lang;
 
     // English Language
-    $tr['en']['AppName']        = 'BirdNET-Pi Files';       $tr['en']['AppTitle']           = 'BirdNET-Pi Files';
+    $tr['en']['AppName']        = 'BatNET-Pi Files';       $tr['en']['AppTitle']           = 'BatNET-Pi Files';
     $tr['en']['Login']          = 'Sign in';                $tr['en']['Username']           = 'Username';
     $tr['en']['Password']       = 'Password';               $tr['en']['Logout']             = 'Sign Out';
     $tr['en']['Move']           = 'Move';                   $tr['en']['Copy']               = 'Copy';

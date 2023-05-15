@@ -73,9 +73,9 @@ def main():
         default='null',
         help='Path to text file containing a list of excluded species. Not used if not provided.')
     parser.add_argument(
-        '--birdweather_id',
+        '--batweather_id',
         default='99999',
-        help='Private Station ID for BirdWeather.')
+        help='Private Station ID for BatWeather.')
     parser.add_argument(
         '--nbr_thread',
         default='1',
@@ -88,8 +88,8 @@ def main():
         sockParams += 'i=' + args.i + '||'
     if args.o:
         sockParams += 'o=' + args.o + '||'
-    #if args.birdweather_id:
-    #    sockParams += 'birdweather_id=' + args.birdweather_id + '||' #not needed for demo
+    #if args.batweather_id:
+    #    sockParams += 'batweather_id=' + args.batweather_id + '||' #not needed for demo
     #if args.include_list:
     #    sockParams += 'include_list=' + args.include_list + '||'
     #if args.exclude_list:

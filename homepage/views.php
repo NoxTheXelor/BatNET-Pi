@@ -5,8 +5,8 @@ $user = trim($user);
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
 if(!isset($_SESSION['behind'])) {
-  $fetch = shell_exec("sudo -u".$user." git -C ".$home."/BirdNET-Pi fetch 2>&1");
-  $_SESSION['behind'] = trim(shell_exec("sudo -u".$user." git -C ".$home."/BirdNET-Pi status | sed -n '2 p' | cut -d ' ' -f 7"));
+  $fetch = shell_exec("sudo -u".$user." git -C ".$home."/BatNET-Pi fetch 2>&1");
+  $_SESSION['behind'] = trim(shell_exec("sudo -u".$user." git -C ".$home."/BatNET-Pi status | sed -n '2 p' | cut -d ' ' -f 7"));
   if(isset($_SESSION['behind'])&&intval($_SESSION['behind']) >= 99) {?>
   <style>
   .updatenumber { 
@@ -118,7 +118,7 @@ if(isset($_GET['view'])){
     } else {
       $submittedpwd = $_SERVER['PHP_AUTH_PW'];
       $submitteduser = $_SERVER['PHP_AUTH_USER'];
-      if($submittedpwd == $caddypwd && $submitteduser == 'birdnet'){
+      if($submittedpwd == $caddypwd && $submitteduser == 'batnet'){
         $url = $_SERVER['SERVER_NAME']."/scripts/adminer.php";
         echo "<div class=\"centered\">
           <form action=\"\" method=\"GET\" id=\"views\">
@@ -160,7 +160,7 @@ if(isset($_GET['view'])){
       $str = preg_replace('/^\h*\v+/m', '', $str);
       file_put_contents("$file", "$str");
       foreach($_GET['species'] as $selectedOption) {
-        $content = file_get_contents("../BirdNET-Pi/include_species_list.txt");
+        $content = file_get_contents("../BatNET-Pi/include_species_list.txt");
         $newcontent = str_replace($selectedOption, "", "$content");
         file_put_contents("./scripts/include_species_list.txt", "$newcontent");
       }
@@ -214,7 +214,7 @@ if(isset($_GET['view'])){
     } else {
       $submittedpwd = $_SERVER['PHP_AUTH_PW'];
       $submitteduser = $_SERVER['PHP_AUTH_USER'];
-      if($submittedpwd == $caddypwd && $submitteduser == 'birdnet'){
+      if($submittedpwd == $caddypwd && $submitteduser == 'batnet'){
         #ACCESS THE WEB TERMINAL
         echo "<iframe src='/terminal'></iframe>";
       } else {
@@ -248,30 +248,30 @@ if(isset($_GET['view'])){
                        'sudo systemctl restart web_terminal.service',
                        'sudo systemctl disable --now web_terminal.service',
                        'sudo systemctl enable --now web_terminal.service',
-                       'sudo systemctl stop birdnet_log.service',
-                       'sudo systemctl restart birdnet_log.service',
-                       'sudo systemctl disable --now birdnet_log.service',
-                       'sudo systemctl enable --now birdnet_log.service',
+                       'sudo systemctl stop batnet_log.service',
+                       'sudo systemctl restart batnet_log.service',
+                       'sudo systemctl disable --now batnet_log.service',
+                       'sudo systemctl enable --now batnet_log.service',
                        'sudo systemctl stop extraction.service',
                        'sudo systemctl restart extraction.service',
                        'sudo systemctl disable --now extraction.service',
                        'sudo systemctl enable --now extraction.service',
-                       'sudo systemctl stop birdnet_server.service',
-                       'sudo systemctl restart birdnet_server.service',
-                       'sudo systemctl disable --now birdnet_server.service',
-                       'sudo systemctl enable --now birdnet_server.service',
-                       'sudo systemctl stop birdnet_analysis.service',
-                       'sudo systemctl restart birdnet_analysis.service',
-                       'sudo systemctl disable --now birdnet_analysis.service',
-                       'sudo systemctl enable --now birdnet_analysis.service',
-                       'sudo systemctl stop birdnet_stats.service',
-                       'sudo systemctl restart birdnet_stats.service',
-                       'sudo systemctl disable --now birdnet_stats.service',
-                       'sudo systemctl enable --now birdnet_stats.service',
-                       'sudo systemctl stop birdnet_recording.service',
-                       'sudo systemctl restart birdnet_recording.service',
-                       'sudo systemctl disable --now birdnet_recording.service',
-                       'sudo systemctl enable --now birdnet_recording.service',
+                       'sudo systemctl stop batnet_server.service',
+                       'sudo systemctl restart batnet_server.service',
+                       'sudo systemctl disable --now batnet_server.service',
+                       'sudo systemctl enable --now batnet_server.service',
+                       'sudo systemctl stop batnet_analysis.service',
+                       'sudo systemctl restart batnet_analysis.service',
+                       'sudo systemctl disable --now batnet_analysis.service',
+                       'sudo systemctl enable --now batnet_analysis.service',
+                       'sudo systemctl stop batnet_stats.service',
+                       'sudo systemctl restart batnet_stats.service',
+                       'sudo systemctl disable --now batnet_stats.service',
+                       'sudo systemctl enable --now batnet_stats.service',
+                       'sudo systemctl stop batnet_recording.service',
+                       'sudo systemctl restart batnet_recording.service',
+                       'sudo systemctl disable --now batnet_recording.service',
+                       'sudo systemctl enable --now batnet_recording.service',
                        'sudo systemctl stop chart_viewer.service',
                        'sudo systemctl restart chart_viewer.service',
                        'sudo systemctl disable --now chart_viewer.service',
@@ -283,18 +283,18 @@ if(isset($_GET['view'])){
                        'stop_core_services.sh',
                        'restart_services.sh',
                        'sudo reboot',
-                       'update_birdnet.sh',
+                       'update_batnet.sh',
                        'sudo shutdown now',
                        'sudo clear_all_data.sh');
       $command = $_GET['submit'];
-    if($submittedpwd == $caddypwd && $submitteduser == 'birdnet' && in_array($command,$allowedCommands)){
+    if($submittedpwd == $caddypwd && $submitteduser == 'batnet' && in_array($command,$allowedCommands)){
       if(isset($command)){
         $initcommand = $command;
         if (strpos($command, "systemctl") !== false) {
           $tmp = explode(" ",trim($command));
           $command .= "& sleep 3;sudo systemctl status ".end($tmp);
         }
-        if($initcommand == "update_birdnet.sh") {
+        if($initcommand == "update_batnet.sh") {
           unset($_SESSION['behind']);
         }
         $results = shell_exec("$command 2>&1");

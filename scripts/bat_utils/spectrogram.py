@@ -7,7 +7,7 @@ import os
 def store_data_4debug(x,fs, ms, overlap ):
 
     userDir = os.path.expanduser('~')
-    path = userDir+'/BirdNET-Pi/perf_logs/'
+    path = userDir+'/BatNET-Pi/perf_logs/'
 
     log_file_name = 'debug.csv'
 

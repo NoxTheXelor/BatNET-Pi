@@ -18,9 +18,9 @@ HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
 
 label_file_name="labels_${lang}.txt"
 
-unzip -o $HOME/BirdNET-Pi/model/labels_l18n.zip $label_file_name \
-  -d $HOME/BirdNET-Pi/model \
-  && mv -f $HOME/BirdNET-Pi/model/$label_file_name $HOME/BirdNET-Pi/model/labels.txt \
+unzip -o $HOME/BatNET-Pi/model/labels_l18n.zip $label_file_name \
+  -d $HOME/BatNET-Pi/model \
+  && mv -f $HOME/BatNET-Pi/model/$label_file_name $HOME/BatNET-Pi/model/labels.txt \
   && logger "[$0] Changed language label file to '$label_file_name'";
 
 exit 0

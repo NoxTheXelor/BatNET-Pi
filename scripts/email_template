@@ -1,6 +1,6 @@
-Hi, Tim, and thank you so much for BirdWeather.com!
+Hi, Tim, and thank you so much for BatWeather.com!
 %0A%0A
-Below is the information I would like to use to request a BirdWeather ID
+Below is the information I would like to use to request a BatWeather ID
 %0A%0A
 Latitude={{ LATITUDE }}%0A
 Longitude={{ LONGITUDE }}%0A
@@ -9,5 +9,5 @@ Location= [ Create a location name ]%0A
 Thank you so much!%0A
 [ Your Name Here ]
 %0A%0A
-Disclaimer: By requesting this BirdWeather ID, I acknowledge that my location%0A
+Disclaimer: By requesting this BatWeather ID, I acknowledge that my location%0A
 and recording data will be made public.

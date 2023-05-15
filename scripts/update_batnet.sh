@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Update BirdNET-Pi's Git Repo
-source /etc/birdnet/birdnet.conf
+# Update BatNET-Pi's Git Repo
+source /etc/batnet/batnet.conf
 trap 'exit 1' SIGINT SIGHUP
 
 usage() { echo "Usage: $0 [-r <remote name>] [-b <branch name>]" 1>&2; exit 1; }
 
 USER=$(awk -F: '/1000/ {print $1}' /etc/passwd)
 HOME=$(awk -F: '/1000/ {print $6}' /etc/passwd)
-my_dir=$HOME/BirdNET-Pi/scripts
+my_dir=$HOME/BatNET-Pi/scripts
 
 # Defaults
 remote="origin"
@@ -17,7 +17,7 @@ while getopts ":r:b:" o; do
   case "${o}" in
     r)
       remote=${OPTARG}
-      git -C $HOME/BirdNET-Pi remote show $remote > /dev/null 2>&1
+      git -C $HOME/BatNET-Pi remote show $remote > /dev/null 2>&1
       ret_val=$?
 
       if [ $ret_val -ne 0 ]; then
@@ -42,17 +42,17 @@ sudo_with_user () {
 }
 
 # Reset current HEAD to remove any local changes
-sudo_with_user git -C $HOME/BirdNET-Pi reset --hard
+sudo_with_user git -C $HOME/BatNET-Pi reset --hard
 
 # Fetches latest changes
-sudo_with_user git -C $HOME/BirdNET-Pi fetch $remote $branch
+sudo_with_user git -C $HOME/BatNET-Pi fetch $remote $branch
 
 # Switches git to specified branch
-sudo_with_user git -C $HOME/BirdNET-Pi switch -C $branch --track $remote/$branch
+sudo_with_user git -C $HOME/BatNET-Pi switch -C $branch --track $remote/$branch
 
 sudo systemctl daemon-reload
 sudo ln -sf $my_dir/* /usr/local/bin/
 
 # The script below handles changes to the host system
 # Any additions to the updater should be placed in that file.
-sudo $my_dir/update_birdnet_snippets.sh
+sudo $my_dir/update_batnet_snippets.sh

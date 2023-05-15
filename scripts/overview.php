@@ -7,7 +7,7 @@ session_start();
 $myDate = date('Y-m-d');
 $chart = "Combo-$myDate.png";
 
-$db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
+$db = new SQLite3('./scripts/bats.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -50,10 +50,10 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
     $comname = preg_replace('/\'/', '', $comname);
     $filename = "/By_Date/".$mostrecent['Date']."/".$comname."/".$mostrecent['File_Name'];
     $args = "&license=2%2C3%2C4%2C5%2C6%2C9&orientation=square,portrait";
-    $comnameprefix = "%20bird";
+    $comnameprefix = "%20bat";
     
       // check to make sure the image actually exists, sometimes it takes a minute to be created\
-      if(file_exists($home."/BirdSongs/Extracted".$filename.".png")){
+      if(file_exists($home."/BatSongs/Extracted".$filename.".png")){
           if($_GET['previous_detection_identifier'] == $filename) { die(); }
           if($_GET['only_name'] == "true") { echo $comname.",".$filename;die(); }
 
@@ -83,7 +83,7 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
         } else {
           // only open the file once per script execution
           if(!isset($lines)) {
-            $lines = file($home."/BirdNET-Pi/model/labels_flickr.txt");
+            $lines = file($home."/BatNET-Pi/model/labels_flickr.txt");
           }
           // convert sci name to English name
           foreach($lines as $line){ 
