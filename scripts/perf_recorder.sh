@@ -3,8 +3,8 @@
 # set -x
 source /etc/batnet/batnet.conf
 name=$(date "+%d-%m-%Y")
-output_file="/home/bat/BatNET-Pi/perf_logs/batnet_perf_$name.csv"
-max_file="/home/bat/BatNET-Pi/perf_logs/max.csv"
+output_file=$HOME/BatNET-Pi/perf_logs/batnet_perf_$name.csv
+max_file=$HOME/BatNET-Pi/perf_logs/max.csv
 
 # Create the output file with column headers if it doesn't exist
 if [ ! -f ${output_file} ]; then
