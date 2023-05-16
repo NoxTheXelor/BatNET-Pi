@@ -117,7 +117,7 @@ run_analysis() {
   for i in "${files[@]}";do
     [ ! -f ${1}/${i} ] && continue
     echo "${1}/${i}" > $HOME/BatNET-Pi/analyzing_now.txt
-    [ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=15
+    [ -z ${RECORDING_LENGTH} ] && RECORDING_LENGTH=10
     echo "RECORDING_LENGTH set to ${RECORDING_LENGTH}"
     until [ -z "$(lsof -t ${1}/${i})" ];do
       sleep 2

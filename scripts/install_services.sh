@@ -192,7 +192,7 @@ install_stop_record_perf_timer() {
 Description= Stop Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 18:00:00
+OnCalendar= *-*-* 20:30:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_perf_recorder.service
