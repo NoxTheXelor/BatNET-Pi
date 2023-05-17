@@ -2,7 +2,7 @@
 set -x
 source /etc/batnet/batnet.conf
 
-[ -z $RECORDING_LENGTH ] && RECORDING_LENGTH=10
+[ -z $RECORDING_LENGTH ] && RECORDING_LENGTH=5
 
 if [ ! -z $RTSP_STREAM ];then
   [ -d $RECS_DIR/StreamData ] || mkdir -p $RECS_DIR/StreamData

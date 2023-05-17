@@ -224,6 +224,8 @@ def handle_client(conn, addr):
                         #need to avoid concurrence writing
                         result_lock.acquire()
                         print("wrinting result to file")
+                        #to record anyway and filter by threshold later
+                        min_conf=0
                         nbr_detection = wo.save_batdetect2(path_daily_result, results, min_conf)
                         result_lock.release()
 
