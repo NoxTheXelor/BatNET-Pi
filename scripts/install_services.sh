@@ -46,7 +46,7 @@ install_batnet_analysis_timer() {
 Description=BatNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 21:00:15
+OnCalendar= *-*-* *:00:15
 AccuracySec= 1s
 Persistent=True
 Unit= batnet_analysis.service
@@ -84,7 +84,7 @@ install_batnet_server_timer() {
 Description=BatNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* 21:00:10
+OnCalendar= *-*-* *:00:10
 AccuracySec= 1s 
 Persistent=True
 Unit= batnet_server.service
@@ -192,7 +192,7 @@ install_stop_record_perf_timer() {
 Description= Stop Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 20:30:00
+OnCalendar= *-*-* *:50:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_perf_recorder.service
@@ -230,7 +230,7 @@ install_record_perf_timer() {
 Description= Start Recording CPU and RAM usage TIMER
 
 [Timer]
-OnCalendar= *-*-* 20:55:00
+OnCalendar= *-*-* *:55:00
 AccuracySec= 1s
 Persistent=True
 Unit= perf_recorder.service
@@ -271,7 +271,7 @@ install_stop_recording_timer() {
 Description= BatNET Stop Recording TIMER
 
 [Timer]
-OnCalendar= *-*-* 07:00:00
+OnCalendar= *-*-* *:20:00
 AccuracySec= 1min
 Persistent=True
 Unit= stop_recording.service
@@ -308,7 +308,7 @@ install_recording_timer() {
 Description=BatNET Recording Timer
 
 [Timer]
-OnCalendar= *-*-* 21:00:00
+OnCalendar= *-*-* *:00:00
 AccuracySec= 1s
 Persistent=True
 Unit= batnet_recording.service
