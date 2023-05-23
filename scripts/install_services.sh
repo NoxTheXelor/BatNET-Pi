@@ -617,7 +617,7 @@ install_services() {
   install_record_perf_timer   #
   install_recording_perf_service    #
 
-  install_extraction_service
+  #install_extraction_service
   install_spectrogram_service
   install_chart_viewer_service
   install_gotty_logs
