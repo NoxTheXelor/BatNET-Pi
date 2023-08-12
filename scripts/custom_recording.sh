@@ -4,7 +4,7 @@ source /etc/birdnet/birdnet.conf
 
 STAMP="%H:%M:%S"
 
-[ -z $RECORDING_LENGTH ] && RECORDING_LENGTH=5
+[ -z $RECORDING_LENGTH ] && RECORDING_LENGTH=10
 
 if ! pulseaudio --check;then pulseaudio --start;fi
 
