@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # record ram and cpu usage
 # set -x
-source /etc/birdnet/birdnet.conf
-output_file="/home/bird/BirdNET-Pi/perf_logs/perf.csv"
-max_file="/home/bird/BirdNET-Pi/perf_logs/max.csv"
+source /etc/batnet/batnet.conf
+output_file="/home/ahoebaer/BatNET-Pi/perf_logs/perf.csv"
+max_file="/home/ahoebaer/BatNET-Pi/perf_logs/max.csv"
 
 # Create the output file with column headers if it doesn't exist
 if [ ! -f ${output_file} ]; then

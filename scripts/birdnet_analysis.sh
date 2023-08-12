@@ -74,6 +74,8 @@ move_analyzed() {
           mkdir -p "${1}-Analyzed" && echo "'Analyzed' directory created"
         fi
         mv "${1}/${i}" "${1}-Analyzed/" #move wav file to Analyzed directory
+				#wavpack  "${1}/${i}" -o "${1}-Analyzed/${i}.wv" #compress the source file + move compressed one
+				#wavpack -d "${1}/${i}" -o "${1}-Analyzed/${i}.wv" #compress, delete source file + move compressed one
       fi
     fi
   done
