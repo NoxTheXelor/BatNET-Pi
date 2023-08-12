@@ -46,7 +46,7 @@ install_birdnet_analysis_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* *:00:15
+OnCalendar= *-*-* *:00:20
 AccuracySec= 10s
 Persistent=True
 Unit= birdnet_analysis.service
@@ -84,7 +84,7 @@ install_birdnet_server_timer() {
 Description=BirdNET Analysis Timer
 
 [Timer]
-OnCalendar= *-*-* *:00:05
+OnCalendar= *-*-* *:00:10
 AccuracySec= 1s 
 Persistent=True
 Unit= birdnet_server.service
